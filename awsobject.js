@@ -39,5 +39,12 @@
 ]
 }
 
+apiCaller._post("f54c7690da7bf0", [{destinationPath: "large"}, {destinationPath: "medium"}, {destinationPath: "small"}, {destinationPath: "thumbnail"}], null, {
+    "host": "hevnly.dev",
+    "client_id": "1_3tk0nlxobfeoow0cw4w400k8o0g008ww00o44gookgskc8ggkw",
+    "client_secret": "38nay3fseqkg0cw80kk4scookoookoskc0c84c4ckkgk4884k8",
+    "grant_type": "client_credentials"
+}, "YTBhYzM3OWNmYzg1ZGYyODg1ZjY0OTY1M2ExZmY1NzUyMTcwOGNjMGRjYWRhOTYwNzk5YTAwM2EzYWM2ZGE0MA", function (err,data) {console.log(data);});
+
 
 

@@ -22,9 +22,6 @@ module.exports = function (grunt) {
             scripts: {
                 files: ['!images/dontdeleteme.png', 'images/*.*']
             },
-            options: {
-                livereload: 8089
-            }
         }
     });
 
@@ -56,18 +53,19 @@ module.exports = function (grunt) {
 
     var _sizesArray = [_800px, _500px, _200px, _45px];
 
-    grunt.event.on('watch', function(action, filepath, target) {
-        if (action === "delete") {
+    grunt.event.on('watch', function(action, filepath) {
+        if (action === "deleted") {
             console.log("Deleted image");
+            return;
         }
         GruntHandler(filepath, _sizesArray, configs);
     });
 
-
-
     grunt.registerTask('default', ['watch']);
-
-
 
     grunt.task.exists('watch');
 }
+
+
+
+

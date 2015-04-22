@@ -36,32 +36,30 @@ exports.GruntHandler = function (filepath, _sizesArray, config) {
 
     async.series([
 
-        apiGet(null, config, function () {
-            console.log("Get request fininshed!");
-        }),
+        function (callback) {
+            apiGet(null, config, callback);
+        },
 
-        function transform (callback) {
-            for (var i = 0; i<len; i++) {
-
-                // Transform the image
+        function (callback) {
+            async.map(sizesConfigs, function (sizesConfig, mapNext) {
                 gm(filepath)
-                    .resize(_sizesArray[i].width)
-                    .write(dstnFile + "/" + _sizesArray[i].destinationPath + "/" + srcFile, function (err) {
+                    .resize(_sizesArray.width)
+                    .write(dstnFile + "/" + _sizesArray.destinationPath + "/" + srcFile, function (err) {
                         if (!err) {
                             console.log("Success");
                         } else {
                             console.error("Error resizing image");
+                            mapNext(err);
+                            return;
                         }
                     });
-            }
-            callback();
+            }, callback);
         },
 
-        apiPost(srcFile, _sizesArray, null, config, function () {
-            console.log("Post request fininshed!");
-        })
+        function (callback) {
+            apiPost(srcFile, _sizesArray, null, config, callback);
+        }
     ]);
-
 };
 
 
@@ -106,10 +104,6 @@ exports.AwsHandler = function (event, context) {
         return;
     }
 
-    apiGet(context, configs, function () {
-        console.log("Api Get finished!");
-    });
-
     var imageType = imgExt[1] || imgExt[2];
 
     async.waterfall([
@@ -143,7 +137,7 @@ exports.AwsHandler = function (event, context) {
             console.error('Error processing image, details %s', err.message);
             context.done(err);
         } else {
-            apiPost(imgId, sizesConfigs, context, configs);
+
         }
     });
 };
