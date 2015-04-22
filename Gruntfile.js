@@ -61,6 +61,8 @@ module.exports = function (grunt) {
         GruntHandler(filepath, _sizesArray, configs);
     });
 
+    grunt.option('stack', true);
+
     grunt.registerTask('default', ['watch']);
 
     grunt.task.exists('watch');

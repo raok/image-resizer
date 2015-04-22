@@ -137,7 +137,7 @@ exports.AwsHandler = function (event, context) {
             console.error('Error processing image, details %s', err.message);
             context.done(err);
         } else {
-
+            context.done();
         }
     });
 };

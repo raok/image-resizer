@@ -30,8 +30,9 @@ apiCaller._get = function (context, config, callback) {
     };
 
     var _callback = function(response) {
+
         console.log('STATUS: ' + response.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(response.headers));
+
         var str = '';
 
         //another chunk of data has been received, so append it to `str`
@@ -77,9 +78,11 @@ apiCaller._get = function (context, config, callback) {
     request.end();
 };
 
-apiCaller._post = function (imgId, sizesConfigs, context, config, token, callback) {
+apiCaller._post = function (imgId, sizesConfigs, context, config, callback) {
 
-   // request to tell our api images were resized
+    console.log('TOKEN: %s', apiCaller.token);
+
+   // options for request
     var post_options = {
         method: "POST",
         hostname: config.host,
@@ -87,7 +90,7 @@ apiCaller._post = function (imgId, sizesConfigs, context, config, token, callbac
         headers: {
             'Content-Type': "application/x-www-form-urlencoded",
             'Accept': "application/json",
-            'Authorization': "Bearer " + token
+            'Authorization': "Bearer " + apiCaller.token
         }
     };
 
@@ -112,24 +115,27 @@ apiCaller._post = function (imgId, sizesConfigs, context, config, token, callbac
 
     var post_callback = function(response) {
 
+        console.log('STATUS POST: ' + response.statusCode);
+
         response.on('data', function (chunk) {
+            console.log("Body" + chunk);
             body += chunk;
         });
+
         // error response
         response.on("error", function (error) {
             if ( !context ) {
-                console.error("Something went wrong with the api, put request.");
+                console.error("Something went wrong with the api, post request.");
                 callback(error);
                 return
             }
-            context.done(new Error("Something went wrong with the api, put request."));
+            context.done(new Error("Something went wrong with the api, post request."));
         });
 
         response.on("end", function () {
-            console.log("Post Done");
             if ( !context ) {
-                callback(null, body);
-                return console.log("Done/Post request end!");
+                console.log("Done!")
+                return callback(null, body);
             }
         });
     };
@@ -138,9 +144,8 @@ apiCaller._post = function (imgId, sizesConfigs, context, config, token, callbac
 
     request.end(data, function () {
         if ( !context ) {
-            return console.log("Done/Post request end!");
+            console.log("Post request end!");
         }
-        context.done();
     });
 };
 
