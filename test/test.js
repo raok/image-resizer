@@ -36,22 +36,22 @@ describe('GruntHandler', function () {
 
     var _800px = {
         width: 800,
-        destinationPath: "large"
+        size: "large"
     };
 
     var _500px = {
         width: 500,
-        destinationPath: "medium"
+        size: "medium"
     };
 
     var _200px = {
         width: 200,
-        destinationPath: "small"
+        size: "small"
     };
 
     var _45px = {
         width: 45,
-        destinationPath: "thumbnail"
+        size: "thumbnail"
     };
 
     var _sizesArray = [_800px, _500px, _200px, _45px];
@@ -136,10 +136,10 @@ describe('AwsHandler', function () {
     //var eventEmitter = require('events').EventEmitter;
 
     var sizesConfigs = [
-        { width: 800, destinationPath: 'large' },
-        { width: 500, destinationPath: 'medium' },
-        { width: 200, destinationPath: 'small' },
-        { width: 45, destinationPath: 'thumbnail'}
+        { width: 800, size: 'large' },
+        { width: 500, size: 'medium' },
+        { width: 200, size: 'small' },
+        { width: 45, size: 'thumbnail'}
     ];
     var baseEvent = {
         "Records": [
@@ -228,7 +228,7 @@ describe('AwsHandler', function () {
             sizesConfigs.forEach(function(s) {
                 expect(putObjectStub).has.been.calledWith({
                     Bucket: event.Records[0].s3.bucket.name,
-                    Key: s.destinationPath + event.Records[0].s3.object.key,
+                    Key: s.size + event.Records[0].s3.object.key,
                     Body: 'data',
                     ContentType: 'image/jpg'
                 });
@@ -288,7 +288,7 @@ describe('AwsHandler', function () {
             sizesConfigs.forEach(function(s) {
                 expect(putObjectStub).has.been.calledWith({
                     Bucket: event.Records[0].s3.bucket.name,
-                    Key: s.destinationPath + event.Records[0].s3.object.key,
+                    Key: s.size + event.Records[0].s3.object.key,
                     Body: 'data',
                     ContentType: 'image/png'
                 });

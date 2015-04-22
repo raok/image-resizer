@@ -1,5 +1,6 @@
 var http = require("http");
 var querystring = require("querystring");
+var qs = require("qs");
 var _ = require("underscore");
 
 apiCaller = {};
@@ -33,7 +34,7 @@ apiCaller._get = function (context, config, callback) {
         console.log('HEADERS: ' + JSON.stringify(response.headers));
         var str = '';
 
-        //another chunk of data has been recieved, so append it to `str`
+        //another chunk of data has been received, so append it to `str`
         response.on('data', function (chunk) {
             str += chunk;
         });
@@ -42,6 +43,7 @@ apiCaller._get = function (context, config, callback) {
         response.on("error", function (error) {
             if ( !context ) {
                 console.error("Something went wrong with the api response.");
+                callback(error);
                 return;
             }
             context.done(new Error("Something went wrong with the api response."));
@@ -52,7 +54,6 @@ apiCaller._get = function (context, config, callback) {
 
             apiCaller.token = JSON.parse(str).access_token;
 
-            callback(null, apiCaller.token);
             // we want to stop the request if token is not correct
             if ( !apiCaller.token || apiCaller.token === undefined || apiCaller.token === null ) {
                 if ( !context ) {
@@ -62,8 +63,7 @@ apiCaller._get = function (context, config, callback) {
                 console.error("Token: %s", apiCaller.token);
                 context.done(new Error("Something went wrong with the token. Wrong token!"));
             }
-            console.log(str);
-            console.log(apiCaller.token);
+            callback(null, apiCaller.token);
 
         });
     };
@@ -91,27 +91,46 @@ apiCaller._post = function (imgId, sizesConfigs, context, config, token, callbac
         }
     };
 
-    var data = querystring.stringify(_.map(sizesConfigs, function (num) {return num.destinationPath}));
+    // create array of only sizes
+    var ArrOfSizes = _.map(sizesConfigs, function (num) {
+        return num.size;
+    });
+
+    var dataObj = {};
+
+    // transform array into object
+    var obj = ArrOfSizes.reduce(function(o, v, i) {
+        o[i] = v;
+        return o;
+    }, {});
+    // create property "sizes" and assign value "obj"
+    dataObj.sizes = obj;
+
+    var data = qs.stringify(dataObj);
 
     var body = "";
 
     var post_callback = function(response) {
 
         response.on('data', function (chunk) {
-            //console.log("body: " + chunk);
             body += chunk;
         });
         // error response
         response.on("error", function (error) {
             if ( !context ) {
                 console.error("Something went wrong with the api, put request.");
-                return;
+                callback(error);
+                return
             }
             context.done(new Error("Something went wrong with the api, put request."));
         });
 
         response.on("end", function () {
-            callback(null, body);
+            console.log("Post Done");
+            if ( !context ) {
+                callback(null, body);
+                return console.log("Done/Post request end!");
+            }
         });
     };
 

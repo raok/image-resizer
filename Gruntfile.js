@@ -31,22 +31,22 @@ module.exports = function (grunt) {
 
     var _800px = {
         width: 800,
-        destinationPath: "large"
+        size: "large"
     };
 
     var _500px = {
         width: 500,
-        destinationPath: "medium"
+        size: "medium"
     };
 
     var _200px = {
         width: 200,
-        destinationPath: "small"
+        size: "small"
     };
 
     var _45px = {
         width: 45,
-        destinationPath: "thumbnail"
+        size: "thumbnail"
     };
 
     var configs = grunt.file.readJSON('configs.json');

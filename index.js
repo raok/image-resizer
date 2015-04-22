@@ -41,19 +41,19 @@ exports.GruntHandler = function (filepath, _sizesArray, config) {
         },
 
         function (callback) {
-            async.map(sizesConfigs, function (sizesConfig, mapNext) {
+            async.map(_sizesArray, function (_sizesArray, mapNext) {
                 gm(filepath)
                     .resize(_sizesArray.width)
-                    .write(dstnFile + "/" + _sizesArray.destinationPath + "/" + srcFile, function (err) {
+                    .write(dstnFile + "/" + _sizesArray.size + "/" + srcFile, function (err) {
                         if (!err) {
                             console.log("Success");
                         } else {
-                            console.error("Error resizing image");
+                            console.error("Error resizing image, %s", err.message);
                             mapNext(err);
                             return;
                         }
                     });
-            }, callback);
+            }, callback());
         },
 
         function (callback) {
@@ -125,7 +125,7 @@ exports.AwsHandler = function (event, context) {
 
                         s3.putObject({
                             Bucket: s3Bucket,
-                            Key: sizeConfig.destinationPath + s3Key,
+                            Key: sizeConfig.size + s3Key,
                             Body: buffer,
                             ContentType: 'image/' + imageType
                         }, mapNext)

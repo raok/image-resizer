@@ -2,58 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bf7a9284-faab-44d2-bbd1-05a5c76d5666" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05 14.59.33.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/2015-honda-nsx-to-become-non-hybrid-racer-47344_1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/Mercedes-SLS-AMG-interior-7.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/diavelBlack 11.51.38.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/diavelBlack.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/ferrari458.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/funny-kitty 11.41.11.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/large/funny-kitty.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05 14.59.33.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/2015-honda-nsx-to-become-non-hybrid-racer-47344_1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/Mercedes-SLS-AMG-interior-7.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/diavelBlack 11.51.38.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/diavelBlack.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/ferrari458.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/funny-kitty 11.41.11.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/medium/funny-kitty.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05 14.59.33.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/2015-honda-nsx-to-become-non-hybrid-racer-47344_1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/Mercedes-SLS-AMG-interior-7.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/diavelBlack 11.51.38.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/diavelBlack.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/ferrari458.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/funny-kitty 11.41.11.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/small/funny-kitty.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05 14.59.33.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/2015-honda-nsx-to-become-non-hybrid-racer-47344_1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/Mercedes-SLS-AMG-interior-7.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/diavelBlack 11.51.38.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/diavelBlack.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/ferrari458.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/funny-kitty 11.41.11.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dst/thumbnail/funny-kitty.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/2014 Nissan GT-R 2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05 14.59.33 16.25.26 16.31.53.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/2015-honda-nsx-to-become-non-hybrid-racer-47344_1 14.40.11 14.41.28 16.32.46.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/Mercedes-SLS-AMG-interior-7 16.11.22 16.15.02 16.16.12 16.16.48 16.22.29.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/diavelBlack 11.51.38 14.40.54 17.32.25.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/funny-kitty 11.41.11 17.09.52.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/images/2015-ducati-diavel-live-pictures-and-tech-specs-photo-gallery_5 14.18.15 14.39.35 14.42.15 14.44.12 14.45.24 14.58.05 14.59.33 16.25.26 16.31.53 11.58.04.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/images/2015-honda-nsx-to-become-non-hybrid-racer-47344_1 14.40.11 14.41.28 16.32.46 23.52.20 11.57.02.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/images/Mercedes-SLS-AMG-interior-7 16.11.22 16.15.02 16.16.12 16.16.48 16.22.29 11.59.08.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/images/diavelBlack 11.51.38 14.40.54 17.32.25 23.49.04 23.49.46 11.46.32.jpg" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gruntfile.js" afterPath="$PROJECT_DIR$/Gruntfile.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apiCaller.js" afterPath="$PROJECT_DIR$/apiCaller.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/awsobject.js" afterPath="$PROJECT_DIR$/awsobject.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configs.json" afterPath="$PROJECT_DIR$/configs.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.js" afterPath="$PROJECT_DIR$/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/oauthConfigs.js" afterPath="$PROJECT_DIR$/oauthConfigs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/test.js" afterPath="$PROJECT_DIR$/test/test.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="imageResizer.iws" />
@@ -81,7 +39,7 @@
             <entry file="file://$PROJECT_DIR$/test/test.js">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="47" column="19" selection-start-line="47" selection-start-column="19" selection-end-line="47" selection-end-column="19" />
+                  <caret line="290" column="32" selection-start-line="290" selection-start-column="32" selection-end-line="290" selection-end-column="32" />
                   <folding />
                 </state>
               </provider>
@@ -97,20 +55,20 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Gruntfile.js" pinned="false" current-in-tab="false">
+          <file leaf-file-name="Gruntfile.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Gruntfile.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0">
-                  <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.61959">
+                  <caret line="48" column="10" selection-start-line="48" selection-start-column="10" selection-end-line="48" selection-end-column="10" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="awsobject.js" pinned="false" current-in-tab="true">
+          <file leaf-file-name="awsobject.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/awsobject.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.6577381">
+                <state vertical-scroll-proportion="0.0">
                   <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="46" selection-end-column="135" />
                   <folding />
                 </state>
@@ -125,7 +83,7 @@
             <entry file="file://$PROJECT_DIR$/index.js">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="55" column="15" selection-start-line="55" selection-start-column="15" selection-end-line="55" selection-end-column="15" />
+                  <caret line="55" column="27" selection-start-line="55" selection-start-column="27" selection-end-line="55" selection-end-column="27" />
                   <folding />
                 </state>
               </provider>
@@ -134,10 +92,17 @@
           <file leaf-file-name="apiCaller.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/apiCaller.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.7638889">
-                  <caret line="119" column="35" selection-start-line="119" selection-start-column="35" selection-end-line="119" selection-end-column="35" />
+                <state vertical-scroll-proportion="0.79347">
+                  <caret line="132" column="13" selection-start-line="132" selection-start-column="13" selection-end-line="132" selection-end-column="13" />
                   <folding />
                 </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="http.js" pinned="false" current-in-tab="false">
+            <entry file="mock://http.js">
+              <provider selected="true" editor-type-id="vmFileEditor">
+                <state />
               </provider>
             </entry>
           </file>
@@ -164,13 +129,11 @@
         <option value="$PROJECT_DIR$/test/test-helper.js" />
         <option value="$PROJECT_DIR$/gruntHandler.js" />
         <option value="$PROJECT_DIR$/apiGruntCaller.js" />
-        <option value="$PROJECT_DIR$/test/test.js" />
         <option value="$PROJECT_DIR$/configs.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="vm:47" />
         <option value="vm:358" />
         <option value="module.js" />
-        <option value="http.js" />
         <option value="_stream_readable.js" />
         <option value="net.js" />
         <option value="console.js" />
@@ -180,8 +143,10 @@
         <option value="$PROJECT_DIR$/configs.json" />
         <option value="$PROJECT_DIR$/oauthConfigs.js" />
         <option value="$PROJECT_DIR$/Gruntfile.js" />
-        <option value="$PROJECT_DIR$/index.js" />
         <option value="$PROJECT_DIR$/awsobject.js" />
+        <option value="$PROJECT_DIR$/test/test.js" />
+        <option value="http.js" />
+        <option value="$PROJECT_DIR$/index.js" />
         <option value="$PROJECT_DIR$/apiCaller.js" />
       </list>
     </option>
@@ -425,7 +390,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296875" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.07539062" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22973977" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22973977" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19553903" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -477,38 +442,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/apiCaller.js</url>
-          <line>121</line>
-          <option name="timeStamp" value="82" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/apiCaller.js</url>
-          <line>105</line>
-          <option name="timeStamp" value="84" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/apiCaller.js</url>
-          <line>104</line>
-          <option name="timeStamp" value="85" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/apiCaller.js</url>
-          <line>99</line>
-          <option name="timeStamp" value="86" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/apiCaller.js</url>
-          <line>97</line>
-          <option name="timeStamp" value="87" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/apiCaller.js</url>
-          <line>82</line>
-          <option name="timeStamp" value="88" />
-        </line-breakpoint>
-      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
@@ -517,7 +450,7 @@
           <properties />
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="89" />
+      <option name="time" value="93" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -858,10 +791,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/awsobject.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="46" selection-end-column="135" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/test/test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="47" column="19" selection-start-line="47" selection-start-column="19" selection-end-line="47" selection-end-column="19" />
+          <caret line="290" column="32" selection-start-line="290" selection-start-column="32" selection-end-line="290" selection-end-column="32" />
           <folding />
         </state>
       </provider>
@@ -876,8 +817,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Gruntfile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.61959">
+          <caret line="48" column="10" selection-start-line="48" selection-start-column="10" selection-end-line="48" selection-end-column="10" />
           <folding />
         </state>
       </provider>
@@ -885,23 +826,15 @@
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="55" column="15" selection-start-line="55" selection-start-column="15" selection-end-line="55" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/awsobject.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6577381">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="46" selection-end-column="135" />
+          <caret line="55" column="27" selection-start-line="55" selection-start-column="27" selection-end-line="55" selection-end-column="27" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apiCaller.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7638889">
-          <caret line="119" column="35" selection-start-line="119" selection-start-column="35" selection-end-line="119" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.79347">
+          <caret line="132" column="13" selection-start-line="132" selection-start-column="13" selection-end-line="132" selection-end-column="13" />
           <folding />
         </state>
       </provider>
