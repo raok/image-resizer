@@ -74,7 +74,7 @@ var _ = require("underscore");
 var apiCaller = require("./apiCaller");
 var apiGet = apiCaller._get;
 var apiPost = apiCaller._post;
-var configs = require("./oauthConfigs");
+var configs = require("./configs.json");
 
 
 

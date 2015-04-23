@@ -4,7 +4,7 @@ var http = require("http");
 var querystring = require("querystring");
 var qs = require("qs");
 var _ = require("underscore");
-var _environ = require("./configs.json").environment;
+var _environ = require("./dev_configs.json").environment;
 
 var apiCaller = {};
 
@@ -13,7 +13,7 @@ apiCaller.token = null;
 // TODO: Server needs to be wrapped in a if statement which must listen on the config file to determine the environment.
 // Lambda does not require the http server and does not run if one if provided.
 
-if (_environ === "develop" || _environ === "beta" || _environ === "nightly") {
+if (_environ === "develop" || _environ === "nightly") {
 
     var server = http.createServer(function (req, res) {
     });

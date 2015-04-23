@@ -1,0 +1,7 @@
+{
+  "host": "beta.hevnly.com",
+  "client_id": "",
+  "client_secret": "",
+  "grant_type": "client_credentials",
+  "environment": "beta"
+}
