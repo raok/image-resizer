@@ -107,6 +107,9 @@ exports.AwsHandler = function (event, context) {
     var imageType = imgExt[1] || imgExt[2];
 
     async.waterfall([
+        function _get (next) {
+            apiGet(context, configs, next);
+        },
         function download(next) {
             s3.getObject({
                 Bucket: s3Bucket,
@@ -131,6 +134,9 @@ exports.AwsHandler = function (event, context) {
                         }, mapNext)
                     });
             }, next);
+        },
+        function _post (next) {
+            apiPost(imgId, sizesConfigs, context, configs, next);
         }
     ], function (err) {
         if (err) {

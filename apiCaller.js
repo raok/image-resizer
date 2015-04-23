@@ -1,15 +1,25 @@
+'use strict'
+
 var http = require("http");
 var querystring = require("querystring");
 var qs = require("qs");
 var _ = require("underscore");
+var _environ = require("./configs.json").environment;
 
-apiCaller = {};
+var apiCaller = {};
 
 apiCaller.token = null;
 
-var server=http.createServer(function(req,res){});
+// TODO: Server needs to be wrapped in a if statement which must listen on the config file to determine the environment.
+// Lambda does not require the http server and does not run if one if provided.
 
-server.listen(8080);
+if (_environ === "develop" || _environ === "beta" || _environ === "nightly") {
+
+    var server = http.createServer(function (req, res) {
+    });
+
+    server.listen(8080);
+}
 
 apiCaller._get = function (context, config, callback) {
 
@@ -31,7 +41,7 @@ apiCaller._get = function (context, config, callback) {
 
     var _callback = function(response) {
 
-        console.log('STATUS: ' + response.statusCode);
+        console.log('GET STATUS: ' + response.statusCode);
 
         var str = '';
 
@@ -79,8 +89,6 @@ apiCaller._get = function (context, config, callback) {
 };
 
 apiCaller._post = function (imgId, sizesConfigs, context, config, callback) {
-
-    console.log('TOKEN: %s', apiCaller.token);
 
    // options for request
     var post_options = {
