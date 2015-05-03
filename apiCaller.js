@@ -5,12 +5,12 @@ var querystring = require("querystring");
 var qs = require("qs");
 var _ = require("underscore");
 var _environ = require("./dev_configs.json").environment;
+var request = require("request");
 
 var apiCaller = {};
 
 apiCaller.token = null;
 
-// TODO: Server needs to be wrapped in a if statement which must listen on the config file to determine the environment.
 // Lambda does not require the http server and does not run if one if provided.
 
 if (_environ === "develop" || _environ === "nightly") {
@@ -29,9 +29,8 @@ apiCaller._get = function (context, config, callback) {
     // create the querystring
     var params = querystring.stringify(oauthParams);
 
-    var options = {
-        method: "GET",
-        hostname: config.host,
+    var get_options = {
+        uri: config.host,
         path: "/oauth/v2/token?" + params,
         headers : {
             'Content-Type': "application/json",
@@ -39,34 +38,21 @@ apiCaller._get = function (context, config, callback) {
         }
     };
 
-    var _callback = function(response) {
-
-        console.log('GET STATUS: ' + response.statusCode);
-
-        var str = '';
-
-        //another chunk of data has been received, so append it to `str`
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-
-        // error response
-        response.on("error", function (error) {
+    function _callback (error, response, body) {
+        if (error) {
             if ( !context ) {
-                console.error("Something went wrong with the api response.");
+                console.error("Something went wrong with the api response: %s", error);
                 callback(error);
                 return;
             }
             context.done(new Error("Something went wrong with the api response."));
-        });
+        }
 
-        //the whole response has been recieved, so we just print it out here
-        response.on('end', function () {
-
-            apiCaller.token = JSON.parse(str).access_token;
+        if (!error && response.statusCode === 200) {
+            apiCaller.token = JSON.parse(body).access_token;
 
             // we want to stop the request if token is not correct
-            if ( !apiCaller.token || apiCaller.token === undefined || apiCaller.token === null ) {
+            if ( !apiCaller.token ) {
                 if ( !context ) {
                     console.error("Something went wrong with the token. Wrong token! Token: %s", apiCaller.token);
                     return;
@@ -75,32 +61,13 @@ apiCaller._get = function (context, config, callback) {
                 context.done(new Error("Something went wrong with the token. Wrong token!"));
             }
             callback(null, apiCaller.token);
+        }
+    }
 
-        });
-    };
-
-    var request = http.request(options, _callback);
-
-    request.on('error', function(e) {
-        console.log('problem with request');
-    });
-
-    request.end();
+    request.get(get_options, _callback);
 };
 
 apiCaller._post = function (imgId, sizesConfigs, context, config, callback) {
-
-   // options for request
-    var post_options = {
-        method: "POST",
-        hostname: config.host,
-        path: "/image/" + imgId + "/resized",
-        headers: {
-            'Content-Type': "application/x-www-form-urlencoded",
-            'Accept': "application/json",
-            'Authorization': "Bearer " + apiCaller.token
-        }
-    };
 
     // create array of only sizes
     var ArrOfSizes = _.map(sizesConfigs, function (num) {
@@ -119,42 +86,37 @@ apiCaller._post = function (imgId, sizesConfigs, context, config, callback) {
 
     var data = qs.stringify(dataObj);
 
-    var body = "";
+    // options for request
+    var post_options = {
+        uri: config.host,
+        path: "/image/" + imgId + "/resized",
+        headers: {
+            'Content-Type': "application/x-www-form-urlencoded",
+            'Accept': "application/json",
+            'Authorization': "Bearer " + apiCaller.token
+        },
+        qs : data
+    };
 
-    var post_callback = function(response) {
-
-        console.log('STATUS POST: ' + response.statusCode);
-
-        response.on('data', function (chunk) {
-            console.log("Body" + chunk);
-            body += chunk;
-        });
-
-        // error response
-        response.on("error", function (error) {
+    function _callback (error, response, body) {
+        if (error) {
             if ( !context ) {
-                console.error("Something went wrong with the api, post request.");
+                console.error("Something went wrong with the api, post request: %s", error);
                 callback(error);
                 return
             }
             context.done(new Error("Something went wrong with the api, post request."));
-        });
-
-        response.on("end", function () {
-            if ( !context ) {
-                console.log("Done!")
-                return callback(null, body);
-            }
-        });
-    };
-
-    var request = http.request(post_options, post_callback);
-
-    request.end(data, function () {
-        if ( !context ) {
-            console.log("Post request end!");
         }
-    });
+        console.log(response);
+        console.log(body);
+        if ( !context ) {
+            console.log("Done!")
+            return callback(null, body);
+        }
+
+    }
+
+    request.post(post_options, _callback);
 };
 
 module.exports = apiCaller;

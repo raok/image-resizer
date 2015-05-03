@@ -16,12 +16,8 @@ var apiPost = apiCaller._post;
 
 exports.GruntHandler = function (filepath, _sizesArray, config) {
 
-    var len = _sizesArray.length;
-
     // get the file name
     var srcFile = filepath.split("/").pop();
-
-    var dstnFile = "dst";
 
     // RegExp to check for image type
     var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
@@ -44,7 +40,7 @@ exports.GruntHandler = function (filepath, _sizesArray, config) {
             async.map(_sizesArray, function (_sizesArray, mapNext) {
                 gm(filepath)
                     .resize(_sizesArray.width)
-                    .write(dstnFile + "/" + _sizesArray.size + "/" + srcFile, function (err) {
+                    .write(_sizesArray.size + "_" + srcFile, function (err) {
                         if (!err) {
                             console.log("Success");
                         } else {
@@ -74,7 +70,7 @@ var _ = require("underscore");
 var apiCaller = require("./apiCaller");
 var apiGet = apiCaller._get;
 var apiPost = apiCaller._post;
-var configs = require("./configs.json");
+var configs = require("./production_configs.json");
 
 
 
@@ -82,10 +78,10 @@ var configs = require("./configs.json");
 var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
 
 var sizesConfigs = [
-    { width: 800, destinationPath: 'large' },
-    { width: 500, destinationPath: 'medium' },
-    { width: 200, destinationPath: 'small' },
-    { width: 45, destinationPath: 'thumbnail'}
+    { width: 800, size: 'large' },
+    { width: 500, size: 'medium' },
+    { width: 200, size: 'small' },
+    { width: 45, size: 'thumbnail'}
 ];
 
 exports.AwsHandler = function (event, context) {
@@ -119,7 +115,7 @@ exports.AwsHandler = function (event, context) {
         function transform(response, next) {
             async.map(sizesConfigs, function (sizeConfig, mapNext) {
                 gm(response.Body, s3Key)
-                    .resize(sizeConfig.width)
+                    .resize(sizeConfigs.width)
                     .toBuffer(imageType, function (err, buffer) {
                         if (err) {
                             mapNext(err);
@@ -128,7 +124,7 @@ exports.AwsHandler = function (event, context) {
 
                         s3.putObject({
                             Bucket: s3Bucket,
-                            Key: sizeConfig.size + s3Key,
+                            Key: sizeConfigs.size + "_" + s3Key,
                             Body: buffer,
                             ContentType: 'image/' + imageType
                         }, mapNext)
