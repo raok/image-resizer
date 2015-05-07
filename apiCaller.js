@@ -22,16 +22,16 @@ if (_environ === "develop" || _environ === "nightly") {
     console.log("Server running");
 }
 
-apiCaller._get = function (event, context, callback) {
+apiCaller._get = function (config, context, callback) {
 
     // get the parameters for our querytring
-    var oauthParams = _.pick(event, "client_id", "client_secret", "grant_type");
+    var oauthParams = _.pick(config, "client_id", "client_secret", "grant_type");
 
     // create the querystring
     var params = querystring.stringify(oauthParams);
 
     var get_options = {
-        uri: event.host + "/oauth/v2/token?" + params,
+        uri: config.host + "/oauth/v2/token?" + params,
         headers : {
             'Content-Type': "application/json",
             'Accept': "application/json"
@@ -45,6 +45,7 @@ apiCaller._get = function (event, context, callback) {
                     callback(error);
                     return;
                 }
+                console.error("Something went wrong with the api response: %s", error);
                 context.done(new Error("Something went wrong with the api response."));
             }
 
@@ -70,10 +71,11 @@ apiCaller._get = function (event, context, callback) {
     });
 };
 
-apiCaller._post = function (event, imgId, sizesevents, context, callback) {
+apiCaller._post = function (config, imgId, sizesConfigs, context, callback) {
 
+    console.log("In post request");
     // create array of only sizes
-    var ArrOfSizes = _.map(sizesevents, function (num) {
+    var ArrOfSizes = _.map(sizesConfigs, function (num) {
         return num.size;
     });
 
@@ -91,7 +93,7 @@ apiCaller._post = function (event, imgId, sizesevents, context, callback) {
 
     // options for request
     var post_options = {
-        uri: event.host + "/image/" + imgId + "/resized",
+        uri: config.host + "/image/" + imgId + "/resized",
         headers: {
             'Content-Type': "application/x-www-form-urlencoded",
             'Accept': "application/json",
@@ -101,23 +103,18 @@ apiCaller._post = function (event, imgId, sizesevents, context, callback) {
     };
 
     request.post(post_options, function (error, response, body) {
-            if (error) {
-                if ( !context ) {
-                    console.log(body);
-                    console.log(response);
-                    console.error("Something went wrong with the api, post request: %s", error);
-                    callback(error);
-                    return
-                }
-                context.done(new Error("Something went wrong with the api, post request."));
-            }
-            console.log(response);
-            console.log(body);
+        if (error) {
             if ( !context ) {
-                console.log("Done!")
-                return callback(null, body);
+                console.error("Something went wrong with the api, post request: %s", error);
+                callback(error);
+                return
             }
-
+            context.done(new Error("Something went wrong with the api, post request."));
+        }
+        if ( !context ) {
+            return callback(null, body);
+        }
+        callback(null, body);
     });
 };
 

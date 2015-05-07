@@ -506,5 +506,19 @@ describe("ApiCaller - Errors - apiCaller._get", function () {
                 }
             });
         });
+
+        it("triggers error on request, with context", function (done) {
+
+            reqGetStb.yields(new Error("There was an error with the request"), {statusCode: 500}, "Bad request");
+
+            testedModule._get(config, contextSpy, function (error, result) {
+                if (error) {
+                    contextSpy.apply(null, arguments);
+                    expect(reqGetStb).to.have.been.called;
+                    expect(contextSpy).to.have.been.called.and.calledWith(new Error("There was an error with the request"));
+                    done();
+                }
+            });
+        });
     });
 });

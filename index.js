@@ -70,23 +70,22 @@ var _ = require("underscore");
 var apiCaller = require("./apiCaller");
 var apiGet = apiCaller._get;
 var apiPost = apiCaller._post;
-var configs = require("./production_configs.json");
+var configs = require("./configs.json");
 
-
-
-// RegExp to check for image type
-var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
-
-var sizesConfigs = [
-    { width: 800, size: 'large' },
-    { width: 500, size: 'medium' },
-    { width: 200, size: 'small' },
-    { width: 45, size: 'thumbnail'}
-];
 
 exports.AwsHandler = function (event, context) {
     var s3Bucket = event.Records[0].s3.bucket.name;
     var s3Key = event.Records[0].s3.object.key;
+
+    // RegExp to check for image type
+    var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
+
+    var sizesConfigs = [
+        { width: 800, size: 'large' },
+        { width: 500, size: 'medium' },
+        { width: 200, size: 'small' },
+        { width: 45, size: 'thumbnail'}
+    ];
 
 
     var imgId = s3Key.split(".").shift().split("_").pop();
@@ -102,38 +101,47 @@ exports.AwsHandler = function (event, context) {
 
     var imageType = imgExt[1] || imgExt[2];
 
-    async.waterfall([
-        function _get (next) {
-            apiGet(context, configs, next);
-        },
-        function download(next) {
-            s3.getObject({
-                Bucket: s3Bucket,
-                Key: s3Key
-            }, next);
-        },
-        function transform(response, next) {
-            async.map(sizesConfigs, function (sizeConfig, mapNext) {
-                gm(response.Body, s3Key)
-                    .resize(sizeConfigs.width)
-                    .toBuffer(imageType, function (err, buffer) {
-                        if (err) {
-                            mapNext(err);
-                            return;
-                        }
+    async.series([
 
-                        s3.putObject({
-                            Bucket: s3Bucket,
-                            Key: sizeConfigs.size + "_" + s3Key,
-                            Body: buffer,
-                            ContentType: 'image/' + imageType
-                        }, mapNext)
-                    });
-            }, next);
+        function _get (callback) {
+            apiGet(configs, context, callback);
         },
-        function _post (next) {
-            apiPost(imgId, sizesConfigs, context, configs, next);
+        function (callback) {
+            async.waterfall([
+                function download(callback) {
+                    s3.getObject({
+                        Bucket: s3Bucket,
+                        Key: s3Key
+                    }, callback);
+                },
+
+                function transform(response, callback) {
+                    async.map(sizesConfigs, function (sizeConfig, mapNext) {
+                        gm(response.Body, s3Key)
+                            .resize(sizeConfig.width)
+                            .toBuffer(imageType, function (err, buffer) {
+                                if (err) {
+                                    console.log("err %s", err);
+                                    mapNext(err);
+                                    return;
+                                }
+
+                                s3.putObject({
+                                    Bucket: s3Bucket,
+                                    Key: sizeConfig.size + "_" + s3Key,
+                                    Body: buffer,
+                                    ContentType: 'image/' + imageType
+                                }, mapNext)
+                            });
+                    }, callback);
+                },
+            ], callback);
+        },
+
+        function _post (callback) {
+            apiPost(configs, imgId, sizesConfigs, context, callback);
         }
+
     ], function (err) {
         if (err) {
             console.error('Error processing image, details %s', err.message);
