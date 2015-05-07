@@ -406,11 +406,9 @@ var proxyquire = require('proxyquire');
 //    });
 //}
 
-describe("ApiCaller-Success calls-apiCaller_get", function () {
+describe("ApiCaller - Success calls - apiCaller._get", function () {
 
-    var callbackSpy, reqGetStb, config, responseOptions, testedModule, params, getOptions;
-
-
+    var callbackSpy, reqGetStb, config, responseOptions, testedModule, params;
 
     before(function () {
 
@@ -445,7 +443,7 @@ describe("ApiCaller-Success calls-apiCaller_get", function () {
 
     it("trigger callback with token", function (done) {
 
-        reqGetStb.yields(null, {statusCode: 200}, responseOptions).returns(callbackSpy);
+        reqGetStb.yields(null, {statusCode: 200}, responseOptions);
 
         testedModule._get(config, null, function (error, result) {
             if ( error ) {
@@ -455,6 +453,58 @@ describe("ApiCaller-Success calls-apiCaller_get", function () {
             expect(reqGetStb).to.have.been.called;
             expect(callbackSpy).to.have.been.called.and.calledWith(null, responseOptions.access_token);
             done();
+        });
+    });
+});
+
+describe("ApiCaller - Errors - apiCaller._get", function () {
+    describe("request error", function () {
+        var callbackSpy, reqGetStb, config, responseOptions, testedModule, params, contextSpy;
+
+        before(function () {
+
+            nock.enableNetConnect();
+
+            config = {
+                "host": "https://www.wherever.com",
+                "client_id": "somethinggood",
+                "client_secret": "alongpassword",
+                "grant_type": "client_credentials",
+                "environment": "live"
+            };
+
+            params = "client_id=somethinggood&client_secret=alongpassword&grant_type=client_credentials";
+
+            responseOptions = {access_token: "123456789"};
+
+            callbackSpy = sinon.spy();
+            contextSpy = sinon.spy();
+            reqGetStb = sinon.stub();
+
+            testedModule = proxyquire("../apiCaller", {
+                "request" : {
+                    "get": reqGetStb
+                }
+            });
+
+        });
+
+        after(function () {
+            nock.disableNetConnect();
+        });
+
+        it("triggers error on request, no context", function (done) {
+
+            reqGetStb.yields(new Error("There was an error with the request"), {statusCode: 500}, "Bad request");
+
+            testedModule._get(config, null, function (error, result) {
+                if ( error ) {
+                    callbackSpy.apply(null, arguments);
+                    expect(reqGetStb).to.have.been.called;
+                    expect(callbackSpy).to.have.been.called.and.calledWith(new Error("There was an error with the request"));
+                    done();
+                }
+            });
         });
     });
 });
