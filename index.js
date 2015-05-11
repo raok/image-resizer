@@ -50,7 +50,6 @@ exports.GruntHandler = function (filepath, _sizesArray) {
 
 var s3 = new (require('aws-sdk')).S3();
 var _ = require("underscore");
-// var configs = require("./configs.json");
 
 
 exports.AwsHandler = function (event, context) {
@@ -66,9 +65,6 @@ exports.AwsHandler = function (event, context) {
         { width: 200, size: 'small' },
         { width: 45, size: 'thumbnail'}
     ];
-
-
-    var imgId = s3Key.split(".").shift().split("_").pop();
 
     // Check if file has a supported image extension
     var imgExt = imageTypeRegExp.exec(s3Key);

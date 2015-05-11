@@ -13,13 +13,14 @@ var extend = require('lodash').extend;
 var sinon = require('sinon');
 chai.use(sinonChai);
 var proxyquire = require('proxyquire');
+var url = require("url");
 
 
 
 
 
 describe('GruntHandler', function () {
-    var testedModule, configs, _sizesArray, gmSubclassStub;
+    var testedModule, _sizesArray, gmSubclassStub;
 
     before(function () {
         var _800px = {
@@ -73,7 +74,7 @@ describe('GruntHandler', function () {
         gmSubclassStub.withArgs(filepath).returns({resize:resizeStub});
 
         // Act - this calls the tested method
-        testedModule.GruntHandler(filepath, _sizesArray, configs);
+        testedModule.GruntHandler(filepath, _sizesArray);
 
         // Assert
         expect(write800Spy).calledWith("large_test.jpg");
@@ -403,3 +404,96 @@ function getTestedModule(gm, getObject, putObject) {
         }
     });
 }
+
+describe("getProtocol", function () {
+    var testedModule, parseSpy, _url;
+
+
+    before(function () {
+
+        _url = "http://www.some.com/test";
+
+        parseSpy = sinon.spy(url, 'parse');
+
+        testedModule = proxyquire('../getProtocol.js', {});
+    });
+
+    after(function () {
+        url.parse.restore();
+    });
+
+    it("calls url.parse", function () {
+        testedModule.getProtocol(_url);
+        expect(parseSpy).has.been.calledOnce.and.calledWithExactly(_url, true);
+    });
+});
+
+describe("resizer", function () {
+    var testedModule, dir, sizesObj, imgName, writeSpy250, writeSpy350, writeSpy500, writeStub250, writeStub350, writeStub500, resizeStub, gmSubClassStub;
+
+    before(function () {
+
+        dir = "/tmp/images";
+
+        sizesObj = [
+            {name: "thumb", width: 250, height: 250},
+            {name: "small", width: 350, height: 350},
+            {name: "medium", width: 500, height: 500}
+        ];
+
+        imgName = "test.png";
+
+        writeSpy250 = sinon.spy();
+        writeSpy350 = sinon.spy();
+        writeSpy500 = sinon.spy();
+
+        writeStub250 = sinon.stub();
+        writeStub350 = sinon.stub();
+        writeStub500 = sinon.stub();
+
+        resizeStub = sinon.stub();
+
+        gmSubClassStub = sinon.stub();
+
+        testedModule = proxyquire('../resizer.js', {
+            'gm': {subClass: sinon.stub().returns(gmSubClassStub)},
+        });
+
+    });
+
+    it("resize image and write to path", function () {
+
+        resizeStub.withArgs(250, 250).returns({write:writeSpy250});
+        resizeStub.withArgs(350, 350).returns({write:writeSpy350});
+        resizeStub.withArgs(500, 500).returns({write:writeSpy500});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(dir, sizesObj, imgName);
+
+        // Assert
+        expect(writeSpy250).calledWith("/tmp/images/thumb/test.png");
+        expect(writeSpy350).calledWith("/tmp/images/small/test.png");
+        expect(writeSpy500).calledWith("/tmp/images/medium/test.png");
+    });
+
+    it("resizes image and call error on write", function () {
+
+        writeStub250.callsArgWith(1, new Error("Error resizing"));
+        writeStub350.callsArgWith(1, new Error("Error resizing"));
+        writeStub500.callsArgWith(1, new Error("Error resizing"));
+
+        resizeStub.withArgs(25).returns({write:writeStub250});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(dir, sizesObj, imgName);
+
+        // Assert
+        expect(writeStub250).calledWith(new Error("Error resizing"));
+    });
+});
