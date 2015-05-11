@@ -15,7 +15,7 @@ module.exports = function (grunt) {
 
                 module: true
             },
-            files: ['index.js',]
+            files: ['index.js']
         },
 
         watch: {
@@ -49,8 +49,6 @@ module.exports = function (grunt) {
         size: "thumbnail"
     };
 
-    var configs = grunt.file.readJSON('configs.json');
-
     var _sizesArray = [_800px, _500px, _200px, _45px];
 
     grunt.event.on('watch', function(action, filepath) {
@@ -58,7 +56,7 @@ module.exports = function (grunt) {
             console.log("Deleted image");
             return;
         }
-        GruntHandler(filepath, _sizesArray, configs);
+        GruntHandler(filepath, _sizesArray);
     });
 
     grunt.option('stack', true);

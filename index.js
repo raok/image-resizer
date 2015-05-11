@@ -7,14 +7,11 @@
 // dependencies
 var gm = require('gm').subClass({ imageMagick: true });
 var async = require('async');
-var apiCaller = require("./apiCaller");
-var apiGet = apiCaller._get;
-var apiPost = apiCaller._post;
 
 
 // handler for dev environment
 
-exports.GruntHandler = function (filepath, _sizesArray, config) {
+exports.GruntHandler = function (filepath, _sizesArray) {
 
     // get the file name
     var srcFile = filepath.split("/").pop();
@@ -30,32 +27,20 @@ exports.GruntHandler = function (filepath, _sizesArray, config) {
         return;
     }
 
-    async.series([
 
-        function (callback) {
-            apiGet(null, config, callback);
-        },
-
-        function (callback) {
-            async.map(_sizesArray, function (_sizesArray, mapNext) {
-                gm(filepath)
-                    .resize(_sizesArray.width)
-                    .write(_sizesArray.size + "_" + srcFile, function (err) {
-                        if (!err) {
-                            console.log("Success");
-                        } else {
-                            console.error("Error resizing image, %s", err.message);
-                            mapNext(err);
-                            return;
-                        }
-                    });
-            }, callback());
-        },
-
-        function (callback) {
-            apiPost(srcFile, _sizesArray, null, config, callback);
-        }
-    ]);
+    async.map(_sizesArray, function (_sizesArray, mapNext) {
+        gm(filepath)
+            .resize(_sizesArray.width)
+            .write(_sizesArray.size + "_" + srcFile, function (err) {
+                if (!err) {
+                    console.log("Success");
+                } else {
+                    console.error("Error resizing image, %s", err.message);
+                    mapNext(err);
+                    return;
+                }
+            });
+    });
 };
 
 
@@ -64,13 +49,8 @@ exports.GruntHandler = function (filepath, _sizesArray, config) {
 'use strict';
 
 var s3 = new (require('aws-sdk')).S3();
-var gm = require('gm').subClass({ imageMagick: true });
-var async = require('async');
 var _ = require("underscore");
-var apiCaller = require("./apiCaller");
-var apiGet = apiCaller._get;
-var apiPost = apiCaller._post;
-var configs = require("./configs.json");
+// var configs = require("./configs.json");
 
 
 exports.AwsHandler = function (event, context) {
@@ -101,53 +81,40 @@ exports.AwsHandler = function (event, context) {
 
     var imageType = imgExt[1] || imgExt[2];
 
-    async.series([
-
-        function _get (callback) {
-            apiGet(configs, context, callback);
-        },
-        function (callback) {
-            async.waterfall([
-                function download(callback) {
-                    s3.getObject({
-                        Bucket: s3Bucket,
-                        Key: s3Key
-                    }, callback);
-                },
-
-                function transform(response, callback) {
-                    async.map(sizesConfigs, function (sizeConfig, mapNext) {
-                        gm(response.Body, s3Key)
-                            .resize(sizeConfig.width)
-                            .toBuffer(imageType, function (err, buffer) {
-                                if (err) {
-                                    console.log("err %s", err);
-                                    mapNext(err);
-                                    return;
-                                }
-
-                                s3.putObject({
-                                    Bucket: s3Bucket,
-                                    Key: sizeConfig.size + "_" + s3Key,
-                                    Body: buffer,
-                                    ContentType: 'image/' + imageType
-                                }, mapNext)
-                            });
-                    }, callback);
-                },
-            ], callback);
+    async.waterfall([
+        function download(callback) {
+            s3.getObject({
+                Bucket: s3Bucket,
+                Key: s3Key
+            }, callback);
         },
 
-        function _post (callback) {
-            apiPost(configs, imgId, sizesConfigs, context, callback);
-        }
+        function transform(response, callback) {
+            async.map(sizesConfigs, function (sizeConfig, mapNext) {
+                gm(response.Body, s3Key)
+                    .resize(sizeConfig.width)
+                    .toBuffer(imageType, function (err, buffer) {
+                        if (err) {
+                            console.log("err %s", err);
+                            mapNext(err);
+                            return;
+                        }
 
+                        s3.putObject({
+                            Bucket: s3Bucket,
+                            Key: sizeConfig.size + "_" + s3Key,
+                            Body: buffer,
+                            ContentType: 'image/' + imageType
+                        }, mapNext)
+                    });
+            }, callback);
+        },
     ], function (err) {
         if (err) {
             console.error('Error processing image, details %s', err.message);
             context.done(err);
         } else {
-            context.done();
+            context.done(null);
         }
     });
 };
