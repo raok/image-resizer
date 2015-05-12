@@ -488,3 +488,46 @@ describe("readDirectory", function () {
         expect(callbackSpy).has.been.called.and.calledWith("thumb_test", "small_test", "medium_test");
     });
 });
+
+describe("readDirectory", function () {
+    var testedModule, readdirStub, callbackSpy;
+
+    testedModule = require('../readDirectory.js');
+
+    before(function () {
+
+        mockDir({
+            tmp: {
+                images: {
+                    thumb: {
+
+                    },
+                    small : {
+
+                    },
+                    medium: {
+
+                    }
+                }
+            }
+        });
+
+        readdirStub = sinon.stub(fs, 'readdir');
+
+        callbackSpy = sinon.spy();
+    });
+
+    after(function () {
+        mockDir.restore();
+        fs.readdir.restore();
+    });
+
+    it("should return error", function () {
+        readdirStub.withArgs(mockDir).callsArgWith(1, new Error("Error reading directory!"), null);
+        testedModule._get(mockDir, function () {
+            callbackSpy.apply(null, arguments);
+        });
+        expect(readdirStub).has.been.called;
+        expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory!"));
+    });
+});
