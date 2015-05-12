@@ -13,98 +13,9 @@ var extend = require('lodash').extend;
 var sinon = require('sinon');
 chai.use(sinonChai);
 var proxyquire = require('proxyquire');
-var url = require("url");
-
-
-
-
-
-//describe('GruntHandler', function () {
-//    var testedModule, _sizesArray, gmSubclassStub;
-//
-//    before(function () {
-//        var _800px = {
-//            width: 800,
-//            size: "large"
-//        };
-//
-//        var _500px = {
-//            width: 500,
-//            size: "medium"
-//        };
-//
-//        var _200px = {
-//            width: 200,
-//            size: "small"
-//        };
-//
-//        var _45px = {
-//            width: 45,
-//            size: "thumbnail"
-//        };
-//
-//
-//        _sizesArray = [_800px, _500px, _200px, _45px];
-//
-//        gmSubclassStub = sinon.stub();
-//
-//        testedModule = proxyquire('../index', {
-//            'gm': {subClass: sinon.stub().returns(gmSubclassStub)},
-//        });
-//    });
-//
-//    it("should call GruntHandler Write and save to correct folders", function () {
-//        // Arrange
-//        var filepath = 'test.jpg';
-//
-//        // Spies are the methods you expect were actually called
-//        var write800Spy = sinon.spy();
-//        var write500Spy = sinon.spy();
-//        var write200Spy = sinon.spy();
-//        var write45Spy = sinon.spy();
-//
-//        // This is a stub that will return the correct spy for each iteration of the for loop
-//        var resizeStub = sinon.stub();
-//        resizeStub.withArgs(800).returns({write:write800Spy});
-//        resizeStub.withArgs(500).returns({write:write500Spy});
-//        resizeStub.withArgs(200).returns({write:write200Spy});
-//        resizeStub.withArgs(45).returns({write:write45Spy});
-//
-//        // Stub is used when you just want to simulate a returned value
-//        gmSubclassStub.withArgs(filepath).returns({resize:resizeStub});
-//
-//        // Act - this calls the tested method
-//        testedModule.GruntHandler(filepath, _sizesArray);
-//
-//        // Assert
-//        expect(write800Spy).calledWith("large_test.jpg");
-//        expect(write500Spy).calledWith("medium_test.jpg");
-//        expect(write200Spy).calledWith("small_test.jpg");
-//        expect(write45Spy).calledWith("thumbnail_test.jpg");
-//    });
-//
-//    it("should call GruntHandler and pass the wrong file type", function () {
-//
-//        var filepath = 'test.txt';
-//
-//        var errorStub = sinon.stub();
-//
-//        gmSubclassStub.withArgs(filepath).returns(errorStub);
-//
-//        expect(testedModule.GruntHandler(filepath, _sizesArray)).to.equal(undefined);
-//    });
-//
-//    it("should call GruntHandler and pass the wrong file type", function () {
-//
-//        var filepath = 'test.gif';
-//
-//        var errorStub = sinon.stub();
-//
-//        gmSubclassStub.withArgs(filepath).returns(errorStub);
-//
-//        expect(testedModule.GruntHandler(filepath, _sizesArray)).to.equal(undefined);
-//    });
-//});
+var url = require('url');
+var fs = require('fs');
+var mockDir = require('mock-fs');
 
 
 
@@ -415,7 +326,7 @@ describe("getProtocol", function () {
 
         parseSpy = sinon.spy(url, 'parse');
 
-        testedModule = proxyquire('../getProtocol.js', {});
+        testedModule = require('../getProtocol.js');
     });
 
     after(function () {
@@ -470,9 +381,9 @@ describe("resizer", function () {
         testedModule.resize(dir, sizesObj, imgName);
 
         // Assert
-        expect(writeSpy250).calledWith("/tmp/images/thumb/test.png");
-        expect(writeSpy350).calledWith("/tmp/images/small/test.png");
-        expect(writeSpy500).calledWith("/tmp/images/medium/test.png");
+        expect(writeSpy250).calledWith("/tmp/images/thumb_test.png");
+        expect(writeSpy350).calledWith("/tmp/images/small_test.png");
+        expect(writeSpy500).calledWith("/tmp/images/medium_test.png");
     });
 });
 
@@ -507,9 +418,9 @@ describe("resizer with error", function () {
 
     it("resizes image and call error on write", function () {
 
-        writeStub250.withArgs("/tmp/images/undefined/test.png").yields(new Error("Error resizing"));
-        writeStub350.withArgs("/tmp/images/undefined/test.png").yields(new Error("Error resizing"));
-        writeStub500.withArgs("/tmp/images/undefined/test.png").yields(new Error("Error resizing"));
+        writeStub250.withArgs("/tmp/images/undefined_test.png").yields(new Error("Error resizing"));
+        writeStub350.withArgs("/tmp/images/undefined_test.png").yields(new Error("Error resizing"));
+        writeStub500.withArgs("/tmp/images/undefined_test.png").yields(new Error("Error resizing"));
 
         resizeStub.withArgs(250).returns({write:writeStub250});
         resizeStub.withArgs(350).returns({write:writeStub350});
@@ -526,5 +437,54 @@ describe("resizer with error", function () {
         expect(writeStub250).contains(new Error("Error resizing"));
         expect(writeStub350).contains(new Error("Error resizing"));
         expect(writeStub500).contains(new Error("Error resizing"));
+    });
+});
+
+describe("readDirectory", function () {
+    var testedModule, readdirStub, callbackSpy;
+
+    testedModule = require('../readDirectory.js');
+
+    before(function () {
+
+        mockDir({
+            tmp: {
+                images: {
+                    thumb: {
+                        thumb_test: "thumbnail pic"
+                    },
+                    small : {
+                        small_test: "small pic"
+                    },
+                    medium: {
+                        medium_test: "medium pic"
+                    }
+                }
+            }
+        });
+
+        readdirStub = sinon.stub(fs, 'readdir');
+
+        callbackSpy = sinon.spy();
+    });
+
+    after(function () {
+        mockDir.restore();
+        fs.readdir.restore();
+    });
+
+    it("call readdir with fake directory", function () {
+        testedModule._get(mockDir, function () {console.log("Hello");});
+
+        expect(readdirStub).to.have.been.called.and.calledWith(mockDir);
+    });
+
+    it("should return list of files", function () {
+        readdirStub.withArgs(mockDir).callsArgWith(1, null, ["thumb_test", "small_test", "medium_test"]);
+        testedModule._get(mockDir, function () {
+            callbackSpy.apply(null, ["thumb_test", "small_test", "medium_test"]);
+        });
+        expect(readdirStub).has.been.called;
+        expect(callbackSpy).has.been.called.and.calledWith("thumb_test", "small_test", "medium_test");
     });
 });

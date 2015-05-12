@@ -14,7 +14,7 @@ resizer.resize = function (directory, sizesObj, imgName) {
     async.map(sizesObj, function (sizesObj, mapNext) {
         gm(imgName)
             .resize(sizesObj.width, sizesObj.height)
-            .write(directory + "/" + sizesObj.name + "/" + imgName, function (err) {
+            .write(directory + "/" + sizesObj.name + "_" + imgName, function (err) {
                 if (err) {
                     console.error("Error resizing image, %s", err.message);
                     mapNext(err);

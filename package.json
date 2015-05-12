@@ -25,11 +25,12 @@
     "grunt-execute": "^0.2.2",
     "lodash": "^3.6.0",
     "mocha": "^2.1.0",
+    "mocha-bamboo-reporter": "*",
+    "mock-fs": "^2.7.0",
     "nock": "^1.7.1",
     "proxyquire": "^1.3.2",
     "sinon": "^1.14.1",
-    "sinon-chai": "^2.7.0",
-    "mocha-bamboo-reporter": "*"
+    "sinon-chai": "^2.7.0"
   },
   "repository": {
     "type": "git",
