@@ -15,9 +15,7 @@ resizer.resize = function (directory, sizesObj, imgName) {
         gm(imgName)
             .resize(sizesObj.width, sizesObj.height)
             .write(directory + "/" + sizesObj.name + "/" + imgName, function (err) {
-                if (!err) {
-                    console.log("Success");
-                } else {
+                if (err) {
                     console.error("Error resizing image, %s", err.message);
                     mapNext(err);
                     return;

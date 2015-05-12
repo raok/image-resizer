@@ -11,37 +11,37 @@ var async = require('async');
 
 // handler for dev environment
 
-exports.GruntHandler = function (filepath, _sizesArray) {
-
-    // get the file name
-    var srcFile = filepath.split("/").pop();
-
-    // RegExp to check for image type
-    var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
-
-    // Check if file has a supported image extension
-    var imgExt = imageTypeRegExp.exec(srcFile);
-
-    if (!imgExt) {
-        console.error('Unable to infer image type for key %s', srcFile);
-        return;
-    }
-
-
-    async.map(_sizesArray, function (_sizesArray, mapNext) {
-        gm(filepath)
-            .resize(_sizesArray.width)
-            .write(_sizesArray.size + "_" + srcFile, function (err) {
-                if (!err) {
-                    console.log("Success");
-                } else {
-                    console.error("Error resizing image, %s", err.message);
-                    mapNext(err);
-                    return;
-                }
-            });
-    });
-};
+//exports.GruntHandler = function (filepath, _sizesArray) {
+//
+//    // get the file name
+//    var srcFile = filepath.split("/").pop();
+//
+//    // RegExp to check for image type
+//    var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
+//
+//    // Check if file has a supported image extension
+//    var imgExt = imageTypeRegExp.exec(srcFile);
+//
+//    if (!imgExt) {
+//        console.error('Unable to infer image type for key %s', srcFile);
+//        return;
+//    }
+//
+//
+//    async.map(_sizesArray, function (_sizesArray, mapNext) {
+//        gm(filepath)
+//            .resize(_sizesArray.width)
+//            .write(_sizesArray.size + "_" + srcFile, function (err) {
+//                if (!err) {
+//                    console.log("Success");
+//                } else {
+//                    console.error("Error resizing image, %s", err.message);
+//                    mapNext(err);
+//                    return;
+//                }
+//            });
+//    });
+//};
 
 
 // module to be exported when in production
