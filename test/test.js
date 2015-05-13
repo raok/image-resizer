@@ -316,6 +316,13 @@ function getTestedModule(gm, getObject, putObject) {
     });
 }
 
+
+
+
+
+
+
+
 describe("getProtocol", function () {
     var testedModule, parseSpy, _url;
 
@@ -530,4 +537,54 @@ describe("readDirectory", function () {
         expect(readdirStub).has.been.called;
         expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory!"));
     });
+});
+
+describe("S3Handler", function () {
+    describe("S3Handler._get", function () {
+        var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse, s3Stub;
+
+        before(function () {
+
+            fakeResponse = {Body: "Image content"};
+
+            imgName = "test.jpg";
+
+            bucketName = "testBucket";
+
+            callbackSpy = sinon.spy();
+
+            getStub = sinon.stub();
+
+            //s3Stub = sinon.stub().returns({getObject: getStub});
+
+            testedModule = proxyquire("../S3Handler.js", {
+                'aws-sdk': {
+                    "S3": function () {
+                        return {
+                            getObject: getStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("fetch object from S3Bucket", function () {
+            getStub.callsArgWith(1, null, fakeResponse);
+            testedModule._get(bucketName, imgName, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(null, fakeResponse);
+        });
+
+        it("fetch object from S3Bucket triggers error", function () {
+            getStub.callsArgWith(1, new Error("Error fetching image"), null);
+            testedModule._get(bucketName, imgName, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error fetching image"), null);
+        });
+    });
+
 });
