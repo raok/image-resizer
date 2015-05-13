@@ -10,9 +10,9 @@ var async = require('async');
 
 var resizer = {};
 
-resizer.resize = function (directory, sizesObj, imgName) {
+resizer.resize = function (data, imgName, directory, sizesObj) {
     async.map(sizesObj, function (sizesObj, mapNext) {
-        gm(imgName)
+        gm(data.Body)
             .resize(sizesObj.width, sizesObj.height)
             .write(directory + "/" + sizesObj.name + "_" + imgName, function (err) {
                 if (err) {

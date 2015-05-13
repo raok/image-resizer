@@ -347,11 +347,13 @@ describe("getProtocol", function () {
 });
 
 describe("resizer", function () {
-    var testedModule, dir, sizesObj, imgName, writeSpy250, writeSpy350, writeSpy500, resizeStub, gmSubClassStub;
+    var testedModule, dir, sizesObj, imgName, writeSpy250, writeSpy350, writeSpy500, resizeStub, gmSubClassStub, fakeResponse;
 
     before(function () {
 
         dir = "/tmp/images";
+
+        fakeResponse = {Body: "test.png"};
 
         sizesObj = [
             {name: "thumb", width: 250, height: 250},
@@ -385,7 +387,7 @@ describe("resizer", function () {
         gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
 
         // Act - this calls the tested method
-        testedModule.resize(dir, sizesObj, imgName);
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj);
 
         // Assert
         expect(writeSpy250).calledWith("/tmp/images/thumb_test.png");
@@ -395,11 +397,13 @@ describe("resizer", function () {
 });
 
 describe("resizer with error", function () {
-    var testedModule, dir, sizesObj, imgName, writeStub250, writeStub350, writeStub500, resizeStub, gmSubClassStub;
+    var testedModule, dir, sizesObj, imgName, writeStub250, writeStub350, writeStub500, resizeStub, gmSubClassStub, fakeResponse;
 
     before(function () {
 
         dir = "/tmp/images";
+
+        fakeResponse = {Body: "test.png"};
 
         sizesObj = [
             {width: 250, height: 250},
@@ -437,7 +441,7 @@ describe("resizer with error", function () {
         gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
 
         // Act - this calls the tested method
-        testedModule.resize(dir, sizesObj, imgName);
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj);
 
         // Assert
         expect(resizeStub).has.been.called;
@@ -498,7 +502,7 @@ describe("readDirectory", function () {
 
 describe("S3Handler", function () {
     describe("S3Handler._get", function () {
-        var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse, s3Stub;
+        var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse;
 
         before(function () {
 

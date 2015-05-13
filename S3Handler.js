@@ -19,17 +19,17 @@ S3Handler._get = function (bucketName, imgName, callback) {
         if (error) {
             return callback(error, null);
         }
-        return callback(null, data);
+        return callback(null, data, imgName);
     });
 };
 
-S3Handler._put = function (bucketName, files, directory, sizesObj, imgName, imageType, callback) {
+S3Handler._put = function (bucketName, content, sizesObj, imgName, imageType, callback) {
     return function () {
         files.forEach(
             s3.putObject({
                 Bucket: bucketName,
-                Key: directory + "/" + sizesObj.name + "/" + imgName,
-                Body: files,
+                Key: "images/" + sizesObj.name + "/" + imgName,
+                Body: content,
                 ContentType: 'image/' + imageType
             })
         );
