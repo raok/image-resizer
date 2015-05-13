@@ -448,95 +448,52 @@ describe("resizer with error", function () {
 });
 
 describe("readDirectory", function () {
-    var testedModule, readdirStub, callbackSpy;
-
-    testedModule = require('../readDirectory.js');
+    var testedModule, callbackSpy, readFileStub;
 
     before(function () {
+
+        readFileStub = sinon.stub();
+
+        callbackSpy = sinon.spy();
+
+        testedModule = proxyquire('../readDirectory.js', {
+            "node-dir": {
+                "readFiles": readFileStub
+            }
+        });
 
         mockDir({
             tmp: {
                 images: {
-                    thumb: {
-                        thumb_test: "thumbnail pic"
-                    },
-                    small : {
-                        small_test: "small pic"
-                    },
-                    medium: {
-                        medium_test: "medium pic"
-                    }
+                    thumb_test: "thumbnail pic",
+                    small_test: "small pic",
+                    medium_test: "medium pic"
                 }
             }
         });
-
-        readdirStub = sinon.stub(fs, 'readdir');
-
-        callbackSpy = sinon.spy();
     });
 
     after(function () {
         mockDir.restore();
-        fs.readdir.restore();
     });
 
-    it("call readdir with fake directory", function () {
-        testedModule._get(mockDir, function () {console.log("Hello");});
-
-        expect(readdirStub).to.have.been.called.and.calledWith(mockDir);
-    });
-
-    it("should return list of files", function () {
-        readdirStub.withArgs(mockDir).callsArgWith(1, null, ["thumb_test", "small_test", "medium_test"]);
-        testedModule._get(mockDir, function () {
-            callbackSpy.apply(null, ["thumb_test", "small_test", "medium_test"]);
-        });
-        expect(readdirStub).has.been.called;
-        expect(callbackSpy).has.been.called.and.calledWith("thumb_test", "small_test", "medium_test");
-    });
-});
-
-describe("readDirectory", function () {
-    var testedModule, readdirStub, callbackSpy;
-
-    testedModule = require('../readDirectory.js');
-
-    before(function () {
-
-        mockDir({
-            tmp: {
-                images: {
-                    thumb: {
-
-                    },
-                    small : {
-
-                    },
-                    medium: {
-
-                    }
-                }
-            }
-        });
-
-        readdirStub = sinon.stub(fs, 'readdir');
-
-        callbackSpy = sinon.spy();
-    });
-
-    after(function () {
-        mockDir.restore();
-        fs.readdir.restore();
-    });
-
-    it("should return error", function () {
-        readdirStub.withArgs(mockDir).callsArgWith(1, new Error("Error reading directory!"), null);
+    it("call readFile with success", function () {
+        readFileStub.callsArgWith(1, null, ["thumbnail.pic", "small pic", "medium pic"]);
         testedModule._get(mockDir, function () {
             callbackSpy.apply(null, arguments);
         });
-        expect(readdirStub).has.been.called;
-        expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory!"));
+
+        expect(callbackSpy).has.been.called.and.calledWith(null, ["thumbnail.pic", "small pic", "medium pic"]);
     });
+
+    it("call readFile with error", function () {
+        readFileStub.callsArgWith(1, new Error("Error reading directory"), null);
+        testedModule._get(mockDir, function () {
+            callbackSpy.apply(null, arguments);
+        });
+
+        expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory"), null);
+    })
 });
 
 describe("S3Handler", function () {
@@ -554,8 +511,6 @@ describe("S3Handler", function () {
             callbackSpy = sinon.spy();
 
             getStub = sinon.stub();
-
-            //s3Stub = sinon.stub().returns({getObject: getStub});
 
             testedModule = proxyquire("../S3Handler.js", {
                 'aws-sdk': {
