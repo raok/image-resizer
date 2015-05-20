@@ -14,7 +14,6 @@ var sinon = require('sinon');
 chai.use(sinonChai);
 var proxyquire = require('proxyquire');
 var url = require('url');
-var fs = require('fs');
 var mockDir = require('mock-fs');
 
 
@@ -451,53 +450,147 @@ describe("resizer with error", function () {
     });
 });
 
-describe("readDirectory", function () {
-    var testedModule, callbackSpy, readFileStub;
+describe("readDirectory _getFiles._get", function () {
+    describe("_get success call", function () {
+        var testedModule, callbackSpy, readFileStub;
 
-    before(function () {
+        before(function () {
 
-        readFileStub = sinon.stub();
+            readFileStub = sinon.stub();
 
-        callbackSpy = sinon.spy();
+            callbackSpy = sinon.spy();
 
-        testedModule = proxyquire('../readDirectory.js', {
-            "node-dir": {
-                "readFiles": readFileStub
-            }
-        });
+            testedModule = require('../readDirectory.js');
 
-        mockDir({
-            tmp: {
-                images: {
-                    thumb_test: "thumbnail pic",
-                    small_test: "small pic",
-                    medium_test: "medium pic"
+            mockDir({
+                tmp: {
+                    images: {
+                        "thumb_test.txt": "thumbnail pic",
+                        "small_test.txt": "small pic",
+                        "medium_test.txt": "medium pic"
+                    }
                 }
-            }
+            });
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("returns list of files", function (done) {
+            testedModule._get("tmp/images/", function (error, files) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium_test.txt", "small_test.txt", "thumb_test.txt"]);
+                done();
+            });
         });
     });
 
-    after(function () {
-        mockDir.restore();
-    });
+    describe("_get error call", function () {
+        var testedModule, callbackSpy, readFileStub;
 
-    it("call readFile with success", function () {
-        readFileStub.callsArgWith(1, null, ["thumbnail.pic", "small pic", "medium pic"]);
-        testedModule._get(mockDir, function () {
-            callbackSpy.apply(null, arguments);
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = proxyquire('../readDirectory.js', {
+                "fs": {
+                    "readdir": readFileStub
+                }
+            });
+
+            mockDir({
+                tmp: {
+                    images: {
+                        "thumb_test.txt": "thumbnail pic",
+                        "small_test.txt": "small pic",
+                        "medium_test.txt": "medium pic"
+                    }
+                }
+            });
+
+            readFileStub.callsArgWith(1, new Error("Error reading directory!"), null);
         });
 
-        expect(callbackSpy).has.been.called.and.calledWith(null, ["thumbnail.pic", "small pic", "medium pic"]);
-    });
-
-    it("call readFile with error", function () {
-        readFileStub.callsArgWith(1, new Error("Error reading directory"), null);
-        testedModule._get(mockDir, function () {
-            callbackSpy.apply(null, arguments);
+        after(function () {
+            mockDir.restore();
         });
 
-        expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory"), null);
-    })
+        it("returns error", function () {
+            testedModule._get("tmp/images/", function (error, files) {
+                callbackSpy.apply(null, arguments);
+            });
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory!"), null);
+        });
+    });
+});
+
+describe("readDirectory _getFiles._getContent", function () {
+    describe("_getContent success call", function () {
+        var testedModule, callbackSpy, readFileStub;
+
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = require('../readDirectory.js');
+
+            mockDir({
+                "thumb_test.png": new Buffer([1,2,3])
+            });
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("reads content of file", function (done) {
+            testedModule._getContent("thumb_test.png", function (error, data) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
+                done();
+            });
+
+        });
+    });
+
+    describe("_getContent error call", function () {
+        var testedModule, callbackSpy, readFileStub;
+
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = proxyquire('../readDirectory.js', {
+                "fs": {
+                    "readFile": readFileStub
+                }
+            });
+
+            mockDir({
+                "thumb_test.png": new Buffer([1,2,3])
+            });
+
+            readFileStub.callsArgWith(1, new Error("Error reading file!"), null);
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("returns error", function () {
+            testedModule._getContent("thumb_test.png", function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading file!"),null);
+        });
+    });
 });
 
 describe("S3Handler", function () {

@@ -8,20 +8,25 @@
 'use strict';
 
 var fs = require('fs');
-var async = require('async');
-var dir = require('node-dir');
 
 var _getFiles = {};
 
-_getFiles._get = function (directory, callback) {
-
-    dir.readFiles(directory,
-        function(err, content, next) {
-            if (err) {
-                callback(err, null);
-            }
-            callback(null, content);
-        });
+_getFiles._get = function (path, callback) {
+    fs.readdir(path, function (error, files) {
+        if (error) {
+            callback(error, null);
+        }
+        callback(null, files);
+    });
 };
+
+_getFiles._getContent = function (file, callback) {
+    fs.readFile(file, function (error, data) {
+        if(error) {
+            callback(error, null);
+        }
+        callback(null, data);
+    });
+}
 
 module.exports = _getFiles;
