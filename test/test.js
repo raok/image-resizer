@@ -321,7 +321,6 @@ function getTestedModule(gm, getObject, putObject) {
 
 
 
-
 describe("getProtocol", function () {
     var testedModule, parseSpy, _url;
 
@@ -639,4 +638,58 @@ describe("S3Handler", function () {
         });
     });
 
+    describe("S3Handler._put", function () {
+        var testedModule, imgName, imgType, content, data, bucketName, sizesObj, putStub, callbackSpy;
+
+        before(function () {
+
+            imgName = "test.png";
+
+            imgType = "png";
+
+            content = new Buffer([1,2,3]);
+
+            bucketName = "testBucket";
+
+            callbackSpy = sinon.spy();
+
+            data = {
+                "Expiration": "12-12-2016"
+            };
+
+            sizesObj = {
+                width: 800, size: 'large'
+            };
+
+            putStub = sinon.stub();
+
+            testedModule = proxyquire("../S3Handler.js", {
+                'aws-sdk': {
+                    "S3": function () {
+                        return {
+                            putObject: putStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("put object to S3Bucket", function () {
+            putStub.callsArgWith(1, null, data);
+            testedModule._put(bucketName, content, sizesObj, imgName, imgType, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(null, data);
+        });
+
+        it("put object triggers error", function () {
+            putStub.callsArgWith(1, new Error("Error putting image to S3"), null);
+            testedModule._put(bucketName, content, sizesObj, imgName, imgType, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error putting image to S3"));
+        });
+    });
 });
