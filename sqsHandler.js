@@ -29,7 +29,6 @@ sqsHandler._createQueue = function (callback) {
         QueueName: _queueName
     };
 
-
     sqs.createQueue(params, function (error, data) {
         if( error ) {
             callback(error, null);
