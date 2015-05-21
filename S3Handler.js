@@ -17,9 +17,9 @@ S3Handler._get = function (bucketName, imgName, callback) {
 
     s3.getObject(params, function (error, data) {
         if (error) {
-            return callback(error, null);
+            callback(error, null);
         }
-        return callback(null, data, imgName);
+        callback(null, data, imgName);
     });
 };
 

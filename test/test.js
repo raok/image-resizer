@@ -693,3 +693,155 @@ describe("S3Handler", function () {
         });
     });
 });
+
+describe("sqsHandler", function () {
+
+    describe("sqsHandler._createQueue success call", function () {
+        var testedModule, callbackSpy, sqsStub, fakeServer;
+
+        before(function () {
+
+            callbackSpy = sinon.spy();
+
+            sqsStub = sinon.stub();
+
+            fakeServer = sinon.fakeServer.create();
+
+            fakeServer.autoRespond = true;
+
+            testedModule = proxyquire("../sqsHandler.js", {
+                'aws-sdk' : {
+                    'SQS': function () {
+                        return {
+                            createQueue: sqsStub
+                        }
+                    }
+                }
+            });
+
+        });
+
+        after(function () {
+            fakeServer.restore();
+        });
+
+        it("return name of queue", function () {
+
+            sqsStub.callsArgWith(1, null, "imageReziserQueue");
+            testedModule._createQueue(function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+            expect(callbackSpy).has.been.called.and.calledWith(null, "imageReziserQueue");
+        });
+    });
+
+    describe("sqsHandler._createQueue with error", function () {
+        var testedModule, callbackSpy, sqsStub;
+
+        before(function () {
+
+            callbackSpy = sinon.spy();
+
+            sqsStub = sinon.stub();
+
+            testedModule = proxyquire("../sqsHandler.js", {
+                'aws-sdk' : {
+                    'SQS': function () {
+                        return {
+                            createQueue: sqsStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("trigger error when creating sqs queue", function () {
+            sqsStub.callsArgWith(1, new Error("Error creating sqs queue!"), null);
+            testedModule._createQueue(function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error creating sqs queue!"), null);
+        });
+    });
+
+    describe("sqsHandler._sendMessage success call", function () {
+        var testedModule, callbackSpy, object, sqsStub;
+
+        before(function () {
+
+            callbackSpy = sinon.spy();
+
+            sqsStub = sinon.stub();
+
+            object = {
+                "event": "image_rs.resizer",
+                "message": {
+                    "url": "blablabla",
+                    "size": ["thumb", "small", "medium"]
+                }
+            };
+
+            object = JSON.stringify(object);
+
+            testedModule = proxyquire("../sqsHandler.js", {
+                'aws-sdk': {
+                    'SQS': function () {
+                        return {
+                            sendMessage: sqsStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("return response", function () {
+            sqsStub.callsArgWith(1, null, "Sent");
+            testedModule._sendMessage(object, function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(null, "Sent");
+        });
+    });
+
+    describe("sqsHandler._sendMessage with error", function () {
+        var testedModule, callbackSpy, sqsStub, object;
+
+        before(function () {
+
+            callbackSpy = sinon.spy();
+
+            sqsStub = sinon.stub();
+
+            object = {
+                "event": "image_rs.resizer",
+                "message": {
+                    "url": "blablabla",
+                    "size": ["thumb", "small", "medium"]
+                }
+            };
+
+            object = JSON.stringify(object);
+
+            testedModule = proxyquire("../sqsHandler.js", {
+                'aws-sdk': {
+                    'SQS': function () {
+                        return {
+                            sendMessage: sqsStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("triggers an error when sending message", function () {
+            sqsStub.callsArgWith(1, new Error("Error sending message!"), null);
+            testedModule._sendMessage(object, function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error sending message!"), null);
+        });
+    });
+});

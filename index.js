@@ -27,10 +27,10 @@ exports.AwsHandler = function (event, context) {
     var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
 
     var sizesConfigs = [
-        { width: 800, size: 'large' },
-        { width: 500, size: 'medium' },
-        { width: 200, size: 'small' },
-        { width: 45, size: 'thumbnail'}
+        { width: 800, height: 800, size: 'large' },
+        { width: 500, height: 500, size: 'medium' },
+        { width: 200, height: 200, size: 'small' },
+        { width: 45, height: 45, size: 'thumbnail'}
     ];
 
     // Check if file has a supported image extension
