@@ -18,302 +18,302 @@ var mockDir = require('mock-fs');
 
 
 
-describe('AwsHandler', function () {
-    var expect = chai.expect;
-    var sizesConfigs = [
-        { width: 800, size: 'large' },
-        { width: 500, size: 'medium' },
-        { width: 200, size: 'small' },
-        { width: 45, size: 'thumbnail'}
-    ];
-    var baseEvent = {
-        "Records": [
-            { "s3": {
-                "bucket": { "name": "testbucket" },
-                "object": { "key": null }
-            }
-            }
-        ]
-    };
-
-    describe('reject to process non recognised image file extensions', function () {
-        var event, gmSpy, getObjectSpy, putObjectSpy, contextDoneSpy, testedModule;
-
-        before(function () {
-            event = extend({}, baseEvent);
-            event.Records[0].s3.object.key = "no-supported.gif";
-            gmSpy = sinon.spy();
-            getObjectSpy = sinon.spy();
-            putObjectSpy = sinon.spy();
-            contextDoneSpy = sinon.spy();
-            testedModule = getTestedModule(gmSpy, getObjectSpy, putObjectSpy);
-            testedModule.AwsHandler(event, { done: contextDoneSpy });
-        });
-
-        it('never call s3 getObject', function () {
-            expect(getObjectSpy).has.not.been.called;
-        });
-        it('never call graphics magick', function () {
-            expect(gmSpy).has.not.been.called;
-        });
-        it('never call s3 putObject', function () {
-            expect(putObjectSpy).has.not.been.called;
-        });
-        it('call context done with error', function () {
-            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(new Error());
-        });
-    });
-
-    describe('process the image when the it has jpg extension', function () {
-        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
-
-        before(function (done) {
-            fakeResponse = { Body: 'image content' };
-            event = extend({}, baseEvent);
-            event.Records[0].s3.object.key = "image.jpg";
-
-            gmStubs = getGmStubs();
-            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-            putObjectStub = sinon.stub().callsArgWith(1, null);
-            contextDoneSpy = sinon.spy();
-
-            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
-            testedModule.AwsHandler(event, { done: function () {
-                contextDoneSpy.apply(null, arguments);
-                done();
-            }});
-        });
-
-        it('call s3 getObject', function () {
-            expect(getObjectStub).has.been.calledOnce;
-            expect(getObjectStub).has.been.calledWith({
-                Bucket: event.Records[0].s3.bucket.name,
-                Key: event.Records[0].s3.object.key
-            });
-        });
-
-        it('call graphics magick', function () {
-            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-
-            sizesConfigs.forEach(function(s) {
-                expect(gmStubs.resize).has.been.calledWith(s.width);
-                expect(gmStubs.toBuffer).has.been.calledWith('jpg');
-            });
-        });
-
-        it('call s3 putObject', function () {
-            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
-
-            sizesConfigs.forEach(function(s) {
-                expect(putObjectStub).has.been.calledWith({
-                    Bucket: event.Records[0].s3.bucket.name,
-                    Key: s.size + '_' + event.Records[0].s3.object.key,
-                    Body: 'data',
-                    ContentType: 'image/jpg'
-                });
-            });
-        });
-
-        it('call context done with no error', function () {
-            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
-        });
-    });
-
-    describe('process the image when the it has jpge extension', function () {
-        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
-
-        before(function (done) {
-            fakeResponse = { Body: 'image content' };
-            event = extend({}, baseEvent);
-            event.Records[0].s3.object.key = "image.jpge";
-
-            gmStubs = getGmStubs();
-            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-            putObjectStub = sinon.stub().callsArgWith(1, null);
-            contextDoneSpy = sinon.spy();
-
-            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
-            testedModule.AwsHandler(event, { done: function () {
-                contextDoneSpy.apply(null, arguments);
-                done();
-            }});
-        });
-
-        it('call s3 getObject', function () {
-            expect(getObjectStub).has.been.calledOnce;
-            expect(getObjectStub).has.been.calledWith({
-                Bucket: event.Records[0].s3.bucket.name,
-                Key: event.Records[0].s3.object.key
-            });
-        });
-
-        it('call graphics magick', function () {
-            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-
-            sizesConfigs.forEach(function(s) {
-                expect(gmStubs.resize).has.been.calledWith(s.width);
-                expect(gmStubs.toBuffer).has.been.calledWith('jpg');
-            });
-        });
-
-        it('call s3 putObject', function () {
-            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
-
-            sizesConfigs.forEach(function(s) {
-                expect(putObjectStub).has.been.calledWith({
-                    Bucket: event.Records[0].s3.bucket.name,
-                    Key: s.size + '_' + event.Records[0].s3.object.key,
-                    Body: 'data',
-                    ContentType: 'image/jpg'
-                });
-            });
-        });
-
-        it('call context done with no error', function () {
-            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
-        });
-    });
-
-    describe('process the image when the it has png extension', function () {
-        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
-
-        before(function (done) {
-            fakeResponse = { Body: 'image content' };
-            event = extend({}, baseEvent);
-            event.Records[0].s3.object.key = "image.png";
-
-            gmStubs = getGmStubs();
-            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-            putObjectStub = sinon.stub().callsArgWith(1, null);
-            contextDoneSpy = sinon.spy();
-
-            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
-            testedModule.AwsHandler(event, { done: function () {
-                contextDoneSpy.apply(null, arguments);
-                done();
-            }});
-        });
-
-        it('call s3 getObject', function () {
-            expect(getObjectStub).has.been.calledOnce;
-            expect(getObjectStub).has.been.calledWith({
-                Bucket: event.Records[0].s3.bucket.name,
-                Key: event.Records[0].s3.object.key
-            });
-        });
-
-        it('call graphics magick', function () {
-            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-
-            sizesConfigs.forEach(function(s) {
-                expect(gmStubs.resize).has.been.calledWith(s.width);
-                expect(gmStubs.toBuffer).has.been.calledWith('png');
-            });
-        });
-
-        it('call s3 putObject', function () {
-            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
-
-            sizesConfigs.forEach(function(s) {
-                expect(putObjectStub).has.been.calledWith({
-                    Bucket: event.Records[0].s3.bucket.name,
-                    Key: s.size + '_' + event.Records[0].s3.object.key,
-                    Body: 'data',
-                    ContentType: 'image/png'
-                });
-            });
-        });
-
-        it('call context done with no error', function () {
-            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
-        });
-    });
-
-    describe('process the image but image magick fails', function () {
-        var event, gmStubs, getObjectStub, putObjectSpy, contextDoneSpy, testedModule, fakeResponse;
-
-        before(function (done) {
-            fakeResponse = { Body: 'image content' };
-            event = extend({}, baseEvent);
-            event.Records[0].s3.object.key = "image.png";
-
-            var toBufferStub = sinon.stub().callsArgWith(1, new Error('Image resize failed'));
-            gmStubs = getGmStubs(toBufferStub);
-            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-            putObjectSpy = sinon.spy();
-            contextDoneSpy = sinon.spy();
-
-            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectSpy);
-            testedModule.AwsHandler(event, { done: function () {
-                contextDoneSpy.apply(null, arguments);
-                done();
-            }});
-        });
-
-        it('call s3 getObject', function () {
-            expect(getObjectStub).has.been.calledOnce;
-            expect(getObjectStub).has.been.calledWith({
-                Bucket: event.Records[0].s3.bucket.name,
-                Key: event.Records[0].s3.object.key
-            });
-        });
-
-        it('call graphics magick', function () {
-            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-
-            sizesConfigs.forEach(function(s) {
-                expect(gmStubs.resize).has.been.calledWith(s.width);
-                expect(gmStubs.toBuffer).has.been.calledWith('png');
-            });
-        });
-
-        it('never call s3 putObject', function () {
-            expect(putObjectSpy).has.been.not.called;
-        });
-
-        it('call context done with no error', function () {
-            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(new Error('Image resize failed'));
-        });
-    });
-});
-
-function getGmStubs(toBuffer) {
-    var toBuffer = toBuffer || sinon.stub().callsArgWith(1, null, 'data')
-    var resize = sinon.stub().returns({ toBuffer: toBuffer });
-    var gm = sinon.stub().returns({ resize: resize });
-
-    return {
-        gm: gm,
-        resize: resize,
-        toBuffer: toBuffer
-    };
-}
-
-function getTestedModule(gm, getObject, putObject) {
-    return proxyquire('../index.js', {
-        'gm': { subClass: function() { return gm; } },
-        'aws-sdk': {
-            "S3": function () {
-                return {
-                    getObject: getObject,
-                    putObject: putObject
-                };
-            }
-        }
-    });
-}
+//describe('AwsHandler', function () {
+//    var expect = chai.expect;
+//    var sizesConfigs = [
+//        { width: 800, size: 'large' },
+//        { width: 500, size: 'medium' },
+//        { width: 200, size: 'small' },
+//        { width: 45, size: 'thumbnail'}
+//    ];
+//    var baseEvent = {
+//        "Records": [
+//            { "s3": {
+//                "bucket": { "name": "testbucket" },
+//                "object": { "key": null }
+//            }
+//            }
+//        ]
+//    };
+//
+//    describe('reject to process non recognised image file extensions', function () {
+//        var event, gmSpy, getObjectSpy, putObjectSpy, contextDoneSpy, testedModule;
+//
+//        before(function () {
+//            event = extend({}, baseEvent);
+//            event.Records[0].s3.object.key = "no-supported.gif";
+//            gmSpy = sinon.spy();
+//            getObjectSpy = sinon.spy();
+//            putObjectSpy = sinon.spy();
+//            contextDoneSpy = sinon.spy();
+//            testedModule = getTestedModule(gmSpy, getObjectSpy, putObjectSpy);
+//            testedModule.AwsHandler(event, { done: contextDoneSpy });
+//        });
+//
+//        it('never call s3 getObject', function () {
+//            expect(getObjectSpy).has.not.been.called;
+//        });
+//        it('never call graphics magick', function () {
+//            expect(gmSpy).has.not.been.called;
+//        });
+//        it('never call s3 putObject', function () {
+//            expect(putObjectSpy).has.not.been.called;
+//        });
+//        it('call context done with error', function () {
+//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(new Error());
+//        });
+//    });
+//
+//    describe('process the image when the it has jpg extension', function () {
+//        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
+//
+//        before(function (done) {
+//            fakeResponse = { Body: 'image content' };
+//            event = extend({}, baseEvent);
+//            event.Records[0].s3.object.key = "image.jpg";
+//
+//            gmStubs = getGmStubs();
+//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
+//            putObjectStub = sinon.stub().callsArgWith(1, null);
+//            contextDoneSpy = sinon.spy();
+//
+//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
+//            testedModule.AwsHandler(event, { done: function () {
+//                contextDoneSpy.apply(null, arguments);
+//                done();
+//            }});
+//        });
+//
+//        it('call s3 getObject', function () {
+//            expect(getObjectStub).has.been.calledOnce;
+//            expect(getObjectStub).has.been.calledWith({
+//                Bucket: event.Records[0].s3.bucket.name,
+//                Key: event.Records[0].s3.object.key
+//            });
+//        });
+//
+//        it('call graphics magick', function () {
+//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(gmStubs.resize).has.been.calledWith(s.width);
+//                expect(gmStubs.toBuffer).has.been.calledWith('jpg');
+//            });
+//        });
+//
+//        it('call s3 putObject', function () {
+//            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(putObjectStub).has.been.calledWith({
+//                    Bucket: event.Records[0].s3.bucket.name,
+//                    Key: s.size + '_' + event.Records[0].s3.object.key,
+//                    Body: 'data',
+//                    ContentType: 'image/jpg'
+//                });
+//            });
+//        });
+//
+//        it('call context done with no error', function () {
+//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
+//        });
+//    });
+//
+//    describe('process the image when the it has jpge extension', function () {
+//        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
+//
+//        before(function (done) {
+//            fakeResponse = { Body: 'image content' };
+//            event = extend({}, baseEvent);
+//            event.Records[0].s3.object.key = "image.jpge";
+//
+//            gmStubs = getGmStubs();
+//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
+//            putObjectStub = sinon.stub().callsArgWith(1, null);
+//            contextDoneSpy = sinon.spy();
+//
+//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
+//            testedModule.AwsHandler(event, { done: function () {
+//                contextDoneSpy.apply(null, arguments);
+//                done();
+//            }});
+//        });
+//
+//        it('call s3 getObject', function () {
+//            expect(getObjectStub).has.been.calledOnce;
+//            expect(getObjectStub).has.been.calledWith({
+//                Bucket: event.Records[0].s3.bucket.name,
+//                Key: event.Records[0].s3.object.key
+//            });
+//        });
+//
+//        it('call graphics magick', function () {
+//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(gmStubs.resize).has.been.calledWith(s.width);
+//                expect(gmStubs.toBuffer).has.been.calledWith('jpg');
+//            });
+//        });
+//
+//        it('call s3 putObject', function () {
+//            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(putObjectStub).has.been.calledWith({
+//                    Bucket: event.Records[0].s3.bucket.name,
+//                    Key: s.size + '_' + event.Records[0].s3.object.key,
+//                    Body: 'data',
+//                    ContentType: 'image/jpg'
+//                });
+//            });
+//        });
+//
+//        it('call context done with no error', function () {
+//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
+//        });
+//    });
+//
+//    describe('process the image when the it has png extension', function () {
+//        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
+//
+//        before(function (done) {
+//            fakeResponse = { Body: 'image content' };
+//            event = extend({}, baseEvent);
+//            event.Records[0].s3.object.key = "image.png";
+//
+//            gmStubs = getGmStubs();
+//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
+//            putObjectStub = sinon.stub().callsArgWith(1, null);
+//            contextDoneSpy = sinon.spy();
+//
+//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
+//            testedModule.AwsHandler(event, { done: function () {
+//                contextDoneSpy.apply(null, arguments);
+//                done();
+//            }});
+//        });
+//
+//        it('call s3 getObject', function () {
+//            expect(getObjectStub).has.been.calledOnce;
+//            expect(getObjectStub).has.been.calledWith({
+//                Bucket: event.Records[0].s3.bucket.name,
+//                Key: event.Records[0].s3.object.key
+//            });
+//        });
+//
+//        it('call graphics magick', function () {
+//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(gmStubs.resize).has.been.calledWith(s.width);
+//                expect(gmStubs.toBuffer).has.been.calledWith('png');
+//            });
+//        });
+//
+//        it('call s3 putObject', function () {
+//            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(putObjectStub).has.been.calledWith({
+//                    Bucket: event.Records[0].s3.bucket.name,
+//                    Key: s.size + '_' + event.Records[0].s3.object.key,
+//                    Body: 'data',
+//                    ContentType: 'image/png'
+//                });
+//            });
+//        });
+//
+//        it('call context done with no error', function () {
+//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
+//        });
+//    });
+//
+//    describe('process the image but image magick fails', function () {
+//        var event, gmStubs, getObjectStub, putObjectSpy, contextDoneSpy, testedModule, fakeResponse;
+//
+//        before(function (done) {
+//            fakeResponse = { Body: 'image content' };
+//            event = extend({}, baseEvent);
+//            event.Records[0].s3.object.key = "image.png";
+//
+//            var toBufferStub = sinon.stub().callsArgWith(1, new Error('Image resize failed'));
+//            gmStubs = getGmStubs(toBufferStub);
+//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
+//            putObjectSpy = sinon.spy();
+//            contextDoneSpy = sinon.spy();
+//
+//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectSpy);
+//            testedModule.AwsHandler(event, { done: function () {
+//                contextDoneSpy.apply(null, arguments);
+//                done();
+//            }});
+//        });
+//
+//        it('call s3 getObject', function () {
+//            expect(getObjectStub).has.been.calledOnce;
+//            expect(getObjectStub).has.been.calledWith({
+//                Bucket: event.Records[0].s3.bucket.name,
+//                Key: event.Records[0].s3.object.key
+//            });
+//        });
+//
+//        it('call graphics magick', function () {
+//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
+//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
+//
+//            sizesConfigs.forEach(function(s) {
+//                expect(gmStubs.resize).has.been.calledWith(s.width);
+//                expect(gmStubs.toBuffer).has.been.calledWith('png');
+//            });
+//        });
+//
+//        it('never call s3 putObject', function () {
+//            expect(putObjectSpy).has.been.not.called;
+//        });
+//
+//        it('call context done with no error', function () {
+//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(new Error('Image resize failed'));
+//        });
+//    });
+//});
+//
+//function getGmStubs(toBuffer) {
+//    var toBuffer = toBuffer || sinon.stub().callsArgWith(1, null, 'data')
+//    var resize = sinon.stub().returns({ toBuffer: toBuffer });
+//    var gm = sinon.stub().returns({ resize: resize });
+//
+//    return {
+//        gm: gm,
+//        resize: resize,
+//        toBuffer: toBuffer
+//    };
+//}
+//
+//function getTestedModule(gm, getObject, putObject) {
+//    return proxyquire('../index.js', {
+//        'gm': { subClass: function() { return gm; } },
+//        'aws-sdk': {
+//            "S3": function () {
+//                return {
+//                    getObject: getObject,
+//                    putObject: putObject
+//                };
+//            }
+//        }
+//    });
+//}
 
 
 
@@ -844,4 +844,108 @@ describe("sqsHandler", function () {
             expect(callbackSpy).has.been.called.and.calledWith(new Error("Error sending message!"), null);
         });
     });
+});
+
+describe("objectCreator", function () {
+    var testedModule, fakeObj, fakePath;
+
+    before(function () {
+
+        fakeObj = [
+            { width: 800, height: 800, name: 'large' },
+            { width: 500, height: 500, name: 'medium' },
+            { width: 200, height: 200, name: 'small' },
+            { width: 45, height: 45, name: 'thumbnail'}
+        ];
+
+        fakePath = "S3://bucketname/images/908798";
+
+        testedModule = require("../objectCreator.js");
+    });
+
+    it("returns a newly formed object", function () {
+        var result = testedModule.creator(fakePath, fakeObj);
+        expect(result).to.be.ok;
+        expect(result).contains("message");
+        expect(result).contains("S3://bucketname/images/908798");
+        expect(result).contains('{"event":"image_rs.re-sized","message":{"url":"S3://bucketname/images/908798","sizes":["large","medium","small","thumbnail"]}}');
+    });
+});
+
+describe("S3resizer", function () {
+    var testedModule, fakeResponse, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsCreateStub, sqsSendStub, contextSpy, imgName, bucketName, sizesObj, imageType, obj;
+
+    before(function () {
+
+        S3getStub = sinon.stub();
+
+        rsStub = sinon.stub();
+
+        readDirContStub = sinon.stub();
+
+        readDirFileStub = sinon.stub();
+
+        S3putStub = sinon.stub();
+
+        sqsCreateStub = sinon.stub();
+
+        sqsSendStub = sinon.stub();
+
+        contextSpy = sinon.spy();
+
+        imgName = "Whatever";
+
+        bucketName = "Chappie";
+
+        sizesObj = [
+            { width: 800, height: 800, name: 'large' },
+            { width: 500, height: 500, name: 'medium' },
+            { width: 200, height: 200, name: 'small' },
+            { width: 45, height: 45, name: 'thumbnail'}
+        ];
+
+        imageType = "png";
+
+        obj = {
+            "event":"image_rs.re-sized",
+            "message": {
+                "url":"S3://bucketname/images/908798",
+                "sizes":["large","medium","small","thumbnail"]
+            }
+        };
+
+        fakeResponse = { Body: 'image content' };
+
+        fakeFiles = ["thumbnail_Whatever", "small_Whatever", "medium_Whatever", "large_Whatever"];
+
+        testedModule = proxyquire("../S3resizer.js", {
+            "../S3Handler.js" : {
+                _get: S3getStub,
+                _put: S3putStub
+            },
+            "../readDirectory.js": {
+                _get: readDirFileStub,
+                _getContent: readDirContStub
+            },
+            "../resizer.js": {
+                resize: rsStub
+            },
+            "../sqsHandler.js": {
+                _createQueue: sqsCreateStub,
+                _sendMessage: sqsSendStub
+            }
+        });
+    });
+
+    it("calls context.done", function (done) {
+        S3getStub.callsArgWith(2, null, fakeResponse, imgName);
+        readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+        testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, {done: function () {
+            contextSpy.apply(null, arguments);
+            expect(contextSpy).has.been.called;
+            done();
+        }});
+    });
+
 });

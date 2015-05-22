@@ -12,7 +12,7 @@
 'use strict';
 
 var AWS = require('aws-sdk');
-var sqs = new AWS.SQS({apiVersion: 'latest', region: 'eu-west-1'});
+var sqs = new AWS.SQS({apiVersion: 'latest'});
 
 var configs = require("./configs.json");
 

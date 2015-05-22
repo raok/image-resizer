@@ -23,11 +23,11 @@ S3Handler._get = function (bucketName, imgName, callback) {
     });
 };
 
-S3Handler._put = function (bucketName, content, sizesObj, imgName, imageType, callback) {
+S3Handler._put = function (bucketName, content, fileName, imgName, imageType, callback) {
 
     var params = {
         Bucket: bucketName,
-        Key: "images/" + sizesObj.name + "/" + imgName,
+        Key: "images/" + fileName + "/" + imgName,
         Body: content,
         ContentType: 'image/' + imageType
     };

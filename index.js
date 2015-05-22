@@ -4,34 +4,31 @@
 
 'use strict';
 
-// dependencies
-var gm = require('gm').subClass({ imageMagick: true });
-var async = require('async');
-
-
-
-// module to be exported when in production
-
-'use strict';
-
 
 var _ = require("underscore");
-var s3 = new (require('aws-sdk')).S3();
+var _protocol = require("./getProtocol.js").getProtocol();
+var s3resizer = require("./S3resizer.js");
+var createObj = require("./objectCreator.js").creator();
 
 
-exports.AwsHandler = function (event, context) {
-    var s3Bucket = event.Records[0].s3.bucket.name;
-    var s3Key = event.Records[0].s3.object.key;
+
+exports.imageRs = function (event, context) {
+
+    var parts = _protocol(event.path);
+
+    var imgName = parts.pathname.split("/").pop();
+
+    var s3Bucket = parts.hostname;
+    var s3Key = imgName;
+
+    var protocol = parts.protocol;
 
     // RegExp to check for image type
     var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
 
-    var sizesConfigs = [
-        { width: 800, height: 800, size: 'large' },
-        { width: 500, height: 500, size: 'medium' },
-        { width: 200, height: 200, size: 'small' },
-        { width: 45, height: 45, size: 'thumbnail'}
-    ];
+    var sizesConfigs = event.sizes;
+
+    var obj = createObj(event.path, sizesConfigs);
 
     // Check if file has a supported image extension
     var imgExt = imageTypeRegExp.exec(s3Key);
@@ -44,40 +41,48 @@ exports.AwsHandler = function (event, context) {
 
     var imageType = imgExt[1] || imgExt[2];
 
-    async.waterfall([
-        function download(callback) {
-            s3.getObject({
-                Bucket: s3Bucket,
-                Key: s3Key
-            }, callback);
-        },
+    if (protocol === "S3") {
+        s3resizer(s3Key, s3Bucket, sizesConfigs, imageType, obj, context);
+    }
 
-        function transform(response, callback) {
-            async.map(sizesConfigs, function (sizeConfig, mapNext) {
-                gm(response.Body, s3Key)
-                    .resize(sizeConfig.width)
-                    .toBuffer(imageType, function (err, buffer) {
-                        if (err) {
-                            console.log("err %s", err);
-                            mapNext(err);
-                            return;
-                        }
+    if (protocol === "file") {
 
-                        s3.putObject({
-                            Bucket: s3Bucket,
-                            Key: sizeConfig.size + "_" + s3Key,
-                            Body: buffer,
-                            ContentType: 'image/' + imageType
-                        }, mapNext)
-                    });
-            }, callback);
-        },
-    ], function (err) {
-        if (err) {
-            console.error('Error processing image, details %s', err.message);
-            context.done(err);
-        } else {
-            context.done(null);
-        }
-    });
+    }
+
+    //async.waterfall([
+    //    function download(callback) {
+    //        s3.getObject({
+    //            Bucket: s3Bucket,
+    //            Key: s3Key
+    //        }, callback);
+    //    },
+    //
+    //    function transform(response, callback) {
+    //        async.map(sizesConfigs, function (sizeConfig, mapNext) {
+    //            gm(response.Body, s3Key)
+    //                .resize(sizeConfig.width)
+    //                .toBuffer(imageType, function (err, buffer) {
+    //                    if (err) {
+    //                        console.log("err %s", err);
+    //                        mapNext(err);
+    //                        return;
+    //                    }
+    //
+    //                    s3.putObject({
+    //                        Bucket: s3Bucket,
+    //                        Key: sizeConfig.size + "_" + s3Key,
+    //                        Body: buffer,
+    //                        ContentType: 'image/' + imageType
+    //                    }, mapNext)
+    //                });
+    //        }, callback);
+    //    },
+    //], function (err) {
+    //    if (err) {
+    //        console.error('Error processing image, details %s', err.message);
+    //        context.done(err);
+    //    } else {
+    //        context.done(null);
+    //    }
+    //});
 };

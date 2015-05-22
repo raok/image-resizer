@@ -10,7 +10,7 @@ var async = require('async');
 
 var resizer = {};
 
-resizer.resize = function (data, imgName, directory, sizesObj) {
+resizer.resize = function (data, imgName, directory, sizesObj, callback) {
     async.map(sizesObj, function (sizesObj, mapNext) {
         gm(data.Body)
             .resize(sizesObj.width, sizesObj.height)
@@ -21,7 +21,7 @@ resizer.resize = function (data, imgName, directory, sizesObj) {
                     return;
                 }
             });
-    });
+    }, callback);
 };
 
 module.exports = resizer;
