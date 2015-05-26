@@ -6,22 +6,29 @@
 
 // dependencies
 var gm = require('gm').subClass({ imageMagick: true });
-var async = require('async');
 
 var resizer = {};
 
 resizer.resize = function (data, imgName, directory, sizesObj, callback) {
-    async.map(sizesObj, function (sizesObj, mapNext) {
-        gm(data.Body)
-            .resize(sizesObj.width, sizesObj.height)
-            .write(directory + "/" + sizesObj.name + "_" + imgName, function (err) {
-                if (err) {
-                    console.error("Error resizing image, %s", err.message);
-                    mapNext(err);
-                    return;
-                }
-            });
-    }, callback);
+
+    if (data.hasOwnProperty('Body')) {
+        data = data.Body;
+    } else {
+        data = data;
+    }
+
+    gm(data)
+        .resize(sizesObj.width, sizesObj.height)
+        .write(directory + sizesObj.name + "_" + imgName, function (err) {
+            if (err) {
+                console.error("Error resizing image, %s", err.message);
+                callback(err);
+                return;
+            }
+            console.log("Wrote to '%s' directory, with size name '%s' and image name '%s'", directory, sizesObj.name, imgName);
+            callback();
+        });
+
 };
 
 module.exports = resizer;

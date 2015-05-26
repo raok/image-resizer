@@ -344,6 +344,8 @@ describe("getProtocol", function () {
     });
 });
 
+
+
 describe("resizer", function () {
     var testedModule, dir, sizesObj, imgName, writeSpy250, writeSpy350, writeSpy500, resizeStub, gmSubClassStub, fakeResponse;
 
@@ -393,6 +395,8 @@ describe("resizer", function () {
         expect(writeSpy500).calledWith("/tmp/images/medium_test.png");
     });
 });
+
+
 
 describe("resizer with error", function () {
     var testedModule, dir, sizesObj, imgName, writeStub250, writeStub350, writeStub500, resizeStub, gmSubClassStub, fakeResponse;
@@ -448,6 +452,8 @@ describe("resizer with error", function () {
         expect(writeStub500).contains(new Error("Error resizing"));
     });
 });
+
+
 
 describe("readDirectory _getFiles._get", function () {
     describe("_get success call", function () {
@@ -526,6 +532,8 @@ describe("readDirectory _getFiles._get", function () {
     });
 });
 
+
+
 describe("readDirectory _getFiles._getContent", function () {
     describe("_getContent success call", function () {
         var testedModule, callbackSpy, readFileStub;
@@ -592,6 +600,8 @@ describe("readDirectory _getFiles._getContent", function () {
     });
 });
 
+
+
 describe("S3Handler", function () {
     describe("S3Handler._get", function () {
         var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse;
@@ -629,12 +639,12 @@ describe("S3Handler", function () {
         });
 
         it("fetch object from S3Bucket triggers error", function () {
-            getStub.callsArgWith(1, new Error("Error fetching image"), null);
+            getStub.callsArgWith(1, new Error("Error fetching image!"), null);
             testedModule._get(bucketName, imgName, function () {
                 callbackSpy.apply(null, arguments);
             });
 
-            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error fetching image"), null);
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error fetching image!"), null);
         });
     });
 
@@ -694,76 +704,9 @@ describe("S3Handler", function () {
     });
 });
 
+
+
 describe("sqsHandler", function () {
-
-    describe("sqsHandler._createQueue success call", function () {
-        var testedModule, callbackSpy, sqsStub, fakeServer;
-
-        before(function () {
-
-            callbackSpy = sinon.spy();
-
-            sqsStub = sinon.stub();
-
-            fakeServer = sinon.fakeServer.create();
-
-            fakeServer.autoRespond = true;
-
-            testedModule = proxyquire("../sqsHandler.js", {
-                'aws-sdk' : {
-                    'SQS': function () {
-                        return {
-                            createQueue: sqsStub
-                        }
-                    }
-                }
-            });
-
-        });
-
-        after(function () {
-            fakeServer.restore();
-        });
-
-        it("return name of queue", function () {
-
-            sqsStub.callsArgWith(1, null, "imageReziserQueue");
-            testedModule._createQueue(function (error, data) {
-                callbackSpy.apply(null, arguments);
-            });
-            expect(callbackSpy).has.been.called.and.calledWith(null, "imageReziserQueue");
-        });
-    });
-
-    describe("sqsHandler._createQueue with error", function () {
-        var testedModule, callbackSpy, sqsStub;
-
-        before(function () {
-
-            callbackSpy = sinon.spy();
-
-            sqsStub = sinon.stub();
-
-            testedModule = proxyquire("../sqsHandler.js", {
-                'aws-sdk' : {
-                    'SQS': function () {
-                        return {
-                            createQueue: sqsStub
-                        }
-                    }
-                }
-            });
-        });
-
-        it("trigger error when creating sqs queue", function () {
-            sqsStub.callsArgWith(1, new Error("Error creating sqs queue!"), null);
-            testedModule._createQueue(function (error, data) {
-                callbackSpy.apply(null, arguments);
-            });
-
-            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error creating sqs queue!"), null);
-        });
-    });
 
     describe("sqsHandler._sendMessage success call", function () {
         var testedModule, callbackSpy, object, sqsStub;
@@ -846,6 +789,8 @@ describe("sqsHandler", function () {
     });
 });
 
+
+
 describe("objectCreator", function () {
     var testedModule, fakeObj, fakePath;
 
@@ -872,8 +817,10 @@ describe("objectCreator", function () {
     });
 });
 
+
+
 describe("S3resizer", function () {
-    var testedModule, fakeResponse, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsCreateStub, sqsSendStub, contextSpy, imgName, bucketName, sizesObj, imageType, obj;
+    var testedModule, fakeResponse, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsCreateStub, sqsSendStub, cbSpy, imgName, bucketName, sizesObj, imageType, obj;
 
     before(function () {
 
@@ -891,7 +838,7 @@ describe("S3resizer", function () {
 
         sqsSendStub = sinon.stub();
 
-        contextSpy = sinon.spy();
+        cbSpy = sinon.spy();
 
         imgName = "Whatever";
 
@@ -918,7 +865,7 @@ describe("S3resizer", function () {
 
         fakeFiles = ["thumbnail_Whatever", "small_Whatever", "medium_Whatever", "large_Whatever"];
 
-        testedModule = proxyquire("../S3resizer.js", {
+        testedModule = proxyquire ("../S3resizer.js", {
             "../S3Handler.js" : {
                 _get: S3getStub,
                 _put: S3putStub
@@ -941,11 +888,10 @@ describe("S3resizer", function () {
         S3getStub.callsArgWith(2, null, fakeResponse, imgName);
         readDirFileStub.callsArgWith(1, null, fakeFiles);
 
-        testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, {done: function () {
-            contextSpy.apply(null, arguments);
-            expect(contextSpy).has.been.called;
+        testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+            cbSpy.apply(null, arguments);
+            expect(cbSpy).has.been.called.and.calledWith("Done");
             done();
-        }});
+        });
     });
-
 });

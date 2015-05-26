@@ -12,6 +12,7 @@ var fs = require('fs');
 var _getFiles = {};
 
 _getFiles._get = function (path, callback) {
+    console.log("Called readdir");
     fs.readdir(path, function (error, files) {
         if (error) {
             callback(error, null);
@@ -21,6 +22,7 @@ _getFiles._get = function (path, callback) {
 };
 
 _getFiles._getContent = function (file, callback) {
+    console.log("called readFile");
     fs.readFile(file, function (error, data) {
         if(error) {
             callback(error, null);

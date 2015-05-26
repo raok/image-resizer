@@ -1,4 +1,10 @@
 {
-  "queueName": "imageResizerQueue",
-  "eventName": "image_rs.re-sized"
+  "queueUrl": "https://sqs.eu-west-1.amazonaws.com/193656525156/mariotest",
+  "eventName": "image_rs.re-sized",
+  "sizes" : [
+    { "width": 800, "height": 800, "name": "large" },
+    { "width": 500, "height": 500, "name": "medium" },
+    { "width": 200, "height": 200, "name": "small" },
+    { "width": 45, "height": 45, "name": "thumbnail"}
+  ]
 }

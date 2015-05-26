@@ -6,29 +6,38 @@
 
 
 var _ = require("underscore");
-var _protocol = require("./getProtocol.js").getProtocol();
-var s3resizer = require("./S3resizer.js");
-var createObj = require("./objectCreator.js").creator();
+var async = require('async');
+var _getprotocol = require("./getProtocol.js").getProtocol;
+var s3resizer = require("./S3resizer.js").rs;
+var createObj = require("./objectCreator.js").creator;
+var fileResizer = require("./fileResizer.js").rs;
+var configs = require("./configs.json");
 
 
 
 exports.imageRs = function (event, context) {
 
-    var parts = _protocol(event.path);
+    var _path = process.argv[2] || event.path;
+
+    var _dir = process.argv[3];
+
+    var parts = _getprotocol(_path);
 
     var imgName = parts.pathname.split("/").pop();
 
     var s3Bucket = parts.hostname;
+
     var s3Key = imgName;
 
-    var protocol = parts.protocol;
+    var _protocol = parts.protocol;
 
+    console.log(_protocol);
     // RegExp to check for image type
     var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
 
-    var sizesConfigs = event.sizes;
+    var sizesConfigs = configs.sizes;
 
-    var obj = createObj(event.path, sizesConfigs);
+    var obj = createObj(_path, sizesConfigs);
 
     // Check if file has a supported image extension
     var imgExt = imageTypeRegExp.exec(s3Key);
@@ -41,48 +50,39 @@ exports.imageRs = function (event, context) {
 
     var imageType = imgExt[1] || imgExt[2];
 
-    if (protocol === "S3") {
-        s3resizer(s3Key, s3Bucket, sizesConfigs, imageType, obj, context);
+    switch(_protocol) {
+        case "s3:":
+            async.waterfall([
+                function(callback) {
+                    s3resizer(s3Key, s3Bucket, sizesConfigs, imageType, obj, callback);
+                }
+            ], function (error) {
+                if (error) {
+                    context.done(error);
+                } else {
+                    context.done();
+                }
+            });
+            break;
+        case "file:":
+            async.series([
+                function (callback) {
+                    fileResizer(_path, imgName, _dir, sizesConfigs, obj, callback);
+                }
+            ], function (error, result) {
+                if(error) {
+                    console.error("Error processing image with path 'file'");
+                } else {
+                    console.log("Image processed without errors for 'file' path with result: %s", result);
+                }
+            });
+            break;
+        default:
+            console.log("No matches found for: %s", _protocol);
     }
-
-    if (protocol === "file") {
-
-    }
-
-    //async.waterfall([
-    //    function download(callback) {
-    //        s3.getObject({
-    //            Bucket: s3Bucket,
-    //            Key: s3Key
-    //        }, callback);
-    //    },
-    //
-    //    function transform(response, callback) {
-    //        async.map(sizesConfigs, function (sizeConfig, mapNext) {
-    //            gm(response.Body, s3Key)
-    //                .resize(sizeConfig.width)
-    //                .toBuffer(imageType, function (err, buffer) {
-    //                    if (err) {
-    //                        console.log("err %s", err);
-    //                        mapNext(err);
-    //                        return;
-    //                    }
-    //
-    //                    s3.putObject({
-    //                        Bucket: s3Bucket,
-    //                        Key: sizeConfig.size + "_" + s3Key,
-    //                        Body: buffer,
-    //                        ContentType: 'image/' + imageType
-    //                    }, mapNext)
-    //                });
-    //        }, callback);
-    //    },
-    //], function (err) {
-    //    if (err) {
-    //        console.error('Error processing image, details %s', err.message);
-    //        context.done(err);
-    //    } else {
-    //        context.done(null);
-    //    }
-    //});
 };
+
+if (!process.env.LAMBDA_TASK_ROOT) {
+    exports.imageRs();
+}
+
