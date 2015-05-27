@@ -17,11 +17,8 @@ writeFiles._write = function (fileName, dstFolder, data, imgType, callback) {
     fs.writeFile(_path, data, function (err) {
 
         if (err) {
-            console.log(err);
-            console.log("Error writing to file");
             callback(err, null);
         } else {
-            console.log("Written to file");
             callback();
         }
     })

@@ -12,6 +12,7 @@ var s3resizer = require("./S3resizer.js").rs;
 var createObj = require("./objectCreator.js").creator;
 var fileResizer = require("./fileResizer.js").rs;
 var configs = require("./configs.json");
+var makeDir = require("./makeDir.js").handler;
 
 
 
@@ -66,6 +67,17 @@ exports.imageRs = function (event, context) {
             break;
         case "file:":
             async.series([
+                function (callback) {
+                    async.eachSeries(sizesConfigs, function (item, mapNext) {
+                        makeDir(_dir, item, mapNext);
+                    }, function (err) {
+                        if (err) {
+                            callback(err, null);
+                        } else {
+                            callback(null);
+                        }
+                    });
+                },
                 function (callback) {
                     fileResizer(_path, imgName, _dir, sizesConfigs, obj, imageType, callback);
                 }

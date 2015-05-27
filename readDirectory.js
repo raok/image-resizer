@@ -15,11 +15,8 @@ _getFiles._get = function (path, callback) {
 
     fs.readdir(path, function (error, files) {
         if (error) {
-            console.log("Error with readDir");
             callback(error, null);
         }
-        console.log("Read directory");
-        console.log(files);
         callback(null, files);
     });
 };
@@ -31,8 +28,6 @@ _getFiles._getContent = function (file, dir, callback) {
         if(error) {
             callback(error, null);
         }
-        console.log("Read files");
-        console.log(data);
         callback(null, data);
     });
 };

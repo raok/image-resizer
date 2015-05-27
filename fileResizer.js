@@ -25,10 +25,8 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback
                 rs(data, imgName, tmpDirName, sizesObj, mapNext);
             }, function (err) {
                 if (err) {
-                    console.log("Error when resizing images, %s", err);
                     next(err);
                 } else {
-                    console.log("Processing images completed");
                     next(null);
                 }
             });
@@ -47,10 +45,8 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback
                         });
                     }, function (err) {
                         if (err) {
-                            console.log("Error when writing file, %s", err);
                             asyncCallback(err);
                         } else {
-                            console.log("Image written to directory");
                             asyncCallback();
                         }
                     });

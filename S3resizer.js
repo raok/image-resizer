@@ -31,17 +31,14 @@ S3resizer.rs = function (imgName, bucketName, sizesObj, imageType, obj, cb) {
                         rs(data, imgName, dir, item, mapNext);
                     }, function (err) {
                         if (err) {
-                            console.log("Error when resizing images, %s", err);
                             asyncCallback(err);
                         } else {
-                            console.log("Processing images completed");
                             asyncCallback(null);
                         }
                     });
                 }
             ], function (err, result) {
                 if(err) {
-                    console.log("Error in first async.waterfall");
                     next(err);
                 } else {
                     next(null, result);
@@ -63,10 +60,8 @@ S3resizer.rs = function (imgName, bucketName, sizesObj, imageType, obj, cb) {
                         });
                     }, function (err) {
                         if (err) {
-                            console.log("Error when putting image to S3, %s", err);
                             asyncCallback(err);
                         } else {
-                            console.log("Image sent to S3");
                             asyncCallback();
                         }
                     });
