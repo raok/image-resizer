@@ -23,15 +23,14 @@ exports.imageRs = function (event, context) {
 
     var parts = _getprotocol(_path);
 
-    var imgName = "diavelBlack.jpg";
+    var imgName = parts.pathname.split("/").pop();
 
-    var s3Bucket = "hevnlydevimageresize";
+    var s3Bucket = parts.hostname;
 
     var s3Key = imgName;
 
-    var _protocol = "s3:";
+    var _protocol = parts.protocol;
 
-    console.log(_protocol);
     // RegExp to check for image type
     var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
 
@@ -68,7 +67,7 @@ exports.imageRs = function (event, context) {
         case "file:":
             async.series([
                 function (callback) {
-                    fileResizer(_path, imgName, _dir, sizesConfigs, obj, callback);
+                    fileResizer(_path, imgName, _dir, sizesConfigs, obj, imageType, callback);
                 }
             ], function (error, result) {
                 if(error) {

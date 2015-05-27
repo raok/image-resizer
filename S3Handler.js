@@ -25,9 +25,11 @@ S3Handler._get = function (bucketName, imgName, callback) {
 
 S3Handler._put = function (bucketName, content, fileName, imgName, imageType, callback) {
 
+    var _fileName = fileName.split("_").shift();
+
     var params = {
         Bucket: bucketName,
-        Key: "images/" + fileName + "/" + imgName,
+        Key: "images/" + _fileName + "/" + imgName,
         Body: content,
         ContentType: 'image/' + imageType
     };

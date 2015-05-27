@@ -12,25 +12,29 @@ var fs = require('fs');
 var _getFiles = {};
 
 _getFiles._get = function (path, callback) {
-    console.log("Called readdir");
+
     fs.readdir(path, function (error, files) {
         if (error) {
             console.log("Error with readDir");
             callback(error, null);
         }
+        console.log("Read directory");
+        console.log(files);
         callback(null, files);
     });
 };
 
 _getFiles._getContent = function (file, dir, callback) {
-    fs.readFile(dir + file, function (error, data) {
+
+    var _path = dir + file;
+    fs.readFile(_path, function (error, data) {
         if(error) {
             callback(error, null);
         }
-        console.log("No error reading file");
+        console.log("Read files");
         console.log(data);
         callback(null, data);
     });
-}
+};
 
 module.exports = _getFiles;

@@ -53,7 +53,6 @@ S3resizer.rs = function (imgName, bucketName, sizesObj, imageType, obj, cb) {
             async.waterfall([
 
                 function readDir (asyncCallback) {
-                    console.log("reached readfile");
                     readDirFile(dir, asyncCallback);
                 },
                 function readFiles (files, asyncCallback) {
