@@ -30,9 +30,9 @@ sqsHandler._sendMessage = function (obj, callback) {
     sqs.sendMessage(params, function (error, data) {
         console.log("called sqsSend");
         if ( error ) {
-            console.log(error);
             callback(error, null);
         } else {
+            console.log(data);
             callback(null, data);
         }
     });

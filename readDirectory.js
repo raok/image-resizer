@@ -15,18 +15,20 @@ _getFiles._get = function (path, callback) {
     console.log("Called readdir");
     fs.readdir(path, function (error, files) {
         if (error) {
+            console.log("Error with readDir");
             callback(error, null);
         }
         callback(null, files);
     });
 };
 
-_getFiles._getContent = function (file, callback) {
-    console.log("called readFile");
-    fs.readFile(file, function (error, data) {
+_getFiles._getContent = function (file, dir, callback) {
+    fs.readFile(dir + file, function (error, data) {
         if(error) {
             callback(error, null);
         }
+        console.log("No error reading file");
+        console.log(data);
         callback(null, data);
     });
 }

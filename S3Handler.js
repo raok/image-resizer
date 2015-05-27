@@ -10,8 +10,6 @@ var S3Handler = {};
 
 S3Handler._get = function (bucketName, imgName, callback) {
 
-    console.log("called S3GET");
-
     var params = {
         Bucket: bucketName,
         Key: imgName
@@ -21,14 +19,11 @@ S3Handler._get = function (bucketName, imgName, callback) {
         if (error) {
             callback(error, null);
         }
-        console.log(data.Body);
         callback(null, data);
     });
 };
 
 S3Handler._put = function (bucketName, content, fileName, imgName, imageType, callback) {
-
-    console.log("Called S3Put");
 
     var params = {
         Bucket: bucketName,
@@ -39,6 +34,7 @@ S3Handler._put = function (bucketName, content, fileName, imgName, imageType, ca
 
     s3.putObject(params, function (error, data) {
         if ( error ) {
+            console.log("Error in S3put");
             callback(error, null);
         }
         callback(null, data);

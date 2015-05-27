@@ -22,7 +22,7 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, callback) {
                     next(err);
                 } else {
                     console.log("Processing images completed");
-                    next(null, "Done resizing");
+                    next(null);
                 }
             });
         },

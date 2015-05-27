@@ -11,13 +11,15 @@ var resizer = {};
 
 resizer.resize = function (data, imgName, directory, sizesObj, callback) {
 
-    if (data.hasOwnProperty('Body')) {
-        data = data.Body;
+    var _data = null;
+
+    if (data.hasOwnProperty("Body")) {
+        _data = data.Body;
     } else {
-        data = data;
+        _data = data;
     }
 
-    gm(data)
+    gm(_data)
         .resize(sizesObj.width, sizesObj.height)
         .write(directory + sizesObj.name + "_" + imgName, function (err) {
             if (err) {

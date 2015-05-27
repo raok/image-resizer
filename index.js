@@ -23,13 +23,13 @@ exports.imageRs = function (event, context) {
 
     var parts = _getprotocol(_path);
 
-    var imgName = parts.pathname.split("/").pop();
+    var imgName = "diavelBlack.jpg";
 
-    var s3Bucket = parts.hostname;
+    var s3Bucket = "hevnlydevimageresize";
 
     var s3Key = imgName;
 
-    var _protocol = parts.protocol;
+    var _protocol = "s3:";
 
     console.log(_protocol);
     // RegExp to check for image type
@@ -60,6 +60,7 @@ exports.imageRs = function (event, context) {
                 if (error) {
                     context.done(error);
                 } else {
+                    console.log("Everything went well. Calling context.done");
                     context.done();
                 }
             });
@@ -73,7 +74,7 @@ exports.imageRs = function (event, context) {
                 if(error) {
                     console.error("Error processing image with path 'file'");
                 } else {
-                    console.log("Image processed without errors for 'file' path with result: %s", result);
+                    console.log("Image processed without errors for 'file' path");
                 }
             });
             break;
