@@ -321,504 +321,744 @@ var mockDir = require('mock-fs');
 
 
 
-//describe("getProtocol", function () {
-//    var testedModule, parseSpy, _url;
-//
-//
-//    before(function () {
-//
-//        _url = "http://www.some.com/test";
-//
-//        parseSpy = sinon.spy(url, 'parse');
-//
-//        testedModule = require('../getProtocol.js');
-//    });
-//
-//    after(function () {
-//        url.parse.restore();
-//    });
-//
-//    it("calls url.parse", function () {
-//        testedModule.getProtocol(_url);
-//        expect(parseSpy).has.been.calledOnce.and.calledWithExactly(_url, true);
-//    });
-//});
-//
-//
-//
-//describe("resizer", function () {
-//    var testedModule, dir, sizesObj, imgName, writeSpy250, writeSpy350, writeSpy500, resizeStub, gmSubClassStub, fakeResponse;
-//
-//    before(function () {
-//
-//        dir = "/tmp/images";
-//
-//        fakeResponse = {Body: "test.png"};
-//
-//        sizesObj = [
-//            {name: "thumb", width: 250, height: 250},
-//            {name: "small", width: 350, height: 350},
-//            {name: "medium", width: 500, height: 500}
-//        ];
-//
-//        imgName = "test.png";
-//
-//        writeSpy250 = sinon.spy();
-//        writeSpy350 = sinon.spy();
-//        writeSpy500 = sinon.spy();
-//
-//        resizeStub = sinon.stub();
-//
-//        gmSubClassStub = sinon.stub();
-//
-//        testedModule = proxyquire('../resizer.js', {
-//            'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
-//        });
-//
-//    });
-//
-//    it("resize image and write to path", function () {
-//
-//        resizeStub.withArgs(250, 250).returns({write:writeSpy250});
-//        resizeStub.withArgs(350, 350).returns({write:writeSpy350});
-//        resizeStub.withArgs(500, 500).returns({write:writeSpy500});
-//
-//        // Stub is used when you just want to simulate a returned value
-//        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
-//
-//        // Act - this calls the tested method
-//        testedModule.resize(fakeResponse, imgName, dir, sizesObj);
-//
-//        // Assert
-//        expect(writeSpy250).calledWith("/tmp/images/thumb_test.png");
-//        expect(writeSpy350).calledWith("/tmp/images/small_test.png");
-//        expect(writeSpy500).calledWith("/tmp/images/medium_test.png");
-//    });
-//});
-//
-//
-//
-//describe("resizer with error", function () {
-//    var testedModule, dir, sizesObj, imgName, writeStub250, writeStub350, writeStub500, resizeStub, gmSubClassStub, fakeResponse;
-//
-//    before(function () {
-//
-//        dir = "/tmp/images";
-//
-//        fakeResponse = {Body: "test.png"};
-//
-//        sizesObj = [
-//            {width: 250, height: 250},
-//            {width: 350, height: 350},
-//            {width: 500, height: 500}
-//        ];
-//
-//        imgName = "test.png";
-//
-//        writeStub250 = sinon.stub();
-//        writeStub350 = sinon.stub();
-//        writeStub500 = sinon.stub();
-//
-//        resizeStub = sinon.stub();
-//
-//        gmSubClassStub = sinon.stub();
-//
-//        testedModule = proxyquire('../resizer.js', {
-//            'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
-//        });
-//
-//    });
-//
-//    it("resizes image and call error on write", function () {
-//
-//        writeStub250.withArgs("/tmp/images/undefined_test.png").yields(new Error("Error resizing"));
-//        writeStub350.withArgs("/tmp/images/undefined_test.png").yields(new Error("Error resizing"));
-//        writeStub500.withArgs("/tmp/images/undefined_test.png").yields(new Error("Error resizing"));
-//
-//        resizeStub.withArgs(250).returns({write:writeStub250});
-//        resizeStub.withArgs(350).returns({write:writeStub350});
-//        resizeStub.withArgs(500).returns({write:writeStub500});
-//
-//        // Stub is used when you just want to simulate a returned value
-//        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
-//
-//        // Act - this calls the tested method
-//        testedModule.resize(fakeResponse, imgName, dir, sizesObj);
-//
-//        // Assert
-//        expect(resizeStub).has.been.called;
-//        expect(writeStub250).contains(new Error("Error resizing"));
-//        expect(writeStub350).contains(new Error("Error resizing"));
-//        expect(writeStub500).contains(new Error("Error resizing"));
-//    });
-//});
-//
-//
-//
-//describe("readDirectory _getFiles._get", function () {
-//    describe("_get success call", function () {
-//        var testedModule, callbackSpy, readFileStub;
-//
-//        before(function () {
-//
-//            readFileStub = sinon.stub();
-//
-//            callbackSpy = sinon.spy();
-//
-//            testedModule = require('../readDirectory.js');
-//
-//            mockDir({
-//                tmp: {
-//                    images: {
-//                        "thumb_test.txt": "thumbnail pic",
-//                        "small_test.txt": "small pic",
-//                        "medium_test.txt": "medium pic"
-//                    }
-//                }
-//            });
-//        });
-//
-//        after(function () {
-//            mockDir.restore();
-//        });
-//
-//        it("returns list of files", function (done) {
-//            testedModule._get("tmp/images/", function (error, files) {
-//                callbackSpy.apply(null, arguments);
-//                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium_test.txt", "small_test.txt", "thumb_test.txt"]);
-//                done();
-//            });
-//        });
-//    });
-//
-//    describe("_get error call", function () {
-//        var testedModule, callbackSpy, readFileStub;
-//
-//        before(function () {
-//
-//            readFileStub = sinon.stub();
-//
-//            callbackSpy = sinon.spy();
-//
-//            testedModule = proxyquire('../readDirectory.js', {
-//                "fs": {
-//                    "readdir": readFileStub
-//                }
-//            });
-//
-//            mockDir({
-//                tmp: {
-//                    images: {
-//                        "thumb_test.txt": "thumbnail pic",
-//                        "small_test.txt": "small pic",
-//                        "medium_test.txt": "medium pic"
-//                    }
-//                }
-//            });
-//
-//            readFileStub.callsArgWith(1, new Error("Error reading directory!"), null);
-//        });
-//
-//        after(function () {
-//            mockDir.restore();
-//        });
-//
-//        it("returns error", function () {
-//            testedModule._get("tmp/images/", function (error, files) {
-//                callbackSpy.apply(null, arguments);
-//            });
-//            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory!"), null);
-//        });
-//    });
-//});
-//
-//
-//
-//describe("readDirectory _getFiles._getContent", function () {
-//    describe("_getContent success call", function () {
-//        var testedModule, callbackSpy, readFileStub;
-//
-//        before(function () {
-//
-//            readFileStub = sinon.stub();
-//
-//            callbackSpy = sinon.spy();
-//
-//            testedModule = require('../readDirectory.js');
-//
-//            mockDir({
-//                "thumb_test.png": new Buffer([1,2,3])
-//            });
-//        });
-//
-//        after(function () {
-//            mockDir.restore();
-//        });
-//
-//        it("reads content of file", function (done) {
-//            testedModule._getContent("thumb_test.png", function (error, data) {
-//                callbackSpy.apply(null, arguments);
-//                expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
-//                done();
-//            });
-//
-//        });
-//    });
-//
-//    describe("_getContent error call", function () {
-//        var testedModule, callbackSpy, readFileStub;
-//
-//        before(function () {
-//
-//            readFileStub = sinon.stub();
-//
-//            callbackSpy = sinon.spy();
-//
-//            testedModule = proxyquire('../readDirectory.js', {
-//                "fs": {
-//                    "readFile": readFileStub
-//                }
-//            });
-//
-//            mockDir({
-//                "thumb_test.png": new Buffer([1,2,3])
-//            });
-//
-//            readFileStub.callsArgWith(1, new Error("Error reading file!"), null);
-//        });
-//
-//        after(function () {
-//            mockDir.restore();
-//        });
-//
-//        it("returns error", function () {
-//            testedModule._getContent("thumb_test.png", function (error, data) {
-//                callbackSpy.apply(null, arguments);
-//            });
-//            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading file!"),null);
-//        });
-//    });
-//});
-//
-//
-//
-//describe("S3Handler", function () {
-//    describe("S3Handler._get", function () {
-//        var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse;
-//
-//        before(function () {
-//
-//            fakeResponse = {Body: "Image content"};
-//
-//            imgName = "test.jpg";
-//
-//            bucketName = "testBucket";
-//
-//            callbackSpy = sinon.spy();
-//
-//            getStub = sinon.stub();
-//
-//            testedModule = proxyquire("../S3Handler.js", {
-//                'aws-sdk': {
-//                    "S3": function () {
-//                        return {
-//                            getObject: getStub
-//                        }
-//                    }
-//                }
-//            });
-//        });
-//
-//        it("fetch object from S3Bucket", function () {
-//            getStub.callsArgWith(1, null, fakeResponse);
-//            testedModule._get(bucketName, imgName, function () {
-//                callbackSpy.apply(null, arguments);
-//            });
-//
-//            expect(callbackSpy).has.been.called.and.calledWith(null, fakeResponse);
-//        });
-//
-//        it("fetch object from S3Bucket triggers error", function () {
-//            getStub.callsArgWith(1, new Error("Error fetching image!"), null);
-//            testedModule._get(bucketName, imgName, function () {
-//                callbackSpy.apply(null, arguments);
-//            });
-//
-//            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error fetching image!"), null);
-//        });
-//    });
-//
-//    describe("S3Handler._put", function () {
-//        var testedModule, imgName, imgType, content, data, bucketName, sizesObj, putStub, callbackSpy;
-//
-//        before(function () {
-//
-//            imgName = "test.png";
-//
-//            imgType = "png";
-//
-//            content = new Buffer([1,2,3]);
-//
-//            bucketName = "testBucket";
-//
-//            callbackSpy = sinon.spy();
-//
-//            data = {
-//                "Expiration": "12-12-2016"
-//            };
-//
-//            sizesObj = {
-//                width: 800, size: 'large'
-//            };
-//
-//            putStub = sinon.stub();
-//
-//            testedModule = proxyquire("../S3Handler.js", {
-//                'aws-sdk': {
-//                    "S3": function () {
-//                        return {
-//                            putObject: putStub
-//                        }
-//                    }
-//                }
-//            });
-//        });
-//
-//        it("put object to S3Bucket", function () {
-//            putStub.callsArgWith(1, null, data);
-//            testedModule._put(bucketName, content, sizesObj, imgName, imgType, function () {
-//                callbackSpy.apply(null, arguments);
-//            });
-//
-//            expect(callbackSpy).has.been.called.and.calledWith(null, data);
-//        });
-//
-//        it("put object triggers error", function () {
-//            putStub.callsArgWith(1, new Error("Error putting image to S3"), null);
-//            testedModule._put(bucketName, content, sizesObj, imgName, imgType, function () {
-//                callbackSpy.apply(null, arguments);
-//            });
-//
-//            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error putting image to S3"));
-//        });
-//    });
-//});
-//
-//
-//
-//describe("sqsHandler", function () {
-//
-//    describe("sqsHandler._sendMessage success call", function () {
-//        var testedModule, callbackSpy, object, sqsStub;
-//
-//        before(function () {
-//
-//            callbackSpy = sinon.spy();
-//
-//            sqsStub = sinon.stub();
-//
-//            object = {
-//                "event": "image_rs.resizer",
-//                "message": {
-//                    "url": "blablabla",
-//                    "size": ["thumb", "small", "medium"]
-//                }
-//            };
-//
-//            object = JSON.stringify(object);
-//
-//            testedModule = proxyquire("../sqsHandler.js", {
-//                'aws-sdk': {
-//                    'SQS': function () {
-//                        return {
-//                            sendMessage: sqsStub
-//                        }
-//                    }
-//                }
-//            });
-//        });
-//
-//        it("return response", function () {
-//            sqsStub.callsArgWith(1, null, "Sent");
-//            testedModule._sendMessage(object, function (error, data) {
-//                callbackSpy.apply(null, arguments);
-//            });
-//
-//            expect(callbackSpy).has.been.called.and.calledWith(null, "Sent");
-//        });
-//    });
-//
-//    describe("sqsHandler._sendMessage with error", function () {
-//        var testedModule, callbackSpy, sqsStub, object;
-//
-//        before(function () {
-//
-//            callbackSpy = sinon.spy();
-//
-//            sqsStub = sinon.stub();
-//
-//            object = {
-//                "event": "image_rs.resizer",
-//                "message": {
-//                    "url": "blablabla",
-//                    "size": ["thumb", "small", "medium"]
-//                }
-//            };
-//
-//            object = JSON.stringify(object);
-//
-//            testedModule = proxyquire("../sqsHandler.js", {
-//                'aws-sdk': {
-//                    'SQS': function () {
-//                        return {
-//                            sendMessage: sqsStub
-//                        }
-//                    }
-//                }
-//            });
-//        });
-//
-//        it("triggers an error when sending message", function () {
-//            sqsStub.callsArgWith(1, new Error("Error sending message!"), null);
-//            testedModule._sendMessage(object, function (error, data) {
-//                callbackSpy.apply(null, arguments);
-//            });
-//
-//            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error sending message!"), null);
-//        });
-//    });
-//});
-//
-//
-//
-//describe("objectCreator", function () {
-//    var testedModule, fakeObj, fakePath;
-//
-//    before(function () {
-//
-//        fakeObj = [
-//            { width: 800, height: 800, name: 'large' },
-//            { width: 500, height: 500, name: 'medium' },
-//            { width: 200, height: 200, name: 'small' },
-//            { width: 45, height: 45, name: 'thumbnail'}
-//        ];
-//
-//        fakePath = "S3://bucketname/images/908798";
-//
-//        testedModule = require("../objectCreator.js");
-//    });
-//
-//    it("returns a newly formed object", function () {
-//        var result = testedModule.creator(fakePath, fakeObj);
-//        expect(result).to.be.ok;
-//        expect(result).contains("message");
-//        expect(result).contains("S3://bucketname/images/908798");
-//        expect(result).contains('{"event":"image_rs.re-sized","message":{"url":"S3://bucketname/images/908798","sizes":["large","medium","small","thumbnail"]}}');
-//    });
-//});
-//
-//
-//
+describe("getProtocol", function () {
+    var testedModule, parseSpy, _url;
+
+
+    before(function () {
+
+        _url = "http://www.some.com/test";
+
+        parseSpy = sinon.spy(url, 'parse');
+
+        testedModule = require('../getProtocol.js');
+    });
+
+    after(function () {
+        url.parse.restore();
+    });
+
+    it("calls url.parse", function () {
+        testedModule.getProtocol(_url);
+        expect(parseSpy).has.been.calledOnce.and.calledWithExactly(_url, true);
+    });
+});
+
+
+
+describe("resizer when data has property 'Body'", function () {
+    var testedModule, dir, sizesObj, imgName, writeStub250, callbackSpy, resizeStub, gmSubClassStub, fakeResponse;
+
+    before(function () {
+
+        dir = "/tmp/";
+
+        fakeResponse = {Body: "test.png"};
+
+        sizesObj = {name: "thumb", width: 250, height: 250};
+
+        imgName = "test.png";
+
+        writeStub250 = sinon.stub();
+
+        resizeStub = sinon.stub();
+
+        gmSubClassStub = sinon.stub();
+
+        callbackSpy = sinon.spy();
+
+        testedModule = proxyquire('../resizer.js', {
+            'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
+        });
+
+    });
+
+    it("resize image and write to path", function () {
+
+        resizeStub.withArgs(250, 250).returns({write:writeStub250});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
+            callbackSpy.apply(null, arguments);
+        });
+
+        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb_test.png");
+    });
+
+    it("calls callbackSpy", function () {
+        writeStub250.callsArgWith(1, null);
+
+        resizeStub.withArgs(250, 250).returns({write:writeStub250});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
+            callbackSpy.apply(null, arguments);
+        });
+
+        expect(callbackSpy).has.been.called;
+    });
+});
+
+describe("resizer when data is path", function () {
+    var testedModule, dir, sizesObj, imgName, writeStub250, callbackSpy, resizeStub, gmSubClassStub, fakeResponse;
+
+    before(function () {
+
+        dir = "/tmp/";
+
+        fakeResponse = "test.png";
+
+        sizesObj = {name: "thumb", width: 250, height: 250};
+
+        imgName = "test.png";
+
+        writeStub250 = sinon.stub();
+
+        resizeStub = sinon.stub();
+
+        gmSubClassStub = sinon.stub();
+
+        callbackSpy = sinon.spy();
+
+        testedModule = proxyquire('../resizer.js', {
+            'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
+        });
+
+    });
+
+    it("resize image and write to path", function () {
+
+        resizeStub.withArgs(250, 250).returns({write:writeStub250});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
+            callbackSpy.apply(null, arguments);
+        });
+
+        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb_test.png");
+    });
+
+    it("calls callbackSpy", function () {
+        writeStub250.callsArgWith(1, null);
+
+        resizeStub.withArgs(250, 250).returns({write:writeStub250});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
+            callbackSpy.apply(null, arguments);
+        });
+
+        expect(callbackSpy).has.been.called;
+    });
+});
+
+
+
+describe("resizer with error", function () {
+    var testedModule, dir, sizesObj, imgName, writeStub250, callbackSpy, resizeStub, gmSubClassStub, fakeResponse;
+
+    before(function () {
+
+        dir = "/tmp/";
+
+        fakeResponse = {Body: "test.png"};
+
+        sizesObj = {width: 250, height: 250};
+
+        imgName = "test.png";
+
+        writeStub250 = sinon.stub();
+
+        resizeStub = sinon.stub();
+
+        gmSubClassStub = sinon.stub();
+
+        callbackSpy = sinon.spy();
+
+        testedModule = proxyquire('../resizer.js', {
+            'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
+        });
+
+    });
+
+    it("resizes image and call error on write", function () {
+
+        writeStub250.withArgs("/tmp/undefined_test.png").yields(new Error("Error resizing"));
+
+        resizeStub.withArgs(250).returns({write:writeStub250});
+
+        // Stub is used when you just want to simulate a returned value
+        gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
+
+        // Act - this calls the tested method
+        testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
+            callbackSpy.apply(null, arguments);
+        });
+
+        // Assert
+        expect(resizeStub).has.been.called;
+        expect(writeStub250).contains(new Error("Error resizing"));
+        expect(callbackSpy).has.been.called.and.calledWith(new Error("Error resizing"));
+    });
+});
+
+
+
+describe("readDirectory _getFiles._get", function () {
+    describe("_get success call", function () {
+        var testedModule, callbackSpy, readFileStub;
+
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = require('../readDirectory.js');
+
+            mockDir({
+                tmp: {
+                    images: {
+                        "thumb_test.txt": "thumbnail pic",
+                        "small_test.txt": "small pic",
+                        "medium_test.txt": "medium pic"
+                    }
+                }
+            });
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("returns list of files", function (done) {
+            testedModule._get("tmp/images/", function (error, files) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium_test.txt", "small_test.txt", "thumb_test.txt"]);
+                done();
+            });
+        });
+    });
+
+    describe("_get error call", function () {
+        var testedModule, callbackSpy, readFileStub;
+
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = proxyquire('../readDirectory.js', {
+                "fs": {
+                    "readdir": readFileStub
+                }
+            });
+
+            mockDir({
+                tmp: {
+                    images: {
+                        "thumb_test.txt": "thumbnail pic",
+                        "small_test.txt": "small pic",
+                        "medium_test.txt": "medium pic"
+                    }
+                }
+            });
+
+            readFileStub.callsArgWith(1, new Error("Error reading directory!"), null);
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("returns error", function () {
+            testedModule._get("tmp/images/", function (error, files) {
+                callbackSpy.apply(null, arguments);
+            });
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading directory!"), null);
+        });
+    });
+});
+
+
+
+describe("readDirectory _getFiles._getContent", function () {
+    describe("_getContent success call", function () {
+        var testedModule, callbackSpy, readFileStub;
+
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = require('../readDirectory.js');
+
+            mockDir({
+                "images" : {
+                    "thumb_test.png": new Buffer([1,2,3])
+                }
+            });
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("reads content of file", function (done) {
+            testedModule._getContent("thumb_test.png", "images/", function (error, data) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
+                done();
+            });
+
+        });
+    });
+
+    describe("_getContent error call", function () {
+        var testedModule, callbackSpy, readFileStub;
+
+        before(function () {
+
+            readFileStub = sinon.stub();
+
+            callbackSpy = sinon.spy();
+
+            testedModule = proxyquire('../readDirectory.js', {
+                "fs": {
+                    "readFile": readFileStub
+                }
+            });
+
+            mockDir({
+                "images" : {
+                    "thumb_test.png": new Buffer([1,2,3])
+                }
+            });
+
+            readFileStub.callsArgWith(1, new Error("Error reading file!"), null);
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("returns error", function () {
+            testedModule._getContent("thumb_test.png", "images/", function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading file!"),null);
+        });
+    });
+});
+
+
+
+describe("S3Handler", function () {
+    describe("S3Handler._get", function () {
+        var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse;
+
+        before(function () {
+
+            fakeResponse = {Body: "Image content"};
+
+            imgName = "test.jpg";
+
+            bucketName = "testBucket";
+
+            callbackSpy = sinon.spy();
+
+            getStub = sinon.stub();
+
+            testedModule = proxyquire("../S3Handler.js", {
+                'aws-sdk': {
+                    "S3": function () {
+                        return {
+                            getObject: getStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("fetch object from S3Bucket", function () {
+            getStub.callsArgWith(1, null, fakeResponse);
+            testedModule._get(bucketName, imgName, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(null, fakeResponse);
+        });
+
+        it("fetch object from S3Bucket triggers error", function () {
+            getStub.callsArgWith(1, new Error("Error fetching image!"), null);
+            testedModule._get(bucketName, imgName, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error fetching image!"), null);
+        });
+    });
+
+    describe("S3Handler._put", function () {
+        var testedModule, imgName, imgType, content, data, bucketName, sizesObj, putStub, callbackSpy, fileName;
+
+        before(function () {
+
+            imgName = "test.png";
+
+            imgType = "png";
+
+            fileName = "large_test.png";
+
+            content = new Buffer([1,2,3]);
+
+            bucketName = "testBucket";
+
+            callbackSpy = sinon.spy();
+
+            data = {
+                "Expiration": "12-12-2016"
+            };
+
+            putStub = sinon.stub();
+
+            testedModule = proxyquire("../S3Handler.js", {
+                'aws-sdk': {
+                    "S3": function () {
+                        return {
+                            putObject: putStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("put object to S3Bucket", function () {
+            putStub.callsArgWith(1, null, data);
+            testedModule._put(bucketName, content, fileName, imgName, imgType, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(null, data);
+        });
+
+        it("put object triggers error", function () {
+            putStub.callsArgWith(1, new Error("Error putting image to S3"), null);
+            testedModule._put(bucketName, content, fileName, imgName, imgType, function () {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error putting image to S3"));
+        });
+    });
+});
+
+
+
+describe("sqsHandler", function () {
+
+    describe("sqsHandler._sendMessage success call", function () {
+        var testedModule, callbackSpy, object, sqsStub;
+
+        before(function () {
+
+            callbackSpy = sinon.spy();
+
+            sqsStub = sinon.stub();
+
+            object = {
+                "event": "image_rs.resizer",
+                "message": {
+                    "url": "blablabla",
+                    "size": ["thumb", "small", "medium"]
+                }
+            };
+
+            object = JSON.stringify(object);
+
+            testedModule = proxyquire("../sqsHandler.js", {
+                'aws-sdk': {
+                    'SQS': function () {
+                        return {
+                            sendMessage: sqsStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("return response", function () {
+            sqsStub.callsArgWith(1, null, "Sent");
+            testedModule._sendMessage(object, function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(null, "Sent");
+        });
+    });
+
+    describe("sqsHandler._sendMessage with error", function () {
+        var testedModule, callbackSpy, sqsStub, object;
+
+        before(function () {
+
+            callbackSpy = sinon.spy();
+
+            sqsStub = sinon.stub();
+
+            object = {
+                "event": "image_rs.resizer",
+                "message": {
+                    "url": "blablabla",
+                    "size": ["thumb", "small", "medium"]
+                }
+            };
+
+            object = JSON.stringify(object);
+
+            testedModule = proxyquire("../sqsHandler.js", {
+                'aws-sdk': {
+                    'SQS': function () {
+                        return {
+                            sendMessage: sqsStub
+                        }
+                    }
+                }
+            });
+        });
+
+        it("triggers an error when sending message", function () {
+            sqsStub.callsArgWith(1, new Error("Error sending message!"), null);
+            testedModule._sendMessage(object, function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+
+            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error sending message!"), null);
+        });
+    });
+});
+
+
+
+describe("objectCreator", function () {
+    var testedModule, fakeObj, fakePath;
+
+    before(function () {
+
+        fakeObj = [
+            { width: 800, height: 800, name: 'large' },
+            { width: 500, height: 500, name: 'medium' },
+            { width: 200, height: 200, name: 'small' },
+            { width: 45, height: 45, name: 'thumbnail'}
+        ];
+
+        fakePath = "S3://bucketname/images/908798";
+
+        testedModule = require("../objectCreator.js");
+    });
+
+    it("returns a newly formed object", function () {
+        var result = testedModule.creator(fakePath, fakeObj);
+        expect(result).to.be.ok;
+        expect(result).contains("message");
+        expect(result).contains("S3://bucketname/images/908798");
+        expect(result).contains('{"event":"image_rs.re-sized","message":{"url":"S3://bucketname/images/908798","sizes":["large","medium","small","thumbnail"]}}');
+    });
+});
+
+describe("makeDir", function () {
+    describe("creates directory", function () {
+        var testedModule, fakeObj, fakePath, callbackSpy;
+
+        before(function () {
+            fakeObj = { width: 800, height: 800, name: 'large' };
+
+            fakePath = "documents/"
+
+            callbackSpy = sinon.spy();
+
+            testedModule = require("../makeDir.js");
+
+            mockDir({
+                "documents" : {}
+            });
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it('create new directory', function (done) {
+            testedModule.handler(fakePath, fakeObj, function (err, made) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.calledOnce.and.calledWith(null, made);
+                done();
+            });
+        });
+    });
+
+    describe("directory already exists", function () {
+        var testedModule, fakeObj, fakePath, callbackSpy;
+
+        before(function () {
+            fakeObj = { width: 800, height: 800, name: 'large' };
+
+            fakePath = "documents/"
+
+            callbackSpy = sinon.spy();
+
+            testedModule = require("../makeDir.js");
+
+            mockDir({
+                "documents" : {
+                    "large": { }
+                }
+            });
+        });
+
+        after(function () {
+            mockDir.restore();
+        });
+
+        it("calls callback with null", function (done) {
+            testedModule.handler(fakePath, fakeObj, function (err, stats) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.calledOnce.and.calledWithExactly(null);
+                done();
+            });
+        });
+    });
+
+    describe("calls callback with error when creating directory", function () {
+        var testedModule, fakeObj, fakePath, callbackSpy, fsStub, mkdirpStub;
+
+        before(function () {
+            fakeObj = { width: 800, height: 800, name: 'large' };
+
+            fakePath = new Buffer([1,2,3]);
+
+            callbackSpy = sinon.spy();
+
+            fsStub = sinon.stub();
+
+            mkdirpStub = sinon.stub();
+
+            testedModule = proxyquire('../makeDir', {
+                fs: {
+                    lstat: fsStub
+                },
+                mkdirp: mkdirpStub
+            });
+
+        });
+
+        it("triggers error when creating a new directory", function (done) {
+
+            mkdirpStub.callsArgWith(1, new Error("Error creating directory"), null);
+
+            fsStub.callsArgWith(1, new Error("Error"), null);
+
+            testedModule.handler(fakePath, fakeObj, function (err, made) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWithExactly(new Error("Error creating directory"), null);
+                done();
+            });
+
+        });
+    });
+});
+
+describe("writeFiles", function () {
+
+    describe("writes file to directory", function () {
+        var testedModule, callbackSpy, fileName, dstFolder, data, imgType;
+
+        before(function () {
+            callbackSpy = sinon.spy();
+
+            fileName = "large_diavel.png";
+
+            dstFolder = "images/";
+
+            imgType = "png";
+
+            data = new Buffer([1,2,3]);
+
+            testedModule = require("../writeFiles.js");
+
+            mockDir({
+                "images" : {
+                    "large": { }
+                }
+            });
+
+        });
+
+        after(function ()  {
+            mockDir.restore();
+        });
+
+        it("writes files to directory", function (done) {
+            testedModule._write(fileName, dstFolder, data, imgType, function(err) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWithExactly();
+                done();
+            });
+        });
+    });
+
+    describe("calls callback with error when writing file", function () {
+        var testedModule, callbackSpy, fileName, dstFolder, data, imgType, fsStub;
+
+        before(function () {
+            callbackSpy = sinon.spy();
+
+            fileName = "large_diavel.png";
+
+            dstFolder = "images/";
+
+            imgType = "png";
+
+            data = new Buffer([1,2,3]);
+
+            fsStub = sinon.stub();
+
+            testedModule = proxyquire('../writeFiles', {
+                fs: {
+                    writeFile: fsStub
+                }
+            });
+
+        });
+
+        it("calls callback with error", function (done) {
+
+            fsStub.callsArgWith(2, new Error("Error writing to directory."));
+
+            testedModule._write(fileName, dstFolder, data, imgType, function(err) {
+                callbackSpy.apply(null, arguments);
+                expect(callbackSpy).has.been.called.and.calledWith(new Error("Error writing to directory."), null);
+                done();
+            });
+        });
+    });
+});
+
+
 //describe("S3resizer", function () {
 //    var testedModule, fakeResponse, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsCreateStub, sqsSendStub, cbSpy, imgName, bucketName, sizesObj, imageType, obj;
 //
@@ -865,20 +1105,19 @@ var mockDir = require('mock-fs');
 //
 //        fakeFiles = ["thumbnail_Whatever", "small_Whatever", "medium_Whatever", "large_Whatever"];
 //
-//        testedModule = proxyquire ("../S3resizer.js", {
-//            "../S3Handler.js" : {
+//        testedModule = proxyquire ('../S3resizer', {
+//            '../S3Handler.js' : {
 //                _get: S3getStub,
 //                _put: S3putStub
 //            },
-//            "../readDirectory.js": {
+//            '../readDirectory.js': {
 //                _get: readDirFileStub,
 //                _getContent: readDirContStub
 //            },
-//            "../resizer.js": {
+//            '../resizer.js': {
 //                resize: rsStub
 //            },
-//            "../sqsHandler.js": {
-//                _createQueue: sqsCreateStub,
+//            '../sqsHandler.js': {
 //                _sendMessage: sqsSendStub
 //            }
 //        });
