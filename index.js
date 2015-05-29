@@ -33,7 +33,7 @@ exports.imageRs = function (event, context) {
     var _protocol = parts.protocol;
 
     // RegExp to check for image type
-    var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg)$/;
+    var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
 
     var sizesConfigs = configs.sizes;
 
