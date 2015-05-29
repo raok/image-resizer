@@ -17,8 +17,10 @@ makeDir.handler = function (dstPath, sizesObj, callback) {
         if (err) {
             mkdirp(_path, function (err, made) {
                 if (err) {
+                    console.log("Error creating directory: %s", err);
                     callback (err, null);
                 } else {
+                    console.log("Created new directory");
                     callback(null, made);
                 }
             });

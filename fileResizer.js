@@ -19,6 +19,8 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback
     var tmpDir = tmp.dirSync(); //object
     var tmpDirName = tmpDir.name + "/"; //path to directory
 
+    console.log(tmpDirName);
+
     async.series([
         function resizeImage (next) {
             async.eachSeries(sizesObj, function (sizesObj, mapNext) {

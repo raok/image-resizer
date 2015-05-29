@@ -33,7 +33,7 @@ exports.imageRs = function (event, context) {
     var _protocol = parts.protocol;
 
     // RegExp to check for image type
-    var imageTypeRegExp = /(?:(jpg)e?|(png))$/;
+    var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg)$/;
 
     var sizesConfigs = configs.sizes;
 
@@ -83,7 +83,7 @@ exports.imageRs = function (event, context) {
                 }
             ], function (error, result) {
                 if(error) {
-                    console.error("Error processing image with path 'file'");
+                    console.error("Error processing image with path 'file': %s", error);
                 } else {
                     console.log("Image processed without errors for 'file' path");
                 }

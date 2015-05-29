@@ -19,10 +19,13 @@ resizer.resize = function (data, imgName, directory, sizesObj, callback) {
         _data = data;
     }
 
+    console.log(_data);
+
     gm(_data)
         .resize(sizesObj.width, sizesObj.height)
-        .write(directory + sizesObj.name + "_" + imgName, function (err) {
+        .write(directory + sizesObj.name + "-" + imgName, function (err) {
             if (err) {
+                console.log("There was an error while resizing the image: %s", err);
                 callback(err);
                 return;
             }

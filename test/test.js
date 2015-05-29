@@ -385,7 +385,7 @@ describe("resizer when data has property 'Body'", function () {
             callbackSpy.apply(null, arguments);
         });
 
-        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb_test.png");
+        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb-test.png");
     });
 
     it("calls callbackSpy", function () {
@@ -444,7 +444,7 @@ describe("resizer when data is path", function () {
             callbackSpy.apply(null, arguments);
         });
 
-        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb_test.png");
+        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb-test.png");
     });
 
     it("calls callbackSpy", function () {
@@ -495,7 +495,7 @@ describe("resizer with error", function () {
 
     it("resizes image and call error on write", function () {
 
-        writeStub250.withArgs("/tmp/undefined_test.png").yields(new Error("Error resizing"));
+        writeStub250.withArgs("/tmp/undefined-test.png").yields(new Error("Error resizing"));
 
         resizeStub.withArgs(250).returns({write:writeStub250});
 
@@ -531,9 +531,9 @@ describe("readDirectory _getFiles._get", function () {
             mockDir({
                 tmp: {
                     images: {
-                        "thumb_test.txt": "thumbnail pic",
-                        "small_test.txt": "small pic",
-                        "medium_test.txt": "medium pic"
+                        "thumb-test.txt": "thumbnail pic",
+                        "small-test.txt": "small pic",
+                        "medium-test.txt": "medium pic"
                     }
                 }
             });
@@ -546,7 +546,7 @@ describe("readDirectory _getFiles._get", function () {
         it("returns list of files", function (done) {
             testedModule._get("tmp/images/", function (error, files) {
                 callbackSpy.apply(null, arguments);
-                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium_test.txt", "small_test.txt", "thumb_test.txt"]);
+                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium-test.txt", "small-test.txt", "thumb-test.txt"]);
                 done();
             });
         });
@@ -570,9 +570,9 @@ describe("readDirectory _getFiles._get", function () {
             mockDir({
                 tmp: {
                     images: {
-                        "thumb_test.txt": "thumbnail pic",
-                        "small_test.txt": "small pic",
-                        "medium_test.txt": "medium pic"
+                        "thumb-test.txt": "thumbnail pic",
+                        "small-test.txt": "small pic",
+                        "medium-test.txt": "medium pic"
                     }
                 }
             });
@@ -609,7 +609,7 @@ describe("readDirectory _getFiles._getContent", function () {
 
             mockDir({
                 "images" : {
-                    "thumb_test.png": new Buffer([1,2,3])
+                    "thumb-test.png": new Buffer([1,2,3])
                 }
             });
         });
@@ -619,7 +619,7 @@ describe("readDirectory _getFiles._getContent", function () {
         });
 
         it("reads content of file", function (done) {
-            testedModule._getContent("thumb_test.png", "images/", function (error, data) {
+            testedModule._getContent("thumb-test.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
                 expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
                 done();
@@ -657,7 +657,7 @@ describe("readDirectory _getFiles._getContent", function () {
         });
 
         it("returns error", function () {
-            testedModule._getContent("thumb_test.png", "images/", function (error, data) {
+            testedModule._getContent("thumb-test.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
             });
             expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading file!"),null);
@@ -722,7 +722,7 @@ describe("S3Handler", function () {
 
             imgType = "png";
 
-            fileName = "large_test.png";
+            fileName = "large-test.png";
 
             content = new Buffer([1,2,3]);
 
@@ -990,7 +990,7 @@ describe("writeFiles", function () {
         before(function () {
             callbackSpy = sinon.spy();
 
-            fileName = "large_diavel.png";
+            fileName = "large-diavel.png";
 
             dstFolder = "images/";
 
@@ -1027,7 +1027,7 @@ describe("writeFiles", function () {
         before(function () {
             callbackSpy = sinon.spy();
 
-            fileName = "large_diavel.png";
+            fileName = "large-diavel.png";
 
             dstFolder = "images/";
 
