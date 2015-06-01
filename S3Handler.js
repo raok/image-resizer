@@ -2,6 +2,18 @@
  * Created by mario on 12/05/15.
  */
 
+/**
+ * @_get - function that retrieves the contents of the object specified by params 'imgName' and 'bucketName' from an aws S3 bucket.
+ * @_put - function that writes the contents of the data passed in corresponding to params 'fileName' to an aws S3 bucket.
+ * @params bucketName type string - name of S3 bucket from which we want to get the desired object or to which we want to write to.
+ * @params imgName type string - name of file before image manipulation. This is the object we want to manipulate.
+ * @params content type buffer - actual content of target file. It is the data that will be saved to the S3 bucket.
+ * @params imageType type string - type of image being saved (e.g 'png;, 'jpg', 'jpeg').
+ * @params fileName type string - complete name of image after resizing ('large-0_02348923.jpg').
+ * @var _sizeName - name of folder where we will store files according to size.
+ * @property Key in var params - This is the full path with file name of the file being saved or read from the S3 bucket.
+ */
+
 'use strict';
 
 var s3 = new (require('aws-sdk')).S3();
@@ -25,11 +37,15 @@ S3Handler._get = function (bucketName, imgName, callback) {
 
 S3Handler._put = function (bucketName, content, fileName, imgName, imageType, callback) {
 
-    var _fileName = fileName.split("_").shift();
+    console.log(fileName);
+
+    var _sizeName = fileName.split("-").shift();
+
+    console.log("Filename after manipulation: %s", _sizeName);
 
     var params = {
         Bucket: bucketName,
-        Key: "images/" + _fileName + "/" + imgName,
+        Key: "images/" + _sizeName + "/" + imgName,
         Body: content,
         ContentType: 'image/' + imageType
     };

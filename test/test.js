@@ -985,7 +985,7 @@ describe("makeDir", function () {
 describe("writeFiles", function () {
 
     describe("writes file to directory", function () {
-        var testedModule, callbackSpy, fileName, dstFolder, data, imgType;
+        var testedModule, callbackSpy, fileName, dstFolder, data;
 
         before(function () {
             callbackSpy = sinon.spy();
@@ -993,8 +993,6 @@ describe("writeFiles", function () {
             fileName = "large-diavel.png";
 
             dstFolder = "images/";
-
-            imgType = "png";
 
             data = new Buffer([1,2,3]);
 
@@ -1013,7 +1011,7 @@ describe("writeFiles", function () {
         });
 
         it("writes files to directory", function (done) {
-            testedModule._write(fileName, dstFolder, data, imgType, function(err) {
+            testedModule._write(fileName, dstFolder, data, function(err) {
                 callbackSpy.apply(null, arguments);
                 expect(callbackSpy).has.been.called.and.calledWithExactly();
                 done();
@@ -1022,7 +1020,7 @@ describe("writeFiles", function () {
     });
 
     describe("calls callback with error when writing file", function () {
-        var testedModule, callbackSpy, fileName, dstFolder, data, imgType, fsStub;
+        var testedModule, callbackSpy, fileName, dstFolder, data, fsStub;
 
         before(function () {
             callbackSpy = sinon.spy();
@@ -1030,9 +1028,6 @@ describe("writeFiles", function () {
             fileName = "large-diavel.png";
 
             dstFolder = "images/";
-
-            imgType = "png";
-
             data = new Buffer([1,2,3]);
 
             fsStub = sinon.stub();
@@ -1049,7 +1044,7 @@ describe("writeFiles", function () {
 
             fsStub.callsArgWith(2, new Error("Error writing to directory."));
 
-            testedModule._write(fileName, dstFolder, data, imgType, function(err) {
+            testedModule._write(fileName, dstFolder, data, function(err) {
                 callbackSpy.apply(null, arguments);
                 expect(callbackSpy).has.been.called.and.calledWith(new Error("Error writing to directory."), null);
                 done();

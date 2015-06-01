@@ -2,6 +2,13 @@
  * Created by mario on 27/05/15.
  */
 
+/**
+ * @handler - this function checks for the existence of a directory and creates that directory if it does not exist. If the directory already exists, it simply triggers its callback.
+ * @params dstPath type string - the path which we wish to check its existence.
+ * @params sizesObj type array of objects - the object containing a list of sizes to check against.
+ * @var _path - the full path (original path + sizes) to check against.
+ */
+
 'use strict';
 
 var fs = require('fs');

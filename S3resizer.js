@@ -2,6 +2,20 @@
  * Created by mario on 22/05/15.
  */
 
+/**
+ * This function is called when the protocol defined in index.js is "s3:".
+ * @async.series - is used when we want to call a list of functions in a series, the next being called only once the previous has finished running.
+ * @async.waterfall - is used like 'async.series' but passed the results form the first function to the next second.
+ * @async.eachSeries - applies the function to each item in the array in series. the iterator functions will end in order.
+ * @fs type function - This function calls a list of functions using the methods 'series', 'waterfall', 'eachSeries' and 'series' from the 'async' module.
+ * @params imgName type string - the original name of the file to be manipulated.
+ * @params bucketName type string - the name of the S3 bucket that will be used.
+ * @params sizesObj type array of objects - the object containing the list of sizes we wish to resize our object too.
+ * @params imageType type string - the type of image.
+ * @params obj type object - the object being sent in the sqs message to the sqs queue.
+ * @var dir - is set to '/tmp/' as this is the path to the temporary directory on aws lambda where this function will run.
+ */
+
 'use strict';
 
 var async = require('async');

@@ -26,6 +26,8 @@ exports.imageRs = function (event, context) {
 
     var imgName = parts.pathname.split("/").pop();
 
+    console.log("imgName: %s", imgName);
+
     var s3Bucket = parts.hostname;
 
     var s3Key = imgName;
@@ -37,7 +39,7 @@ exports.imageRs = function (event, context) {
 
     var sizesConfigs = configs.sizes;
 
-    var obj = createObj(_path, sizesConfigs);
+    var obj = createObj(_path);
 
     // Check if file has a supported image extension
     var imgExt = imageTypeRegExp.exec(s3Key);

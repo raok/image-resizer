@@ -3,7 +3,11 @@
  */
 
 /**
- * directory - will always need to end at the images folder: /tmp/images
+ * @_get - function that reads the directory specified by param 'path' and returns a list of file names
+ * @_getContent - function that returns the content of the file passed as param 'file'
+ * @params path type string - path to directory where target files are stored
+ * @params file type string - name of file of which we want content
+ * @params dir type string - path of directory where the target file is stored. Must end with '/'.
  */
 'use strict';
 

@@ -2,10 +2,23 @@
  * Created by mario on 25/05/15.
  */
 
+/**
+ * This function is called when the protocol defined in index.js is "file:".
+ * @rs type function - This function calls a list of functions using the methods 'series', 'waterfall', 'eachSeries' and 'series' from the 'async' module.
+ * @params data type string - for this function this is the path to the file being resized.
+ * @params imgName type string - the name of the image being resized.
+ * @params _dir type string - the destination path to where the resized images will be written.
+ * @params sizesObj type array of objects - array of objects containing the properties 'sizes', 'height' and 'width'.
+ * @params obj type object - the object being sent in the sqs message to the sqs queue.
+ * @params imgtype tupe string - the type of image.
+ * @var tmpDir type object - the object representing the temporary directory.
+ * @var tmpdDirName type string - the path of the temporary directory.
+ */
+
 'use strict';
 
 var async = require('async');
-var rs = require("./resizer.js").resize;
+var resizer = require("./resizer.js").resize;
 var sqsSend = require("./sqsHandler.js")._sendMessage;
 var readDirFile = require("./readDirectory.js")._get;
 var readDirCont = require("./readDirectory.js")._getContent;
@@ -24,7 +37,7 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback
     async.series([
         function resizeImage (next) {
             async.eachSeries(sizesObj, function (sizesObj, mapNext) {
-                rs(data, imgName, tmpDirName, sizesObj, mapNext);
+                resizer(data, imgName, tmpDirName, sizesObj, mapNext);
             }, function (err) {
                 if (err) {
                     next(err);
