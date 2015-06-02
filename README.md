@@ -11,9 +11,11 @@ To do this run `sudo apt-get install imagemagick`
 
 2 next you will have to set-up the `aws cli` to send sqs messages to amazon's SQS.
 Run the following commands or follow this [guideline](http://docs.aws.amazon.com/cli/latest/userguide/installing.html):
-    + $ curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-    + $ unzip awscli-bundle.zip
-    + $ ./awscli-bundle/install -b ~/bin/aws
+
+    - $ curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+    - $ unzip awscli-bundle.zip
+    - $ ./awscli-bundle/install -b ~/bin/aws
+    
 Once you have `aws cli` installed you will need to set it up. If you don't have an ID and secret access key, [get one](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html).
 If you already have an ID and secret key, follow [this](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
@@ -39,15 +41,17 @@ listeners:
 ```
 
 7 next its time to run the app. To do this:
-    + in the command line type `node /path/to/app/index.js file:///source/path/to/target/image.png /destination/path/for/resized/images/`
-    + note that the destination path ends with `/`
-    + if the destination folder does not exist, the app will generate it for you before resizing the images.
+
+    - in the command line type `node /path/to/app/index.js file:///source/path/to/target/image.png /destination/path/for/resized/images/`
+    - note that the destination path ends with `/`
+    - if the destination folder does not exist, the app will generate it for you before resizing the images.
 
 ### How to get it running on AWS Lambda
 
 1 Change the following properties of the parameters.yml file:
-    + imageStoreAdapter: to hevnlys3
-    + and image_bucket to the bucket you want to use
+
+    - imageStoreAdapter: to hevnlys3
+    - and image_bucket to the bucket you want to use
     
 2 Make sure you have a `lambda` function uploaded to lambda with the same name as the function defined in your `conf.yml` file.
     
