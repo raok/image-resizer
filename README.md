@@ -52,7 +52,8 @@ listeners:
 2 Make sure you have a `lambda` function uploaded to lambda with the same name as the function defined in your `conf.yml` file.
     
 3 Change you conf.yml file again to look like this:
-    ```javascript
+
+```javascript
     sources:
       - type: http
         port: 8000
@@ -62,7 +63,7 @@ listeners:
           region: eu-west-1
           function: Imager
           message: ${message}
-    ```
+```
     
 4 Go into the directory where you have `eevy` installed. This should be `/var/www/hevnly.dev` and run `./eevy`.
 
