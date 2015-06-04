@@ -1,3 +1,5 @@
+"use strict";
+
 require('blanket')({
     pattern: function (filename) {
         return !/node_modules/.test(filename);
@@ -12,7 +14,7 @@ var expect = chai.expect;
 var extend = require('lodash').extend;
 var sinon = require('sinon');
 chai.use(sinonChai);
-var proxyquire = require('proxyquire');
+var proxyquire = require('proxyquire').noCallThru();
 var url = require('url');
 var mockDir = require('mock-fs');
 
@@ -367,7 +369,7 @@ describe("resizer when data has property 'Body'", function () {
 
         callbackSpy = sinon.spy();
 
-        testedModule = proxyquire('../resizer.js', {
+        testedModule = proxyquire('../resizer', {
             'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
         });
 
@@ -426,7 +428,7 @@ describe("resizer when data is path", function () {
 
         callbackSpy = sinon.spy();
 
-        testedModule = proxyquire('../resizer.js', {
+        testedModule = proxyquire('../resizer', {
             'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
         });
 
@@ -487,7 +489,7 @@ describe("resizer with error", function () {
 
         callbackSpy = sinon.spy();
 
-        testedModule = proxyquire('../resizer.js', {
+        testedModule = proxyquire('../resizer', {
             'gm': {subClass: sinon.stub().returns(gmSubClassStub)}
         });
 
@@ -561,7 +563,7 @@ describe("readDirectory _getFiles._get", function () {
 
             callbackSpy = sinon.spy();
 
-            testedModule = proxyquire('../readDirectory.js', {
+            testedModule = proxyquire('../readDirectory', {
                 "fs": {
                     "readdir": readFileStub
                 }
@@ -637,7 +639,7 @@ describe("readDirectory _getFiles._getContent", function () {
 
             callbackSpy = sinon.spy();
 
-            testedModule = proxyquire('../readDirectory.js', {
+            testedModule = proxyquire('../readDirectory', {
                 "fs": {
                     "readFile": readFileStub
                 }
@@ -669,11 +671,11 @@ describe("readDirectory _getFiles._getContent", function () {
 
 describe("S3Handler", function () {
     describe("S3Handler._get", function () {
-        var testedModule, imgName, callbackSpy, bucketName, getStub, fakeResponse;
+        var testedModule, imgName, callbackSpy, bucketName, getStub, putStub, fakeResponse;
 
         before(function () {
 
-            fakeResponse = {Body: "Image content"};
+            fakeResponse = {Body: "Body Content"};
 
             imgName = "test.jpg";
 
@@ -683,11 +685,14 @@ describe("S3Handler", function () {
 
             getStub = sinon.stub();
 
-            testedModule = proxyquire("../S3Handler.js", {
+            putStub = sinon.stub();
+
+            testedModule = proxyquire("../S3Handler", {
                 'aws-sdk': {
                     "S3": function () {
                         return {
-                            getObject: getStub
+                            getObject: getStub,
+                            putObject: putStub
                         }
                     }
                 }
@@ -714,7 +719,7 @@ describe("S3Handler", function () {
     });
 
     describe("S3Handler._put", function () {
-        var testedModule, imgName, imgType, content, data, bucketName, sizesObj, putStub, callbackSpy, fileName;
+        var testedModule, imgName, imgType, content, data, bucketName, getStub, putStub, callbackSpy, fileName;
 
         before(function () {
 
@@ -736,10 +741,13 @@ describe("S3Handler", function () {
 
             putStub = sinon.stub();
 
-            testedModule = proxyquire("../S3Handler.js", {
+            getStub = sinon.stub();
+
+            testedModule = proxyquire("../S3Handler", {
                 'aws-sdk': {
                     "S3": function () {
                         return {
+                            getObject: getStub,
                             putObject: putStub
                         }
                     }
@@ -790,7 +798,7 @@ describe("sqsHandler", function () {
 
             object = JSON.stringify(object);
 
-            testedModule = proxyquire("../sqsHandler.js", {
+            testedModule = proxyquire("../sqsHandler", {
                 'aws-sdk': {
                     'SQS': function () {
                         return {
@@ -830,7 +838,7 @@ describe("sqsHandler", function () {
 
             object = JSON.stringify(object);
 
-            testedModule = proxyquire("../sqsHandler.js", {
+            testedModule = proxyquire("../sqsHandler", {
                 'aws-sdk': {
                     'SQS': function () {
                         return {
@@ -1054,78 +1062,138 @@ describe("writeFiles", function () {
 });
 
 
-//describe("S3resizer", function () {
-//    var testedModule, fakeResponse, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsCreateStub, sqsSendStub, cbSpy, imgName, bucketName, sizesObj, imageType, obj;
-//
-//    before(function () {
-//
-//        S3getStub = sinon.stub();
-//
-//        rsStub = sinon.stub();
-//
-//        readDirContStub = sinon.stub();
-//
-//        readDirFileStub = sinon.stub();
-//
-//        S3putStub = sinon.stub();
-//
-//        sqsCreateStub = sinon.stub();
-//
-//        sqsSendStub = sinon.stub();
-//
-//        cbSpy = sinon.spy();
-//
-//        imgName = "Whatever";
-//
-//        bucketName = "Chappie";
-//
-//        sizesObj = [
-//            { width: 800, height: 800, name: 'large' },
-//            { width: 500, height: 500, name: 'medium' },
-//            { width: 200, height: 200, name: 'small' },
-//            { width: 45, height: 45, name: 'thumbnail'}
-//        ];
-//
-//        imageType = "png";
-//
-//        obj = {
-//            "event":"image_rs.re-sized",
-//            "message": {
-//                "url":"S3://bucketname/images/908798",
-//                "sizes":["large","medium","small","thumbnail"]
-//            }
-//        };
-//
-//        fakeResponse = { Body: 'image content' };
-//
-//        fakeFiles = ["thumbnail_Whatever", "small_Whatever", "medium_Whatever", "large_Whatever"];
-//
-//        testedModule = proxyquire ('../S3resizer', {
-//            '../S3Handler.js' : {
-//                _get: S3getStub,
-//                _put: S3putStub
-//            },
-//            '../readDirectory.js': {
-//                _get: readDirFileStub,
-//                _getContent: readDirContStub
-//            },
-//            '../resizer.js': {
-//                resize: rsStub
-//            },
-//            '../sqsHandler.js': {
-//                _sendMessage: sqsSendStub
-//            }
-//        });
-//    });
-//
-//    it("calls context.done", function (done) {
-//        S3getStub.callsArgWith(2, null, fakeResponse, imgName);
-//        readDirFileStub.callsArgWith(1, null, fakeFiles);
-//
-//        testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
-//            cbSpy.apply(null, arguments);
-//            expect(cbSpy).has.been.called.and.calledWith("Done");
-//            done();
-//        });
-//    });
-//});
+describe("S3resizer succesfull call", function () {
+
+    // To avoid having to refactor code with a global override of the require method and using the cached versions from previous tests, freshly require the modules and inject in stubs.
+    var S3 = require("../S3Handler");
+    var read = require("../readDirectory");
+    var _resizer= require("../resizer");
+    var _sqs = require("../sqsHandler");
+
+    var testedModule, fakeResponse, fakePutMessage, fakeSqsMessage, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsSendStub, cbSpy, callbSpy, imgName, bucketName, sizesObj, imageType, obj;
+
+    before(function () {
+
+        S3getStub = sinon.stub(S3, "_get");
+
+        rsStub = sinon.stub(_resizer, "resize");
+
+        readDirContStub = sinon.stub(read, "_getContent");
+
+        readDirFileStub = sinon.stub(read, "_get");
+
+        S3putStub = sinon.stub(S3, "_put");
+
+        sqsSendStub = sinon.stub(_sqs, "_sendMessage");
+
+        cbSpy = sinon.spy();
+
+        callbSpy = sinon.spy();
+
+        testedModule = proxyquire('../S3resizer', {
+            './S3Handler': {
+                _get: S3getStub,
+                _put: S3putStub
+            },
+            './readDirectory': {
+                _get: readDirFileStub,
+                _getContent: readDirContStub
+            },
+            './resizer': {
+                resize: rsStub
+            },
+            './sqsHandler': {
+                _sendMessage: sqsSendStub
+            }
+        });
+
+        imgName = "Whatever";
+
+        bucketName = "Chappie";
+
+        sizesObj = [
+            { width: 800, height: 800, name: 'large' },
+            { width: 500, height: 500, name: 'medium' },
+            { width: 200, height: 200, name: 'small' },
+            { width: 45, height: 45, name: 'thumbnail'}
+        ];
+
+        imageType = "png";
+
+        obj = {
+            "event":"re-sized",
+            "message": {
+                "url":"S3://bucketname/images/908798",
+                "sizes":["large","medium","small","thumbnail"]
+            }
+        };
+
+        fakeResponse = {Body: 'image content'};
+
+        fakePutMessage = {messageId: "1223abc"};
+
+        fakeSqsMessage = {BinaryValue: "123"};
+
+        fakeFiles = ["thumbnail-Whatever", "small-Whatever", "medium-Whatever", "large-Whatever"];
+
+        S3getStub.callsArgWith(2, null, fakeResponse);
+
+        rsStub.callsArgWith(4, null);
+
+        readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+        readDirContStub.callsArgWith(2, null, fakeResponse);
+
+        S3putStub.callsArgWith(5, null, fakePutMessage);
+
+        sqsSendStub.callsArgWith(1, null, fakeSqsMessage);
+
+        testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+            cbSpy.apply(null, arguments);
+        });
+    });
+
+    after(function () {
+        S3._get.restore();
+        _resizer.resize.restore();
+        read._getContent.restore();
+        read._get.restore();
+        S3._put.restore();
+        _sqs._sendMessage.restore();
+    });
+
+    it("fetches image from S3 and resizes to sizesObject sizes", function () {
+        expect(S3getStub).has.been.called.and.calledWith("Chappie", "Whatever");
+        expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 800, height: 800, name: 'large' });
+        expect(rsStub).has.been.callCount(sizesObj.length);
+    });
+
+    it("reads files names from directory", function () {
+        expect(readDirFileStub).has.been.called.and.calledWith("/tmp/");
+    });
+
+    it("reads content from files", function() {
+        expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[0], "/tmp/");
+        expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[1], "/tmp/");
+        expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[2], "/tmp/");
+        expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[3], "/tmp/");
+        expect(readDirContStub).has.been.callCount(fakeFiles.length);
+    });
+
+    it("puts object to S3", function () {
+        expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[0], imgName, imageType);
+        expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[1], imgName, imageType);
+        expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[2], imgName, imageType);
+        expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[3], imgName, imageType);
+        expect(S3putStub).has.been.callCount(fakeFiles.length);
+    });
+
+    it("sends sqs message", function () {
+        expect(sqsSendStub).has.been.called.and.calledWith(obj);
+    });
+
+    it("calls final callback", function () {
+        expect(cbSpy).has.been.called.and.calledWith(null);
+        expect(sqsSendStub).has.been.calledOnce;
+    });
+});

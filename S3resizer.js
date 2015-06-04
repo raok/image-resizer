@@ -19,12 +19,16 @@
 'use strict';
 
 var async = require('async');
-var S3get = require("./S3Handler.js")._get;
-var S3put = require("./S3Handler.js")._put;
-var readDirFile = require("./readDirectory.js")._get;
-var readDirCont = require("./readDirectory.js")._getContent;
-var rs = require("./resizer.js").resize;
-var sqsSend = require("./sqsHandler.js")._sendMessage;
+var S3 = require("./S3Handler");
+var S3get = S3._get;
+var S3put = S3._put;
+var read = require("./readDirectory");
+var readDirFile = read._get;
+var readDirCont = read._getContent;
+var _resizer= require("./resizer");
+var rs = _resizer.resize;
+var _sqs = require("./sqsHandler");
+var sqsSend = _sqs._sendMessage;
 
 var S3resizer = {};
 

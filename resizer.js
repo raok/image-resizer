@@ -28,8 +28,6 @@ resizer.resize = function (data, imgName, directory, sizesObj, callback) {
         _data = data;
     }
 
-    console.log(_data);
-
     gm(_data)
         .resize(sizesObj.width, sizesObj.height)
         .write(directory + sizesObj.name + "-" + imgName, function (err) {
@@ -38,7 +36,7 @@ resizer.resize = function (data, imgName, directory, sizesObj, callback) {
                 callback(err);
                 return;
             }
-            console.log("Wrote to '%s' directory, with size name '%s' and image name '%s'", directory, sizesObj.name, imgName);
+            console.log("Wrote to '%s'/'%s'/'%s'", directory, sizesObj.name, imgName);
             callback();
         });
 

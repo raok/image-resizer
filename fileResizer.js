@@ -18,11 +18,11 @@
 'use strict';
 
 var async = require('async');
-var resizer = require("./resizer.js").resize;
-var sqsSend = require("./sqsHandler.js")._sendMessage;
-var readDirFile = require("./readDirectory.js")._get;
-var readDirCont = require("./readDirectory.js")._getContent;
-var fileWrite = require("./writeFiles.js")._write;
+var resizer = require("./resizer").resize;
+var sqsSend = require("./sqsHandler")._sendMessage;
+var readDirFile = require("./readDirectory")._get;
+var readDirCont = require("./readDirectory")._getContent;
+var fileWrite = require("./writeFiles")._write;
 var tmp = require('tmp');
 
 var fileResizer = {};

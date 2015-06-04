@@ -29,8 +29,10 @@ S3Handler._get = function (bucketName, imgName, callback) {
 
     s3.getObject(params, function (error, data) {
         if (error) {
+            console.log("Error, %s", error);
             callback(error, null);
         }
+        console.log(data);
         callback(null, data);
     });
 };
@@ -40,8 +42,6 @@ S3Handler._put = function (bucketName, content, fileName, imgName, imageType, ca
     console.log(fileName);
 
     var _sizeName = fileName.split("-").shift();
-
-    console.log("Filename after manipulation: %s", _sizeName);
 
     var params = {
         Bucket: bucketName,

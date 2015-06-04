@@ -7,12 +7,12 @@
 
 var _ = require("underscore");
 var async = require('async');
-var _getprotocol = require("./getProtocol.js").getProtocol;
-var s3resizer = require("./S3resizer.js").rs;
-var createObj = require("./objectCreator.js").creator;
-var fileResizer = require("./fileResizer.js").rs;
+var _getprotocol = require("./getProtocol").getProtocol;
+var s3resizer = require("./S3resizer").rs;
+var createObj = require("./objectCreator").creator;
+var fileResizer = require("./fileResizer").rs;
 var configs = require("./configs.json");
-var makeDir = require("./makeDir.js").handler;
+var makeDir = require("./makeDir").handler;
 
 
 
