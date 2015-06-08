@@ -30,22 +30,18 @@ var makeDir = mkDir.handler;
 
 exports.imageRs = function (event, context) {
 
-    var _path = null;
+    var _path = argv.s || event.path;
 
     console.log(argv._[0]);
     console.log(event);
 
-    if (argv._[0] === "test") {
-        _path = event.path;
-    }
-
-    if( argv ) {
-        console.log("Here");
-        _path = argv.s;
-    } else {
-        console.log("There");
-        _path = event.path;
-    }
+    //if( argv ) {
+    //    console.log("Here");
+    //    _path = argv.s;
+    //} else {
+    //    console.log("There");
+    //    _path = event.path;
+    //}
 
     console.log("Path, %s", _path);
 
