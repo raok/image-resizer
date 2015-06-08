@@ -11,316 +11,12 @@ require('blanket')({
 var chai = require('chai');
 var sinonChai = require("sinon-chai");
 var expect = chai.expect;
-var extend = require('lodash').extend;
+//var extend = require('lodash').extend;
 var sinon = require('sinon');
 chai.use(sinonChai);
 var proxyquire = require('proxyquire').noCallThru();
 var url = require('url');
 var mockDir = require('mock-fs');
-
-
-
-//describe('AwsHandler', function () {
-//    var expect = chai.expect;
-//    var sizesConfigs = [
-//        { width: 800, size: 'large' },
-//        { width: 500, size: 'medium' },
-//        { width: 200, size: 'small' },
-//        { width: 45, size: 'thumbnail'}
-//    ];
-//    var baseEvent = {
-//        "Records": [
-//            { "s3": {
-//                "bucket": { "name": "testbucket" },
-//                "object": { "key": null }
-//            }
-//            }
-//        ]
-//    };
-//
-//    describe('reject to process non recognised image file extensions', function () {
-//        var event, gmSpy, getObjectSpy, putObjectSpy, contextDoneSpy, testedModule;
-//
-//        before(function () {
-//            event = extend({}, baseEvent);
-//            event.Records[0].s3.object.key = "no-supported.gif";
-//            gmSpy = sinon.spy();
-//            getObjectSpy = sinon.spy();
-//            putObjectSpy = sinon.spy();
-//            contextDoneSpy = sinon.spy();
-//            testedModule = getTestedModule(gmSpy, getObjectSpy, putObjectSpy);
-//            testedModule.AwsHandler(event, { done: contextDoneSpy });
-//        });
-//
-//        it('never call s3 getObject', function () {
-//            expect(getObjectSpy).has.not.been.called;
-//        });
-//        it('never call graphics magick', function () {
-//            expect(gmSpy).has.not.been.called;
-//        });
-//        it('never call s3 putObject', function () {
-//            expect(putObjectSpy).has.not.been.called;
-//        });
-//        it('call context done with error', function () {
-//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(new Error());
-//        });
-//    });
-//
-//    describe('process the image when the it has jpg extension', function () {
-//        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
-//
-//        before(function (done) {
-//            fakeResponse = { Body: 'image content' };
-//            event = extend({}, baseEvent);
-//            event.Records[0].s3.object.key = "image.jpg";
-//
-//            gmStubs = getGmStubs();
-//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-//            putObjectStub = sinon.stub().callsArgWith(1, null);
-//            contextDoneSpy = sinon.spy();
-//
-//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
-//            testedModule.AwsHandler(event, { done: function () {
-//                contextDoneSpy.apply(null, arguments);
-//                done();
-//            }});
-//        });
-//
-//        it('call s3 getObject', function () {
-//            expect(getObjectStub).has.been.calledOnce;
-//            expect(getObjectStub).has.been.calledWith({
-//                Bucket: event.Records[0].s3.bucket.name,
-//                Key: event.Records[0].s3.object.key
-//            });
-//        });
-//
-//        it('call graphics magick', function () {
-//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(gmStubs.resize).has.been.calledWith(s.width);
-//                expect(gmStubs.toBuffer).has.been.calledWith('jpg');
-//            });
-//        });
-//
-//        it('call s3 putObject', function () {
-//            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(putObjectStub).has.been.calledWith({
-//                    Bucket: event.Records[0].s3.bucket.name,
-//                    Key: s.size + '_' + event.Records[0].s3.object.key,
-//                    Body: 'data',
-//                    ContentType: 'image/jpg'
-//                });
-//            });
-//        });
-//
-//        it('call context done with no error', function () {
-//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
-//        });
-//    });
-//
-//    describe('process the image when the it has jpge extension', function () {
-//        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
-//
-//        before(function (done) {
-//            fakeResponse = { Body: 'image content' };
-//            event = extend({}, baseEvent);
-//            event.Records[0].s3.object.key = "image.jpge";
-//
-//            gmStubs = getGmStubs();
-//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-//            putObjectStub = sinon.stub().callsArgWith(1, null);
-//            contextDoneSpy = sinon.spy();
-//
-//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
-//            testedModule.AwsHandler(event, { done: function () {
-//                contextDoneSpy.apply(null, arguments);
-//                done();
-//            }});
-//        });
-//
-//        it('call s3 getObject', function () {
-//            expect(getObjectStub).has.been.calledOnce;
-//            expect(getObjectStub).has.been.calledWith({
-//                Bucket: event.Records[0].s3.bucket.name,
-//                Key: event.Records[0].s3.object.key
-//            });
-//        });
-//
-//        it('call graphics magick', function () {
-//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(gmStubs.resize).has.been.calledWith(s.width);
-//                expect(gmStubs.toBuffer).has.been.calledWith('jpg');
-//            });
-//        });
-//
-//        it('call s3 putObject', function () {
-//            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(putObjectStub).has.been.calledWith({
-//                    Bucket: event.Records[0].s3.bucket.name,
-//                    Key: s.size + '_' + event.Records[0].s3.object.key,
-//                    Body: 'data',
-//                    ContentType: 'image/jpg'
-//                });
-//            });
-//        });
-//
-//        it('call context done with no error', function () {
-//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
-//        });
-//    });
-//
-//    describe('process the image when the it has png extension', function () {
-//        var event, gmStubs, getObjectStub, putObjectStub, contextDoneSpy, testedModule, fakeResponse;
-//
-//        before(function (done) {
-//            fakeResponse = { Body: 'image content' };
-//            event = extend({}, baseEvent);
-//            event.Records[0].s3.object.key = "image.png";
-//
-//            gmStubs = getGmStubs();
-//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-//            putObjectStub = sinon.stub().callsArgWith(1, null);
-//            contextDoneSpy = sinon.spy();
-//
-//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectStub);
-//            testedModule.AwsHandler(event, { done: function () {
-//                contextDoneSpy.apply(null, arguments);
-//                done();
-//            }});
-//        });
-//
-//        it('call s3 getObject', function () {
-//            expect(getObjectStub).has.been.calledOnce;
-//            expect(getObjectStub).has.been.calledWith({
-//                Bucket: event.Records[0].s3.bucket.name,
-//                Key: event.Records[0].s3.object.key
-//            });
-//        });
-//
-//        it('call graphics magick', function () {
-//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(gmStubs.resize).has.been.calledWith(s.width);
-//                expect(gmStubs.toBuffer).has.been.calledWith('png');
-//            });
-//        });
-//
-//        it('call s3 putObject', function () {
-//            expect(putObjectStub).has.been.callCount(sizesConfigs.length);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(putObjectStub).has.been.calledWith({
-//                    Bucket: event.Records[0].s3.bucket.name,
-//                    Key: s.size + '_' + event.Records[0].s3.object.key,
-//                    Body: 'data',
-//                    ContentType: 'image/png'
-//                });
-//            });
-//        });
-//
-//        it('call context done with no error', function () {
-//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(null);
-//        });
-//    });
-//
-//    describe('process the image but image magick fails', function () {
-//        var event, gmStubs, getObjectStub, putObjectSpy, contextDoneSpy, testedModule, fakeResponse;
-//
-//        before(function (done) {
-//            fakeResponse = { Body: 'image content' };
-//            event = extend({}, baseEvent);
-//            event.Records[0].s3.object.key = "image.png";
-//
-//            var toBufferStub = sinon.stub().callsArgWith(1, new Error('Image resize failed'));
-//            gmStubs = getGmStubs(toBufferStub);
-//            getObjectStub = sinon.stub().callsArgWith(1, null, fakeResponse);
-//            putObjectSpy = sinon.spy();
-//            contextDoneSpy = sinon.spy();
-//
-//            testedModule = getTestedModule(gmStubs.gm, getObjectStub, putObjectSpy);
-//            testedModule.AwsHandler(event, { done: function () {
-//                contextDoneSpy.apply(null, arguments);
-//                done();
-//            }});
-//        });
-//
-//        it('call s3 getObject', function () {
-//            expect(getObjectStub).has.been.calledOnce;
-//            expect(getObjectStub).has.been.calledWith({
-//                Bucket: event.Records[0].s3.bucket.name,
-//                Key: event.Records[0].s3.object.key
-//            });
-//        });
-//
-//        it('call graphics magick', function () {
-//            expect(gmStubs.gm).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.resize).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.toBuffer).has.been.callCount(sizesConfigs.length);
-//            expect(gmStubs.gm).always.has.been.calledWith(fakeResponse.Body, event.Records[0].s3.object.key);
-//
-//            sizesConfigs.forEach(function(s) {
-//                expect(gmStubs.resize).has.been.calledWith(s.width);
-//                expect(gmStubs.toBuffer).has.been.calledWith('png');
-//            });
-//        });
-//
-//        it('never call s3 putObject', function () {
-//            expect(putObjectSpy).has.been.not.called;
-//        });
-//
-//        it('call context done with no error', function () {
-//            expect(contextDoneSpy).has.been.calledOnce.and.calledWith(new Error('Image resize failed'));
-//        });
-//    });
-//});
-//
-//function getGmStubs(toBuffer) {
-//    var toBuffer = toBuffer || sinon.stub().callsArgWith(1, null, 'data')
-//    var resize = sinon.stub().returns({ toBuffer: toBuffer });
-//    var gm = sinon.stub().returns({ resize: resize });
-//
-//    return {
-//        gm: gm,
-//        resize: resize,
-//        toBuffer: toBuffer
-//    };
-//}
-//
-//function getTestedModule(gm, getObject, putObject) {
-//    return proxyquire('../index.js', {
-//        'gm': { subClass: function() { return gm; } },
-//        'aws-sdk': {
-//            "S3": function () {
-//                return {
-//                    getObject: getObject,
-//                    putObject: putObject
-//                };
-//            }
-//        }
-//    });
-//}
-
-
-
-
-
 
 
 describe("getProtocol", function () {
@@ -329,7 +25,7 @@ describe("getProtocol", function () {
 
     before(function () {
 
-        _url = "http://www.some.com/test";
+        _url = "http://www.some.com/image.jpeg";
 
         parseSpy = sinon.spy(url, 'parse');
 
@@ -355,11 +51,11 @@ describe("resizer when data has property 'Body'", function () {
 
         dir = "/tmp/";
 
-        fakeResponse = {Body: "test.png"};
+        fakeResponse = {Body: "rstest.png"};
 
         sizesObj = {name: "thumb", width: 250, height: 250};
 
-        imgName = "test.png";
+        imgName = "rstest.png";
 
         writeStub250 = sinon.stub();
 
@@ -379,15 +75,13 @@ describe("resizer when data has property 'Body'", function () {
 
         resizeStub.withArgs(250, 250).returns({write:writeStub250});
 
-        // Stub is used when you just want to simulate a returned value
         gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
 
-        // Act - this calls the tested method
         testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
             callbackSpy.apply(null, arguments);
         });
 
-        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb-test.png");
+        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb-rstest.png");
     });
 
     it("calls callbackSpy", function () {
@@ -395,10 +89,8 @@ describe("resizer when data has property 'Body'", function () {
 
         resizeStub.withArgs(250, 250).returns({write:writeStub250});
 
-        // Stub is used when you just want to simulate a returned value
         gmSubClassStub.withArgs(imgName).returns({resize:resizeStub});
 
-        // Act - this calls the tested method
         testedModule.resize(fakeResponse, imgName, dir, sizesObj, function (err) {
             callbackSpy.apply(null, arguments);
         });
@@ -414,11 +106,11 @@ describe("resizer when data is path", function () {
 
         dir = "/tmp/";
 
-        fakeResponse = "test.png";
+        fakeResponse = "rstest.png";
 
         sizesObj = {name: "thumb", width: 250, height: 250};
 
-        imgName = "test.png";
+        imgName = "rstest.png";
 
         writeStub250 = sinon.stub();
 
@@ -446,7 +138,7 @@ describe("resizer when data is path", function () {
             callbackSpy.apply(null, arguments);
         });
 
-        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb-test.png");
+        expect(writeStub250).has.been.called.and.calledWith("/tmp/thumb-rstest.png");
     });
 
     it("calls callbackSpy", function () {
@@ -475,11 +167,11 @@ describe("resizer with error", function () {
 
         dir = "/tmp/";
 
-        fakeResponse = {Body: "test.png"};
+        fakeResponse = {Body: "rstest.png"};
 
         sizesObj = {width: 250, height: 250};
 
-        imgName = "test.png";
+        imgName = "rstest.png";
 
         writeStub250 = sinon.stub();
 
@@ -497,7 +189,7 @@ describe("resizer with error", function () {
 
     it("resizes image and call error on write", function () {
 
-        writeStub250.withArgs("/tmp/undefined-test.png").yields(new Error("Error resizing"));
+        writeStub250.withArgs("/tmp/undefined-rstest.png").yields(new Error("Error resizing"));
 
         resizeStub.withArgs(250).returns({write:writeStub250});
 
@@ -533,9 +225,9 @@ describe("readDirectory _getFiles._get", function () {
             mockDir({
                 tmp: {
                     images: {
-                        "thumb-test.txt": "thumbnail pic",
-                        "small-test.txt": "small pic",
-                        "medium-test.txt": "medium pic"
+                        "thumb-dirtest.txt": "thumbnail pic",
+                        "small-dirtest.txt": "small pic",
+                        "medium-dirtest.txt": "medium pic"
                     }
                 }
             });
@@ -548,7 +240,7 @@ describe("readDirectory _getFiles._get", function () {
         it("returns list of files", function (done) {
             testedModule._get("tmp/images/", function (error, files) {
                 callbackSpy.apply(null, arguments);
-                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium-test.txt", "small-test.txt", "thumb-test.txt"]);
+                expect(callbackSpy).has.been.called.and.calledWith(null, ["medium-dirtest.txt", "small-dirtest.txt", "thumb-dirtest.txt"]);
                 done();
             });
         });
@@ -572,9 +264,9 @@ describe("readDirectory _getFiles._get", function () {
             mockDir({
                 tmp: {
                     images: {
-                        "thumb-test.txt": "thumbnail pic",
-                        "small-test.txt": "small pic",
-                        "medium-test.txt": "medium pic"
+                        "thumb-dirtest.txt": "thumbnail pic",
+                        "small-dirtest.txt": "small pic",
+                        "medium-dirtest.txt": "medium pic"
                     }
                 }
             });
@@ -611,7 +303,7 @@ describe("readDirectory _getFiles._getContent", function () {
 
             mockDir({
                 "images" : {
-                    "thumb-test.png": new Buffer([1,2,3])
+                    "thumb-Dirtest.png": new Buffer([1,2,3])
                 }
             });
         });
@@ -621,7 +313,7 @@ describe("readDirectory _getFiles._getContent", function () {
         });
 
         it("reads content of file", function (done) {
-            testedModule._getContent("thumb-test.png", "images/", function (error, data) {
+            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
                 expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
                 done();
@@ -647,7 +339,7 @@ describe("readDirectory _getFiles._getContent", function () {
 
             mockDir({
                 "images" : {
-                    "thumb_test.png": new Buffer([1,2,3])
+                    "thumb_Dirtest.png": new Buffer([1,2,3])
                 }
             });
 
@@ -659,7 +351,7 @@ describe("readDirectory _getFiles._getContent", function () {
         });
 
         it("returns error", function () {
-            testedModule._getContent("thumb-test.png", "images/", function (error, data) {
+            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
             });
             expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading file!"),null);
@@ -677,7 +369,7 @@ describe("S3Handler", function () {
 
             fakeResponse = {Body: "Body Content"};
 
-            imgName = "test.jpg";
+            imgName = "S3test.jpg";
 
             bucketName = "testBucket";
 
@@ -723,11 +415,11 @@ describe("S3Handler", function () {
 
         before(function () {
 
-            imgName = "test.png";
+            imgName = "S3test.png";
 
             imgType = "png";
 
-            fileName = "large-test.png";
+            fileName = "large-S3test.png";
 
             content = new Buffer([1,2,3]);
 
@@ -1070,7 +762,7 @@ describe("S3resizer succesfull call", function () {
     var _resizer= require("../resizer");
     var _sqs = require("../sqsHandler");
 
-    var testedModule, fakeResponse, fakePutMessage, fakeSqsMessage, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsSendStub, cbSpy, callbSpy, imgName, bucketName, sizesObj, imageType, obj;
+    var testedModule, fakeResponse, fakePutMessage, fakeSqsMessage, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsSendStub, cbSpy, imgName, bucketName, sizesObj, imageType, obj;
 
     before(function () {
 
@@ -1087,8 +779,6 @@ describe("S3resizer succesfull call", function () {
         sqsSendStub = sinon.stub(_sqs, "_sendMessage");
 
         cbSpy = sinon.spy();
-
-        callbSpy = sinon.spy();
 
         testedModule = proxyquire('../S3resizer', {
             './S3Handler': {
@@ -1190,10 +880,692 @@ describe("S3resizer succesfull call", function () {
 
     it("sends sqs message", function () {
         expect(sqsSendStub).has.been.called.and.calledWith(obj);
+        expect(sqsSendStub).has.been.calledOnce;
     });
 
     it("calls final callback", function () {
         expect(cbSpy).has.been.called.and.calledWith(null);
-        expect(sqsSendStub).has.been.calledOnce;
+        expect(cbSpy).has.been.calledOnce;
     });
 });
+
+describe("S3resizer error calls", function () {
+    // To avoid having to refactor code with a global override of the require method and using the cached versions from previous tests, freshly require the modules and inject in stubs.
+    var S3 = require("../S3Handler");
+    var read = require("../readDirectory");
+    var _resizer= require("../resizer");
+    var _sqs = require("../sqsHandler");
+
+    var testedModule, fakeResponse, fakePutMessage, fakeSqsMessage, fakeFiles, S3getStub, rsStub, readDirFileStub, readDirContStub, S3putStub, sqsSendStub, cbSpy, imgName, bucketName, sizesObj, imageType, obj;
+
+    before(function () {
+        S3getStub = sinon.stub(S3, "_get");
+
+        rsStub = sinon.stub(_resizer, "resize");
+
+        readDirContStub = sinon.stub(read, "_getContent");
+
+        readDirFileStub = sinon.stub(read, "_get");
+
+        S3putStub = sinon.stub(S3, "_put");
+
+        sqsSendStub = sinon.stub(_sqs, "_sendMessage");
+
+        cbSpy = sinon.spy();
+
+        testedModule = proxyquire('../S3resizer', {
+            './S3Handler': {
+                _get: S3getStub,
+                _put: S3putStub
+            },
+            './readDirectory': {
+                _get: readDirFileStub,
+                _getContent: readDirContStub
+            },
+            './resizer': {
+                resize: rsStub
+            },
+            './sqsHandler': {
+                _sendMessage: sqsSendStub
+            }
+        });
+
+        imgName = "Whatever";
+
+        bucketName = "Chappie";
+
+        sizesObj = [
+            { width: 800, height: 800, name: 'large' },
+            { width: 500, height: 500, name: 'medium' },
+            { width: 200, height: 200, name: 'small' },
+            { width: 45, height: 45, name: 'thumbnail'}
+        ];
+
+        imageType = "png";
+
+        obj = {
+            "event":"re-sized",
+            "message": {
+                "url":"S3://bucketname/images/908798",
+                "sizes":["large","medium","small","thumbnail"]
+            }
+        };
+
+        fakeResponse = {Body: 'image content'};
+
+        fakePutMessage = {messageId: "1223abc"};
+
+        fakeSqsMessage = {BinaryValue: "123"};
+
+        fakeFiles = ["thumbnail-Whatever", "small-Whatever", "medium-Whatever", "large-Whatever"];
+
+    });
+
+    after(function () {
+        S3._get.restore();
+        _resizer.resize.restore();
+        read._getContent.restore();
+        read._get.restore();
+        S3._put.restore();
+        _sqs._sendMessage.restore();
+    });
+
+    describe("Error with S3get", function () {
+        before(function () {
+            S3getStub.callsArgWith(2, new Error("Error fetching image from S3."), null);
+
+            testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        it("S3get error when fetching image", function () {
+            expect(cbSpy).has.been.called.and.calledWith(new Error("Error fetching image from S3."));
+            expect(rsStub).has.not.been.called;
+            expect(readDirFileStub).has.not.been.called;
+            expect(readDirContStub).has.not.been.called;
+            expect(S3putStub).has.not.been.called;
+            expect(sqsSendStub).has.not.been.called;
+        });
+    });
+
+    describe("Error with resizer", function () {
+        before(function () {
+            S3getStub.callsArgWith(2, null, fakeResponse);
+
+            rsStub.callsArgWith(4, new Error("Error resizing image."));
+
+            testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        it("Error with resizer function", function () {
+            expect(S3getStub).has.been.called.and.calledWith("Chappie", "Whatever");
+            expect(readDirFileStub).has.not.been.called;
+            expect(readDirContStub).has.not.been.called;
+            expect(S3putStub).has.not.been.called;
+            expect(sqsSendStub).has.not.been.called;
+            expect(cbSpy).has.been.called.and.calledWith(new Error("Error resizing image."));
+        });
+    });
+
+    describe("Error with readDir", function () {
+        before(function () {
+            S3getStub.callsArgWith(2, null, fakeResponse);
+
+            rsStub.callsArgWith(4, null);
+
+            readDirFileStub.callsArgWith(1, new Error("Error reading files from directory."), null);
+
+            testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        it("Error reading files from directory", function () {
+            expect(S3getStub).has.been.called.and.calledWith("Chappie", "Whatever");
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 800, height: 800, name: 'large' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 500, height: 500, name: 'medium' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 200, height: 200, name: 'small' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 45, height: 45, name: 'thumbnail' });
+            expect(readDirFileStub).has.been.called;
+            expect(readDirContStub).has.not.been.called;
+            expect(S3putStub).has.not.been.called;
+            expect(sqsSendStub).has.not.been.called;
+            expect(cbSpy).has.been.called.and.calledWith(new Error("Error reading files from directory."));
+        });
+    });
+
+    describe("Error with readDirCont", function () {
+        before(function () {
+            S3getStub.callsArgWith(2, null, fakeResponse);
+
+            rsStub.callsArgWith(4, null);
+
+            readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+            readDirContStub.callsArgWith(2, new Error("Error reading content from files."), null);
+
+            testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        it("Error reading content from files", function () {
+            expect(S3getStub).has.been.called.and.calledWith("Chappie", "Whatever");
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 800, height: 800, name: 'large' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 500, height: 500, name: 'medium' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 200, height: 200, name: 'small' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 45, height: 45, name: 'thumbnail' });
+            expect(readDirFileStub).has.been.called.and.calledWith("/tmp/");
+            expect(S3putStub).has.not.been.called;
+            expect(sqsSendStub).has.not.been.called;
+            expect(cbSpy).has.been.called.and.calledWith(new Error("Error reading content from files."));
+        });
+    });
+
+    describe("Error with S3put", function () {
+        before(function () {
+            S3getStub.callsArgWith(2, null, fakeResponse);
+
+            rsStub.callsArgWith(4, null);
+
+            readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+            readDirContStub.callsArgWith(2, null, fakeResponse);
+
+            S3putStub.callsArgWith(5, new Error("Error putting file to S3."), null);
+
+            testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        it("Error writing to S3 bucket", function () {
+            expect(S3getStub).has.been.called.and.calledWith("Chappie", "Whatever");
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 800, height: 800, name: 'large' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 500, height: 500, name: 'medium' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 200, height: 200, name: 'small' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 45, height: 45, name: 'thumbnail' });
+            expect(readDirFileStub).has.been.called.and.calledWith("/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[0], "/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[1], "/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[2], "/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[3], "/tmp/");
+            expect(readDirContStub).has.been.callCount(fakeFiles.length);
+            expect(S3putStub).has.been.called;
+            expect(sqsSendStub).has.not.been.called;
+            expect(cbSpy).has.been.called.and.calledWith(new Error("Error putting file to S3."));
+        });
+    });
+
+    describe("Error with sqsSend", function () {
+        before(function () {
+            S3getStub.callsArgWith(2, null, fakeResponse);
+
+            rsStub.callsArgWith(4, null);
+
+            readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+            readDirContStub.callsArgWith(2, null, fakeResponse);
+
+            S3putStub.callsArgWith(5, null, fakePutMessage);
+
+            sqsSendStub.callsArgWith(1, new Error("Error sending sqs message."), null);
+
+            testedModule.rs(imgName, bucketName, sizesObj, imageType, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        it("Error sending sqs message", function () {
+            expect(S3getStub).has.been.called.and.calledWith("Chappie", "Whatever");
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 800, height: 800, name: 'large' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 500, height: 500, name: 'medium' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 200, height: 200, name: 'small' });
+            expect(rsStub).has.been.called.and.calledWith(fakeResponse, "Whatever", "/tmp/", { width: 45, height: 45, name: 'thumbnail' });
+            expect(readDirFileStub).has.been.called.and.calledWith("/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[0], "/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[1], "/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[2], "/tmp/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[3], "/tmp/");
+            expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[0], imgName, imageType);
+            expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[1], imgName, imageType);
+            expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[2], imgName, imageType);
+            expect(S3putStub).has.been.called.and.calledWith(bucketName, null, fakeFiles[3], imgName, imageType);
+            expect(cbSpy).has.been.called.and.calledWith(new Error("Error sending sqs message."));
+        })
+    });
+});
+
+describe("fileResizer", function () {
+    describe("fileResizer success call", function () {
+        // To avoid having to refactor code with a global override of the require method and using the cached versions from previous tests, freshly require the modules and inject in stubs.
+        var read = require("../readDirectory");
+        var _resizer = require("../resizer");
+        var _sqs = require("../sqsHandler");
+        var _fileWrite = require("../writeFiles");
+        var tmp = require("tmp");
+
+        var testedModule, fakePath, fakeResponse, fakeTmpStub, fakeSqsMessage, fakeFiles, rsStub, readDirFileStub, readDirContStub, writeFileStub, sqsSendStub, cbSpy, imgName, fakeDstPath, sizesObj, imageType, obj;
+
+        before(function () {
+            writeFileStub = sinon.stub(_fileWrite, "_write");
+
+            rsStub = sinon.stub(_resizer, "resize");
+
+            readDirContStub = sinon.stub(read, "_getContent");
+
+            readDirFileStub = sinon.stub(read, "_get");
+
+            sqsSendStub = sinon.stub(_sqs, "_sendMessage");
+
+            fakeTmpStub = sinon.stub(tmp, "dirSync");
+
+            cbSpy = sinon.spy();
+
+            testedModule = proxyquire('../fileResizer', {
+                './writeFiles': {
+                    _write: writeFileStub
+                },
+                './readDirectory': {
+                    _get: readDirFileStub,
+                    _getContent: readDirContStub
+                },
+                './resizer': {
+                    resize: rsStub
+                },
+                './sqsHandler': {
+                    _sendMessage: sqsSendStub
+                },
+                'tmp': {
+                    'dirSync': fakeTmpStub
+                }
+            });
+
+            fakeTmpStub.returns({name: "/var/folders/tmp/4000fl"});
+
+            imgName = "Whatever";
+
+            fakePath = "path/to/image/Whatever.png";
+
+            fakeDstPath = "path/to/dst/";
+
+            sizesObj = [
+                { width: 800, height: 800, name: 'large' },
+                { width: 500, height: 500, name: 'medium' },
+                { width: 200, height: 200, name: 'small' },
+                { width: 45, height: 45, name: 'thumbnail'}
+            ];
+
+            imageType = "png";
+
+            obj = {
+                "event":"re-sized",
+                "message": {
+                    "url":"S3://bucketname/images/908798",
+                    "sizes":["large","medium","small","thumbnail"]
+                }
+            };
+
+            fakeResponse = {Body: 'image content'};
+
+            fakeSqsMessage = {BinaryValue: "123"};
+
+            fakeFiles = ["thumbnail-Whatever", "small-Whatever", "medium-Whatever", "large-Whatever"];
+
+            rsStub.callsArgWith(4, null);
+
+            readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+            readDirContStub.callsArgWith(2, null, fakeResponse);
+
+            writeFileStub.callsArgWith(3, null);
+
+            sqsSendStub.callsArgWith(1, null, fakeSqsMessage);
+
+            testedModule.rs(fakePath, imgName, fakeDstPath, sizesObj, obj, function () {
+                cbSpy.apply(null, arguments);
+            });
+        });
+
+        after(function () {
+            _fileWrite._write.restore();
+            _resizer.resize.restore();
+            read._getContent.restore();
+            read._get.restore();
+            _sqs._sendMessage.restore();
+            tmp.dirSync.restore();
+        });
+
+        it("resizes image", function () {
+            expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 800, height: 800, name: 'large' });
+            expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 500, height: 500, name: 'medium' });
+            expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 200, height: 200, name: 'small' });
+            expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 45, height: 45, name: 'thumbnail' });
+            expect(rsStub).has.been.callCount(sizesObj.length);
+        });
+
+        it("reads files from directory", function () {
+            expect(readDirFileStub).has.been.called.and.calledWith("/var/folders/tmp/4000fl/");
+        });
+
+        it("reads contents from files", function () {
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[0], "/var/folders/tmp/4000fl/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[1], "/var/folders/tmp/4000fl/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[2], "/var/folders/tmp/4000fl/");
+            expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[3], "/var/folders/tmp/4000fl/");
+            expect(readDirContStub).has.been.callCount(fakeFiles.length);
+        });
+
+        it("writes files to directory", function () {
+            expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[0], fakeDstPath, fakeResponse);
+            expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[1], fakeDstPath, fakeResponse);
+            expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[2], fakeDstPath, fakeResponse);
+            expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[3], fakeDstPath, fakeResponse);
+            expect(writeFileStub).has.been.callCount(fakeFiles.length);
+        });
+
+        it("sends sqs message", function () {
+            expect(sqsSendStub).has.been.called.and.calledWith(obj);
+            expect(sqsSendStub).has.been.calledOnce;
+        });
+
+        it("calls finall callback with no error", function () {
+            expect(cbSpy).has.been.called.and.calledWith();
+            expect(cbSpy).has.been.calledOnce;
+        });
+    });
+
+    describe("fileResizer with error calls", function () {
+        // To avoid having to refactor code with a global override of the require method and using the cached versions from previous tests, freshly require the modules and inject in stubs.
+        var read = require("../readDirectory");
+        var _resizer = require("../resizer");
+        var _sqs = require("../sqsHandler");
+        var _fileWrite = require("../writeFiles");
+        var tmp = require("tmp");
+
+        var testedModule, fakePath, fakeResponse, fakeTmpStub, fakeSqsMessage, fakeFiles, rsStub, readDirFileStub, readDirContStub, writeFileStub, sqsSendStub, cbSpy, imgName, fakeDstPath, sizesObj, imageType, obj;
+
+        before(function () {
+            writeFileStub = sinon.stub(_fileWrite, "_write");
+
+            rsStub = sinon.stub(_resizer, "resize");
+
+            readDirContStub = sinon.stub(read, "_getContent");
+
+            readDirFileStub = sinon.stub(read, "_get");
+
+            sqsSendStub = sinon.stub(_sqs, "_sendMessage");
+
+            fakeTmpStub = sinon.stub(tmp, "dirSync");
+
+            cbSpy = sinon.spy();
+
+            testedModule = proxyquire('../fileResizer', {
+                './writeFiles': {
+                    _write: writeFileStub
+                },
+                './readDirectory': {
+                    _get: readDirFileStub,
+                    _getContent: readDirContStub
+                },
+                './resizer': {
+                    resize: rsStub
+                },
+                './sqsHandler': {
+                    _sendMessage: sqsSendStub
+                },
+                'tmp': {
+                    'dirSync': fakeTmpStub
+                }
+            });
+
+            fakeTmpStub.returns({name: "/var/folders/tmp/4000fl"});
+
+            imgName = "Whatever";
+
+            fakePath = "path/to/image/Whatever.png";
+
+            fakeDstPath = "path/to/dst/";
+
+            sizesObj = [
+                {width: 800, height: 800, name: 'large'},
+                {width: 500, height: 500, name: 'medium'},
+                {width: 200, height: 200, name: 'small'},
+                {width: 45, height: 45, name: 'thumbnail'}
+            ];
+
+            imageType = "png";
+
+            obj = {
+                "event": "re-sized",
+                "message": {
+                    "url": "S3://bucketname/images/908798",
+                    "sizes": ["large", "medium", "small", "thumbnail"]
+                }
+            };
+
+            fakeResponse = {Body: 'image content'};
+
+            fakeSqsMessage = {BinaryValue: "123"};
+
+            fakeFiles = ["thumbnail-Whatever", "small-Whatever", "medium-Whatever", "large-Whatever"];
+        });
+
+        after(function () {
+            _fileWrite._write.restore();
+            _resizer.resize.restore();
+            read._getContent.restore();
+            read._get.restore();
+            _sqs._sendMessage.restore();
+            tmp.dirSync.restore();
+        });
+
+        describe("Error when resizing image", function () {
+            before(function () {
+                rsStub.callsArgWith(4, new Error("Error resizing image."));
+
+                testedModule.rs(fakePath, imgName, fakeDstPath, sizesObj, obj, function () {
+                    cbSpy.apply(null, arguments);
+                });
+            });
+
+            it("Error with resizer function", function () {
+                expect(readDirFileStub).has.not.been.called;
+                expect(readDirContStub).has.not.been.called;
+                expect(writeFileStub).has.not.been.called;
+                expect(sqsSendStub).has.not.been.called;
+                expect(cbSpy).has.been.called.and.calledWith(new Error("Error resizing image."));
+            });
+        });
+
+        describe("Error with readDir", function () {
+            before(function () {
+                rsStub.callsArgWith(4, null);
+
+                readDirFileStub.callsArgWith(1, new Error("Error reading files from directory."), null);
+
+                testedModule.rs(fakePath, imgName, fakeDstPath, sizesObj, obj, function () {
+                    cbSpy.apply(null, arguments);
+                });
+            });
+
+            it("Error reading files from directory", function () {
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 800, height: 800, name: 'large' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 500, height: 500, name: 'medium' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 200, height: 200, name: 'small' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 45, height: 45, name: 'thumbnail' });
+                expect(readDirFileStub).has.been.called;
+                expect(readDirContStub).has.not.been.called;
+                expect(writeFileStub).has.not.been.called;
+                expect(sqsSendStub).has.not.been.called;
+                expect(cbSpy).has.been.called.and.calledWith(new Error("Error reading files from directory."));
+            });
+        });
+
+        describe("Error with readDirCont", function () {
+            before(function () {
+                rsStub.callsArgWith(4, null);
+
+                readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+                readDirContStub.callsArgWith(2, new Error("Error reading content from file."), null);
+
+                testedModule.rs(fakePath, imgName, fakeDstPath, sizesObj, obj, function () {
+                    cbSpy.apply(null, arguments);
+                });
+            });
+
+            it("Error reading content from files", function () {
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 800, height: 800, name: 'large' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 500, height: 500, name: 'medium' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 200, height: 200, name: 'small' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 45, height: 45, name: 'thumbnail' });
+                expect(readDirFileStub).has.been.called.and.calledWith("/var/folders/tmp/4000fl/");
+                expect(writeFileStub).has.been.called;
+                expect(sqsSendStub).has.not.been.called;
+                expect(cbSpy).has.been.called.and.calledWith(new Error("Error reading content from file."));
+            });
+        });
+
+        describe("Error with writeFiles", function () {
+            before(function () {
+                rsStub.callsArgWith(4, null);
+
+                readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+                readDirContStub.callsArgWith(2, null, fakeResponse);
+
+                writeFileStub.callsArgWith(3, new Error("Error writting files to directory."));
+
+                testedModule.rs(fakePath, imgName, fakeDstPath, sizesObj, obj, function () {
+                    cbSpy.apply(null, arguments);
+                });
+            });
+
+            it("Error writing files to directory", function () {
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 800, height: 800, name: 'large' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 500, height: 500, name: 'medium' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 200, height: 200, name: 'small' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 45, height: 45, name: 'thumbnail' });
+                expect(readDirFileStub).has.been.called.and.calledWith("/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[0], "/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[1], "/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[2], "/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[3], "/var/folders/tmp/4000fl/");
+                expect(writeFileStub).has.been.called;
+                expect(sqsSendStub).has.not.been.called;
+                expect(cbSpy).has.been.called.and.calledWith(new Error("Error writting files to directory."));
+            });
+        });
+
+        describe("Error with sqsSend", function () {
+            before(function () {
+                rsStub.callsArgWith(4, null);
+
+                readDirFileStub.callsArgWith(1, null, fakeFiles);
+
+                readDirContStub.callsArgWith(2, null, fakeResponse);
+
+                writeFileStub.callsArgWith(3, null);
+
+                sqsSendStub.callsArgWith(1, new Error("Error sending sqs message."), null);
+
+                testedModule.rs(fakePath, imgName, fakeDstPath, sizesObj, obj, function () {
+                    cbSpy.apply(null, arguments);
+                });
+            });
+
+            it("Error sending sqs message", function () {
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 800, height: 800, name: 'large' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 500, height: 500, name: 'medium' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 200, height: 200, name: 'small' });
+                expect(rsStub).has.been.called.and.calledWith(fakePath, "Whatever", "/var/folders/tmp/4000fl/", { width: 45, height: 45, name: 'thumbnail' });
+                expect(readDirFileStub).has.been.called.and.calledWith("/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[0], "/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[1], "/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[2], "/var/folders/tmp/4000fl/");
+                expect(readDirContStub).has.been.called.and.calledWith(fakeFiles[3], "/var/folders/tmp/4000fl/");
+                expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[0], fakeDstPath, fakeResponse);
+                expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[1], fakeDstPath, fakeResponse);
+                expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[2], fakeDstPath, fakeResponse);
+                expect(writeFileStub).has.been.called.and.calledWith(fakeFiles[3], fakeDstPath, fakeResponse);
+                expect(sqsSendStub).has.been.called;
+                expect(cbSpy).has.been.called.and.calledWith(new Error("Error sending sqs message."));
+            });
+        });
+    });
+});
+
+//describe("imgeRs", function () {
+//
+//    var getprotocol = require("../getProtocol");
+//    var S3rs = require("../S3resizer");
+//    var objCr = require("../objectCreator");
+//    var mkDir = require("../makeDir");
+//    var fileResizer = require("../fileResizer");
+//
+//    describe("Calling S3", function () {
+//        describe("Success call", function () {
+//
+//            var testedModule, eventObj, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeResults, mkDirStub, fileResizerStub;
+//
+//            before(function (done) {
+//                contextDoneSpy = sinon.spy();
+//
+//                S3resizerStub = sinon.stub(S3rs, "rs");
+//
+//                objCreatorStub = sinon.stub(objCr, 'creator');
+//
+//                getProtocolStub = sinon.stub(getprotocol, "getProtocol");
+//
+//                mkDirStub = sinon.stub(mkDir, "handler");
+//
+//                fileResizerStub = sinon.stub(fileResizer, "rs");
+//
+//                eventObj = {"path": "s3://theBucket/image.jpeg"};
+//
+//                fakeResults = ["resized"];
+//
+//                testedModule = proxyquire("../index", {
+//                    './getProtocol': {
+//                        'getProtocol': getProtocolStub
+//                    },
+//                    './S3resizer': {
+//                        'rs': S3resizerStub
+//                    },
+//                    './objectCreator': {
+//                        'creator': objCreatorStub
+//                    },
+//                    './makeDir': {
+//                        'handler': mkDirStub
+//                    },
+//                    './fileResizer': {
+//                        'rs': fileResizerStub
+//                    }
+//                });
+//
+//                S3resizerStub.callsArgWith(5, null, fakeResults);
+//
+//                testedModule.imageRs(eventObj, {done: function (error) {
+//                    contextDoneSpy.apply(null, arguments);
+//                    done();
+//                }});
+//            });
+//
+//            after(function () {
+//                S3rs.rs.restore();
+//                objCr.creator.restore();
+//                getprotocol.getProtocol.restore();
+//                mkDir.handler.restore();
+//                fileResizer.rs.restore();
+//            });
+//
+//            it("calls context.done with no error", function () {
+//                expect(contextDoneSpy).has.been.called;
+//            });
+//        });
+//    });
+//});

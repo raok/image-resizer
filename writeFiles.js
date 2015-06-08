@@ -23,6 +23,8 @@ writeFiles._write = function (fileName, dstFolder, data, callback) {
     var _fileName = fileName.split("-").pop();
     var _path = dstFolder + _sizeName + "/" + _fileName;
 
+    console.log(_path);
+
     fs.writeFile(_path, data, function (err) {
 
         if (err) {

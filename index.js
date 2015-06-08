@@ -7,20 +7,51 @@
 
 var _ = require("underscore");
 var async = require('async');
-var _getprotocol = require("./getProtocol").getProtocol;
-var s3resizer = require("./S3resizer").rs;
-var createObj = require("./objectCreator").creator;
-var fileResizer = require("./fileResizer").rs;
+var argv = require("minimist")(process.argv.slice(2));
+
+var getprotocol = require("./getProtocol");
+var _getprotocol = getprotocol.getProtocol;
+
+var S3rs = require("./S3resizer");
+var s3resizer = S3rs.rs;
+
+var objCr = require("./objectCreator");
+var createObj = objCr.creator;
+
+var fileRs = require("./fileResizer");
+var fileResizer = fileRs.rs;
+
 var configs = require("./configs.json");
-var makeDir = require("./makeDir").handler;
+
+var mkDir = require("./makeDir");
+var makeDir = mkDir.handler;
 
 
 
 exports.imageRs = function (event, context) {
 
-    var _path = process.argv[2] || event.path;
+    var _path = null;
 
-    var _dir = process.argv[3];
+    console.log(argv._[0]);
+    console.log(event);
+
+    if (argv._[0] === "test") {
+        _path = event.path;
+    }
+
+    if( argv ) {
+        console.log("Here");
+        _path = argv.s;
+    } else {
+        console.log("There");
+        _path = event.path;
+    }
+
+    console.log("Path, %s", _path);
+
+    var _dir = argv.d;
+
+    console.log(_dir);
 
     var parts = _getprotocol(_path);
 
@@ -33,6 +64,8 @@ exports.imageRs = function (event, context) {
     var s3Key = imgName;
 
     var _protocol = parts.protocol;
+
+    console.log(_protocol);
 
     // RegExp to check for image type
     var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
@@ -81,7 +114,7 @@ exports.imageRs = function (event, context) {
                     });
                 },
                 function (callback) {
-                    fileResizer(_path, imgName, _dir, sizesConfigs, obj, imageType, callback);
+                    fileResizer(_path, imgName, _dir, sizesConfigs, obj, callback);
                 }
             ], function (error, result) {
                 if(error) {

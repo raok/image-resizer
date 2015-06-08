@@ -18,21 +18,23 @@
 'use strict';
 
 var async = require('async');
-var resizer = require("./resizer").resize;
-var sqsSend = require("./sqsHandler")._sendMessage;
-var readDirFile = require("./readDirectory")._get;
-var readDirCont = require("./readDirectory")._getContent;
-var fileWrite = require("./writeFiles")._write;
+var _resizer= require("./resizer");
+var resizer = _resizer.resize;
+var _sqs = require("./sqsHandler");
+var sqsSend = _sqs._sendMessage;
+var read = require("./readDirectory");
+var readDirFile = read._get;
+var readDirCont = read._getContent;
+var _fileWrite = require("./writeFiles");
+var fileWrite = _fileWrite._write;
 var tmp = require('tmp');
 
 var fileResizer = {};
 
-fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback) {
+fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, callback) {
 
     var tmpDir = tmp.dirSync(); //object
     var tmpDirName = tmpDir.name + "/"; //path to directory
-
-    console.log(tmpDirName);
 
     async.series([
         function resizeImage (next) {
@@ -56,7 +58,7 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback
 
                     async.each(files, function (file, mapNext) {
                         readDirCont(file, tmpDirName, function (error, data) {
-                            fileWrite(file, _dir, data, imgType, mapNext);
+                            fileWrite(file, _dir, data, mapNext);
                         });
                     }, function (err) {
                         if (err) {
@@ -76,7 +78,7 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, imgType, callback
                     next();
                 }
             });
-        },
+        }
     ], function (err) {
         if(err) {
             callback(err);
