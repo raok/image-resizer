@@ -43,8 +43,8 @@ If you already have an ID and secret key, follow [this](http://docs.aws.amazon.c
         bin: node 
         args:
           - /vagrant/image-resizer/index.js
-          - ${message.path}
-          - /var/www/henvly.dev/web/uploads/image/resized/
+          - --source=${message.path}
+          - --dest=/var/www/henvly.dev/web/uploads/image/resized/
     listners:
       api.image_created:
         - imageResizer
@@ -54,7 +54,7 @@ __NOTE THAT THE FIRST ARGUMENT IN THE PROPERTY ARGS IS THE PATH TO THE APP. THIS
 
 7 next its time to run the app on your local machine. To do this:
 
-    - in the command line type `node /path/to/app/index.js file:///source/path/to/target/image.png /destination/path/for/resized/images/`
+    - in the command line type `node /path/to/app/index.js -s file:///source/path/to/target/image.png -d /destination/path/for/resized/images/`
     - note that the destination path ends with `/`
     - if the destination folder does not exist, the app will generate it for you before resizing the images.
     

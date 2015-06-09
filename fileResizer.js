@@ -10,7 +10,6 @@
  * @params _dir type string - the destination path to where the resized images will be written.
  * @params sizesObj type array of objects - array of objects containing the properties 'sizes', 'height' and 'width'.
  * @params obj type object - the object being sent in the sqs message to the sqs queue.
- * @params imgtype tupe string - the type of image.
  * @var tmpDir type object - the object representing the temporary directory.
  * @var tmpdDirName type string - the path of the temporary directory.
  */
