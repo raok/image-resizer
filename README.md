@@ -54,7 +54,7 @@ __NOTE THAT THE FIRST ARGUMENT IN THE PROPERTY ARGS IS THE PATH TO THE APP. THIS
 
 7 next its time to run the app on your local machine. To do this:
 
-    - in the command line type `node /path/to/app/index.js -s file:///source/path/to/target/image.png -d /destination/path/for/resized/images/`
+    - in the command line type `node /path/to/app/index.js --source=file:///source/path/to/target/image.png --dest=/destination/path/for/resized/images/`
     - note that the destination path ends with `/`
     - if the destination folder does not exist, the app will generate it for you before resizing the images.
     
