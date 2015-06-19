@@ -11,7 +11,7 @@ require('blanket')({
 var chai = require('chai');
 var sinonChai = require("sinon-chai");
 var expect = chai.expect;
-//var extend = require('lodash').extend;
+var extend = require('lodash').extend;
 var sinon = require('sinon');
 chai.use(sinonChai);
 var proxyquire = require('proxyquire').noCallThru();
@@ -1510,7 +1510,9 @@ describe("fileResizer", function () {
 //    describe("Calling S3", function () {
 //        describe("Success call", function () {
 //
-//            var testedModule, eventObj, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeResults, mkDirStub, fileResizerStub;
+//            var testedModule, event, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeResults, mkDirStub, fileResizerStub;
+//
+//            var baseEvent = {"path": "s3://theBucket/image.jpeg"};
 //
 //            before(function (done) {
 //                contextDoneSpy = sinon.spy();
@@ -1519,13 +1521,13 @@ describe("fileResizer", function () {
 //
 //                objCreatorStub = sinon.stub(objCr, 'creator');
 //
-//                getProtocolStub = sinon.stub(getprotocol, "getProtocol");
+//                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({"hostname": "theBucket", "protocol": "s3:", "pathname": "/image.jpeg"});
 //
 //                mkDirStub = sinon.stub(mkDir, "handler");
 //
 //                fileResizerStub = sinon.stub(fileResizer, "rs");
 //
-//                eventObj = {"path": "s3://theBucket/image.jpeg"};
+//                event = extend({}, baseEvent);
 //
 //                fakeResults = ["resized"];
 //
@@ -1547,9 +1549,11 @@ describe("fileResizer", function () {
 //                    }
 //                });
 //
+//                getProtocolStub();
+//
 //                S3resizerStub.callsArgWith(5, null, fakeResults);
 //
-//                testedModule.imageRs(eventObj, {done: function (error) {
+//                testedModule.imageRs(event, {done: function (error) {
 //                    contextDoneSpy.apply(null, arguments);
 //                    done();
 //                }});

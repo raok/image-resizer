@@ -36,7 +36,7 @@ resizer.resize = function (data, imgName, directory, sizesObj, callback) {
                 callback(err);
                 return;
             }
-            console.log("Wrote to '%s'/'%s'/'%s'", directory, sizesObj.name, imgName);
+            console.log("Wrote to %s %s / %s ", directory, sizesObj.name, imgName);
             callback();
         });
 

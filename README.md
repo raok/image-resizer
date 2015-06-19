@@ -21,7 +21,7 @@ If you already have an ID and secret key, follow [this](http://docs.aws.amazon.c
 
 3 __If you only want to run the app on your local machine__, jump to step 7.
 
-4 next we need the image resizer app on our vagrant box. For this you will need to do a `git clone git@bitbucket.org:hevnly/image-resizer.git` in your develop branch of hevnly.dev.
+4 next we need the image resizer app on our vagrant box. For this you will need to do a `git clone git@bitbucket.org:hevnly/image-resizer.git` in your develop branch of hevnly.dev, and run `npm install`.
 
 5 we will also need to get `eevy`. Make sure you download it to the same directory as your `conf.yml` file. You can get it with the command `wget https://github.com/hevnly/eevy/releases/download/0.2.1/eevy` while in your develop branch and give eevy permissions with `chmod +x eevy`. Or you can go to [https://github.com/hevnly/eevy/releases](https://github.com/hevnly/eevy/releases), and download the latest version of `eevy` and then copy it to your vagrant box with using `scp`.
 
@@ -102,3 +102,87 @@ __NOTE THAT THE FIRST ARGUMENT IN THE PROPERTY ARGS IS THE PATH TO THE APP. THIS
 5 Go to `hevnly.dev/discover` and post an image.
  
 6 Go to your `s3bucket` and check if the images and been resized. They should be.
+
+### Using Docker
+
+If you just want to run the app without having to download it to your local machine, you can do this by using `Docker`.
+
+[linux](https://docs.docker.com/installation/ubuntulinux/) and [set-up](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-getting-started) on your local machine.
+
+Make sure you have `aws cli` set-up to. Refer to step _2_ of the above guide to run the app on the local machine or:
+
+Run the following commands or follow this [guideline](http://docs.aws.amazon.com/cli/latest/userguide/installing.html):
+
+    - $ curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+    - $ unzip awscli-bundle.zip
+    - $ ./awscli-bundle/install -b ~/bin/aws
+    
+#### Mac users
+
+First you will need to have docker installed on your [mac](https://docs.docker.com/installation/mac/)
+
+You will also need to get [boot2docker](https://github.com/boot2docker/osx-installer/releases/tag/v1.7.0).
+
+_To run docker_ you will need to start run the following commands:
+
+`boot2docker start`
+
+this will start the docker daemon and display:
+
+`To connect the Docker client to the Docker daemon, please set:`
+
+`export DOCKER_HOST=tcp://192.168.59.103:2376`
+
+`export DOCKER_CERT_PATH=/Users/mario/.boot2docker/certs/boot2docker-vm`
+
+`export DOCKER_TLS_VERIFY=1`
+
+now type in:
+
+`eval "$(boot2docker shellinit)"`
+
+You are now ready to issue docker commands. 
+
+_Note:_ That all commands once docker has started on mac do not need `sudo`.
+
+##### Getting the docker image and running the container.
+
+Next, to fetch the docker image for the image-resizer app type in the command:
+
+`docker pull hyprstack/hevnly-image`
+
+This will pull the image from the docker hub and build it for you.
+
+Next, to run the image and create our container, type:
+
+`docker run -it --rm -v ~/.aws:/root/.aws -v ~/.gitconfig:/root/.gitconfig -v ~/.ssh:/root/.ssh hyprstack/hevnly-image sh -c 'aws s3 cp  /home/image-resizer && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
+
+This should open the command line tool for the container. 
+
+To make sure the app's files have been copied correctly, `cd home/image-resizer` and `ls -la`. There should be all the files beloging to the app.
+
+To run the app make sure you have an image in the docker container to resize and then type ``node /path/to/app/index.js --source=file:///source/path/to/target/image.png --dest=/destination/path/for/resized/images/`
+
+#### Linux users
+
+Once you have downloaded and setup docker and aws-cli, you can start to issue docker commands. 
+
+_Note:_ All commands need to be prefixed with the `sudo` command for linux machines.
+
+##### Getting the docker image and running the container.
+
+To fetch the docker image for the image-resizer app type in the command:
+
+`sudo docker pull hyprstack/hevnly-image`
+
+This will pull the image from the docker hub and build it for you.
+
+Next, to run the image and create our container, type:
+
+`sudo docker run -it --rm -v ~/.aws:/root/.aws -v ~/.gitconfig:/root/.gitconfig -v ~/.ssh:/root/.ssh hyprstack/hevnly-image sh -c 'aws s3 cp  /home/image-resizer && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
+
+This should open the command line tool for the container. 
+
+To make sure the app's files have been copied correctly, `cd home/image-resizer` and `ls -la`. There should be all the files beloging to the app.
+
+To run the app make sure you have an image in the docker container to resize and then type ``node /path/to/app/index.js --source=file:///source/path/to/target/image.png --dest=/destination/path/for/resized/images/`

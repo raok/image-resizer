@@ -27,18 +27,20 @@ var mkDir = require("./makeDir");
 var makeDir = mkDir.handler;
 
 
-
 exports.imageRs = function (event, context) {
 
     var _path = "";
 
+    console.log(event);
+    console.log(argv);
+
     if (!event) {
+        console.log("Using argv.source");
         _path = argv.source;
     } else {
+        console.log("Using event");
         _path = event.path;
     }
-
-    //var _path = argv.source || event.path;
 
     console.log("Path, %s", _path);
 
@@ -84,12 +86,12 @@ exports.imageRs = function (event, context) {
                 function(callback) {
                     s3resizer(s3Key, s3Bucket, sizesConfigs, imageType, obj, callback);
                 }
-            ], function (error) {
+            ], function (error, result) {
                 if (error) {
                     context.done(error);
                 } else {
                     console.log("Everything went well. Calling context.done");
-                    context.done();
+                    context.done(result);
                 }
             });
             break;
@@ -112,8 +114,10 @@ exports.imageRs = function (event, context) {
             ], function (error, result) {
                 if(error) {
                     console.error("Error processing image with path 'file': %s", error);
+                    return;
                 } else {
                     console.log("Image processed without errors for 'file' path");
+                    return;
                 }
             });
             break;
