@@ -293,6 +293,8 @@ describe("readDirectory _getFiles._getContent", function () {
     describe("_getContent success call", function () {
         var testedModule, callbackSpy, fakeCont, readFileStub;
 
+        fakeCont = new Buffer([1,2,3]);
+
         before(function () {
 
             readFileStub = sinon.stub();
@@ -304,9 +306,7 @@ describe("readDirectory _getFiles._getContent", function () {
                     "readFile": readFileStub
                 }
             });
-
-            fakeCont = new Buffer([1,2,3]);
-
+            
             readFileStub.callsArgWith(1, null, fakeCont);
         });
 
