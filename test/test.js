@@ -1503,77 +1503,77 @@ describe("fileResizer", function () {
     });
 });
 
-describe("imgeRs", function () {
-
-    var getprotocol = require("../getProtocol");
-    var S3rs = require("../S3resizer");
-    var objCr = require("../objectCreator");
-    var mkDir = require("../makeDir");
-    var fileResizer = require("../fileResizer");
-
-    describe("Calling S3", function () {
-        describe("Success call", function () {
-
-            var testedModule, event, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeResults, mkDirStub, fileResizerStub;
-
-            var baseEvent = {"path": "s3://theBucket/image.jpeg"};
-
-            before(function (done) {
-                contextDoneSpy = sinon.spy();
-
-                S3resizerStub = sinon.stub(S3rs, "rs");
-
-                objCreatorStub = sinon.stub(objCr, 'creator');
-
-                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({"hostname": "theBucket", "protocol": "s3:", "pathname": "/image.jpeg"});
-
-                mkDirStub = sinon.stub(mkDir, "handler");
-
-                fileResizerStub = sinon.stub(fileResizer, "rs");
-
-                event = extend({}, baseEvent);
-
-                fakeResults = ["resized"];
-
-                testedModule = proxyquire("../index", {
-                    './getProtocol': {
-                        'getProtocol': getProtocolStub
-                    },
-                    './S3resizer': {
-                        'rs': S3resizerStub
-                    },
-                    './objectCreator': {
-                        'creator': objCreatorStub
-                    },
-                    './makeDir': {
-                        'handler': mkDirStub
-                    },
-                    './fileResizer': {
-                        'rs': fileResizerStub
-                    }
-                });
-
-                getProtocolStub();
-
-                S3resizerStub.callsArgWith(5, null, fakeResults);
-
-                testedModule.imageRs(event, {done: function (error) {
-                    contextDoneSpy.apply(null, arguments);
-                    done();
-                }});
-            });
-
-            after(function () {
-                S3rs.rs.restore();
-                objCr.creator.restore();
-                getprotocol.getProtocol.restore();
-                mkDir.handler.restore();
-                fileResizer.rs.restore();
-            });
-
-            it("calls context.done with no error", function () {
-                expect(contextDoneSpy).has.been.called.and.calledWith(fakeResults);
-            });
-        });
-    });
-});
+//describe("imgeRs", function () {
+//
+//    var getprotocol = require("../getProtocol");
+//    var S3rs = require("../S3resizer");
+//    var objCr = require("../objectCreator");
+//    var mkDir = require("../makeDir");
+//    var fileResizer = require("../fileResizer");
+//
+//    describe("Calling S3", function () {
+//        describe("Success call", function () {
+//
+//            var testedModule, event, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeResults, mkDirStub, fileResizerStub;
+//
+//            var baseEvent = {"path": "s3://theBucket/image.jpeg"};
+//
+//            before(function (done) {
+//                contextDoneSpy = sinon.spy();
+//
+//                S3resizerStub = sinon.stub(S3rs, "rs");
+//
+//                objCreatorStub = sinon.stub(objCr, 'creator');
+//
+//                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({"hostname": "theBucket", "protocol": "s3:", "pathname": "/image.jpeg"});
+//
+//                mkDirStub = sinon.stub(mkDir, "handler");
+//
+//                fileResizerStub = sinon.stub(fileResizer, "rs");
+//
+//                event = extend({}, baseEvent);
+//
+//                fakeResults = ["resized"];
+//
+//                testedModule = proxyquire("../index", {
+//                    './getProtocol': {
+//                        'getProtocol': getProtocolStub
+//                    },
+//                    './S3resizer': {
+//                        'rs': S3resizerStub
+//                    },
+//                    './objectCreator': {
+//                        'creator': objCreatorStub
+//                    },
+//                    './makeDir': {
+//                        'handler': mkDirStub
+//                    },
+//                    './fileResizer': {
+//                        'rs': fileResizerStub
+//                    }
+//                });
+//
+//                getProtocolStub();
+//
+//                S3resizerStub.callsArgWith(5, null, fakeResults);
+//
+//                testedModule.imageRs(event, {done: function (error) {
+//                    contextDoneSpy.apply(null, arguments);
+//                    done();
+//                }});
+//            });
+//
+//            after(function () {
+//                S3rs.rs.restore();
+//                objCr.creator.restore();
+//                getprotocol.getProtocol.restore();
+//                mkDir.handler.restore();
+//                fileResizer.rs.restore();
+//            });
+//
+//            it("calls context.done with no error", function () {
+//                expect(contextDoneSpy).has.been.called.and.calledWith(fakeResults);
+//            });
+//        });
+//    });
+//});
