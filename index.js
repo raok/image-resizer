@@ -29,22 +29,18 @@ var makeDir = mkDir.handler;
 
 exports.imageRs = function (event, context) {
 
-    var _path = "";
 
     console.log(event);
     console.log(argv);
 
-    if (!event) {
-        console.log("Using argv.source");
-        _path = argv.source;
-    } else {
-        console.log("Using event");
-        _path = event.path;
+    if (event) {
+        var _path = event.path;
+    } else if (!event) {
+        var _path = argv.source;
+        var _dir = argv.dest;
     }
 
     console.log("Path, %s", _path);
-
-    var _dir = argv.dest;
 
     console.log(_dir);
 
@@ -126,7 +122,7 @@ exports.imageRs = function (event, context) {
     }
 };
 
-if (!process.env.LAMBDA_TASK_ROOT) {
+if (!module.parent) {
     exports.imageRs();
 }
 

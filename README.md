@@ -116,7 +116,9 @@ Run the following commands or follow this [guideline](http://docs.aws.amazon.com
     - $ curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
     - $ unzip awscli-bundle.zip
     - $ ./awscli-bundle/install -b ~/bin/aws
-    
+
+___
+
 #### Mac users
 
 First you will need to have docker installed on your [mac](https://docs.docker.com/installation/mac/)
@@ -155,13 +157,15 @@ This will pull the image from the docker hub and build it for you.
 
 Next, to run the image and create our container, type:
 
-`docker run -it --rm -v ~/.aws:/root/.aws -v ~/.gitconfig:/root/.gitconfig -v ~/.ssh:/root/.ssh hyprstack/hevnly-image sh -c 'aws s3 cp  /home/image-resizer && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
+`docker run -it --rm -v ~/.aws:/root/.aws -v ~/.gitconfig:/root/.gitconfig -v ~/.ssh:/root/.ssh hyprstack/hevnly-image sh -c 'aws s3 cp s3://hevnlydeployments/image-resizer-nightly.tar.gz /home/image-resizer && tar zxvf image-resizer-nightly.tar.gz && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
 
 This should open the command line tool for the container. 
 
 To make sure the app's files have been copied correctly, `cd home/image-resizer` and `ls -la`. There should be all the files beloging to the app.
 
 To run the app make sure you have an image in the docker container to resize and then type ``node /path/to/app/index.js --source=file:///source/path/to/target/image.png --dest=/destination/path/for/resized/images/`
+
+___
 
 #### Linux users
 
@@ -179,7 +183,7 @@ This will pull the image from the docker hub and build it for you.
 
 Next, to run the image and create our container, type:
 
-`sudo docker run -it --rm -v ~/.aws:/root/.aws -v ~/.gitconfig:/root/.gitconfig -v ~/.ssh:/root/.ssh hyprstack/hevnly-image sh -c 'aws s3 cp  /home/image-resizer && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
+`sudo docker run -it --rm -v ~/.aws:/root/.aws -v ~/.gitconfig:/root/.gitconfig -v ~/.ssh:/root/.ssh hyprstack/hevnly-image sh -c 'aws s3 cp s3://hevnlydeployments/image-resizer-nightly.tar.gz /home/image-resizer && tar zxvf image-resizer-nightly.tar.gz && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
 
 This should open the command line tool for the container. 
 

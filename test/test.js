@@ -1568,7 +1568,7 @@ describe("fileResizer", function () {
 //            });
 //
 //            it("calls context.done with no error", function () {
-//                expect(contextDoneSpy).has.been.called;
+//                expect(contextDoneSpy).has.been.called.and.calledWith(fakeResults);
 //            });
 //        });
 //    });

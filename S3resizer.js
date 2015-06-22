@@ -57,7 +57,7 @@ S3resizer.rs = function (imgName, bucketName, sizesObj, imageType, obj, cb) {
                 }
             ], function (err, result) {
                 if(err) {
-                    next(err);
+                    next(err, null);
                 } else {
                     next(null, result);
                 }
@@ -87,11 +87,11 @@ S3resizer.rs = function (imgName, bucketName, sizesObj, imageType, obj, cb) {
                 function sendSqs (asyncCallback) {
                     sqsSend(obj, asyncCallback);
                 }
-            ], function (err) {
+            ], function (err, result) {
                 if(err) {
-                    next(err);
+                    next(err, null);
                 } else {
-                    next();
+                    next(null, result);
                 }
             });
         }
