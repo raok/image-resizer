@@ -302,10 +302,8 @@ describe("readDirectory _getFiles._getContent", function () {
             testedModule = require('../readDirectory.js');
 
             mockDir({
-                tmp:{
-                    images : {
-                        "thumb-Dirtest.png": new Buffer([1,2,3])
-                    }
+                "images" : {
+                    "thumb-Dirtest.png": new Buffer([1,2,3])
                 }
             });
         });
@@ -315,7 +313,7 @@ describe("readDirectory _getFiles._getContent", function () {
         });
 
         it("reads content of file", function (done) {
-            testedModule._getContent("thumb-Dirtest.png", "tmp/images/", function (error, data) {
+            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
                 expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
                 done();
@@ -340,10 +338,8 @@ describe("readDirectory _getFiles._getContent", function () {
             });
 
             mockDir({
-                tmp:{
-                    images : {
-                        "thumb-Dirtest.png": new Buffer([1,2,3])
-                    }
+                "images" : {
+                    "thumb_Dirtest.png": new Buffer([1,2,3])
                 }
             });
 
@@ -355,7 +351,7 @@ describe("readDirectory _getFiles._getContent", function () {
         });
 
         it("returns error", function () {
-            testedModule._getContent("thumb-Dirtest.png", "tmp/images/", function (error, data) {
+            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
             });
             expect(callbackSpy).has.been.called.and.calledWith(new Error("Error reading file!"),null);
