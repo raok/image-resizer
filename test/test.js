@@ -291,33 +291,30 @@ describe("readDirectory _getFiles._get", function () {
 
 describe("readDirectory _getFiles._getContent", function () {
     describe("_getContent success call", function () {
-        var testedModule, callbackSpy, fakeCont;
+        var testedModule, callbackSpy, fakeCont, readFileStub;
 
-        before(function (done) {
+        before(function () {
+
+            readFileStub = sinon.stub();
 
             callbackSpy = sinon.spy();
 
-            testedModule = require('../readDirectory.js');
-
-            fakeCont = new Buffer([1,2,3]);
-
-            mockDir({
-                "images" : {
-                    "thumb-Dirtest.png": fakeCont
+            testedModule = proxyquire('../readDirectory', {
+                "fs": {
+                    "readFile": readFileStub
                 }
             });
 
-            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
-                callbackSpy.apply(null, arguments);
-                done();
-            });
-        });
+            fakeCont = new Buffer([1,2,3]);
 
-        after(function () {
-            mockDir.restore();
+            readFileStub.callsArgWith(1, null, fakeCont);
         });
 
         it("reads content of file", function () {
+            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
+                callbackSpy.apply(null, arguments);
+            });
+            console.log(fakeCont);
             expect(callbackSpy).has.been.called.and.calledWith(null, fakeCont);
         });
     });
