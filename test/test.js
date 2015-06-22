@@ -293,7 +293,7 @@ describe("readDirectory _getFiles._getContent", function () {
     describe("_getContent success call", function () {
         var testedModule, callbackSpy, readFileStub;
 
-        before(function () {
+        before(function (done) {
 
             readFileStub = sinon.stub();
 
@@ -306,19 +306,19 @@ describe("readDirectory _getFiles._getContent", function () {
                     "thumb-Dirtest.png": new Buffer([1,2,3])
                 }
             });
+
+            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
+                callbackSpy.apply(null, arguments);
+                done();
+            });
         });
 
         after(function () {
             mockDir.restore();
         });
 
-        it("reads content of file", function (done) {
-            testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
-                callbackSpy.apply(null, arguments);
-                expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
-                done();
-            });
-
+        it("reads content of file", function () {
+            expect(callbackSpy).has.been.called.and.calledWith(null, new Buffer([1,2,3]));
         });
     });
 
