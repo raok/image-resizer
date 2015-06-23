@@ -314,7 +314,6 @@ describe("readDirectory _getFiles._getContent", function () {
             testedModule._getContent("thumb-Dirtest.png", "images/", function (error, data) {
                 callbackSpy.apply(null, arguments);
             });
-            console.log(fakeCont);
             expect(callbackSpy).has.been.called.and.calledWith(null, fakeCont);
         });
     });
