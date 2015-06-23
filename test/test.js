@@ -306,7 +306,7 @@ describe("readDirectory _getFiles._getContent", function () {
                     "readFile": readFileStub
                 }
             });
-            
+
             readFileStub.callsArgWith(1, null, fakeCont);
         });
 
@@ -1508,7 +1508,10 @@ describe("imgeRs", function () {
 
                 objCreatorStub = sinon.stub(objCr, 'creator');
 
-                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({"hostname": "theBucket", "protocol": "s3:", "pathname": "/image.jpeg"});
+                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({
+                    "hostname": "theBucket",
+                    "protocol": "s3:",
+                    "pathname": "/image.jpeg"});
 
                 mkDirStub = sinon.stub(mkDir, "handler");
 
@@ -1556,6 +1559,204 @@ describe("imgeRs", function () {
 
             it("calls context.done with no error", function () {
                 expect(contextDoneSpy).has.been.called.and.calledWith(fakeResults);
+            });
+        });
+
+        describe("Error call", function () {
+
+            var testedModule, event, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeError, mkDirStub, fileResizerStub;
+
+            var baseEvent = {"path": "s3://theBucket/image.jpeg"};
+
+            before(function (done) {
+                contextDoneSpy = sinon.spy();
+
+                S3resizerStub = sinon.stub(S3rs, "rs");
+
+                objCreatorStub = sinon.stub(objCr, 'creator');
+
+                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({
+                    "hostname": "theBucket",
+                    "protocol": "s3:",
+                    "pathname": "/image.jpeg"});
+
+                mkDirStub = sinon.stub(mkDir, "handler");
+
+                fileResizerStub = sinon.stub(fileResizer, "rs");
+
+                event = extend({}, baseEvent);
+
+                fakeError = new Error("Error resizing image for s3.");
+
+                testedModule = proxyquire("../index", {
+                    './getProtocol': {
+                        'getProtocol': getProtocolStub
+                    },
+                    './S3resizer': {
+                        'rs': S3resizerStub
+                    },
+                    './objectCreator': {
+                        'creator': objCreatorStub
+                    },
+                    './makeDir': {
+                        'handler': mkDirStub
+                    },
+                    './fileResizer': {
+                        'rs': fileResizerStub
+                    }
+                });
+
+                getProtocolStub();
+
+                S3resizerStub.callsArgWith(5, fakeError, null);
+
+                testedModule.imageRs(event, {done: function (error) {
+                    contextDoneSpy.apply(null, arguments);
+                    done();
+                }});
+            });
+
+            after(function () {
+                S3rs.rs.restore();
+                objCr.creator.restore();
+                getprotocol.getProtocol.restore();
+                mkDir.handler.restore();
+                fileResizer.rs.restore();
+            });
+
+            it("calls context.done with error", function () {
+                expect(contextDoneSpy).has.been.called.and.calledWith(fakeError);
+            });
+        });
+    });
+
+    describe("Calling file", function () {
+        describe("Success call", function () {
+
+            var testedModule, event, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, fakeResults, mkDirStub, fileResizerStub;
+
+            var baseEvent = {'path': 'file://images/image.jpeg'};
+
+            fakeResults = console.log("Image processed without errors for 'file' path");
+            before(function () {
+                contextDoneSpy = sinon.spy();
+
+                S3resizerStub = sinon.stub(S3rs, "rs");
+
+                objCreatorStub = sinon.stub(objCr, 'creator');
+
+                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({
+                    "hostname": "images",
+                    "protocol": "file:",
+                    "pathname": "/image.jpeg"
+                });
+
+                mkDirStub = sinon.stub(mkDir, "handler");
+
+                fileResizerStub = sinon.stub(fileResizer, "rs");
+
+                event = extend({}, baseEvent);
+
+                testedModule = proxyquire("../index", {
+                    './getProtocol': {
+                        'getProtocol': getProtocolStub
+                    },
+                    './S3resizer': {
+                        'rs': S3resizerStub
+                    },
+                    './objectCreator': {
+                        'creator': objCreatorStub
+                    },
+                    './makeDir': {
+                        'handler': mkDirStub
+                    },
+                    './fileResizer': {
+                        'rs': fileResizerStub
+                    }
+                });
+
+                getProtocolStub();
+
+                mkDirStub.callsArgWith(2, null, "Built");
+
+                fileResizerStub.callsArgWith(5, null, fakeResults);
+            });
+
+            after(function () {
+                S3rs.rs.restore();
+                objCr.creator.restore();
+                getprotocol.getProtocol.restore();
+                mkDir.handler.restore();
+                fileResizer.rs.restore();
+            });
+
+            it("call returns 'Image processed without errors for file path'", function () {
+                var result = testedModule.imageRs();
+                expect(result).to.equal(fakeResults);
+            });
+        });
+
+        describe("Error call", function () {
+
+            var testedModule, event, contextDoneSpy, S3resizerStub, objCreatorStub, getProtocolStub, mkDirStub, fileResizerStub;
+
+            var baseEvent = {'path': 'file://images/image.jpeg'};
+
+            before(function () {
+                contextDoneSpy = sinon.spy();
+
+                S3resizerStub = sinon.stub(S3rs, "rs");
+
+                objCreatorStub = sinon.stub(objCr, 'creator');
+
+                getProtocolStub = sinon.stub(getprotocol, "getProtocol").returns({
+                    "hostname": "images",
+                    "protocol": "file:",
+                    "pathname": "/image.jpeg"
+                });
+
+                mkDirStub = sinon.stub(mkDir, "handler");
+
+                fileResizerStub = sinon.stub(fileResizer, "rs");
+
+                event = extend({}, baseEvent);
+
+                testedModule = proxyquire("../index", {
+                    './getProtocol': {
+                        'getProtocol': getProtocolStub
+                    },
+                    './S3resizer': {
+                        'rs': S3resizerStub
+                    },
+                    './objectCreator': {
+                        'creator': objCreatorStub
+                    },
+                    './makeDir': {
+                        'handler': mkDirStub
+                    },
+                    './fileResizer': {
+                        'rs': fileResizerStub
+                    }
+                });
+
+                getProtocolStub();
+
+                mkDirStub.callsArgWith(2, null, "Built");
+
+                fileResizerStub.callsArgWith(5, new Error("Error processing image with path 'file'"), null);
+            });
+
+            after(function () {
+                S3rs.rs.restore();
+                objCr.creator.restore();
+                getprotocol.getProtocol.restore();
+                mkDir.handler.restore();
+                fileResizer.rs.restore();
+            });
+
+            it("returns 'Image processed with errors for file path'", function () {
+                var result = testedModule.imageRs();
+                expect(result).to.equal(undefined); //TODO: Not happy with this. Why is it returning undefined!
             });
         });
     });

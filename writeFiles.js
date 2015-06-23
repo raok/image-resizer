@@ -28,10 +28,8 @@ writeFiles._write = function (fileName, dstFolder, data, callback) {
     fs.writeFile(_path, data, function (err) {
 
         if (err) {
-            console.log("Error writing file: %s", err);
             callback(err, null);
         } else {
-            console.log("Wrote file.");
             callback();
         }
     })

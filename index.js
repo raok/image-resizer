@@ -29,10 +29,6 @@ var makeDir = mkDir.handler;
 
 exports.imageRs = function (event, context) {
 
-
-    console.log(event);
-    console.log(argv);
-
     if (event) {
         var _path = event.path;
     } else if (!event) {
@@ -40,27 +36,24 @@ exports.imageRs = function (event, context) {
         var _dir = argv.dest;
     }
 
-    console.log("Path, %s", _path);
-
-    console.log(_dir);
-
+    // get parts of passed file path
     var parts = _getprotocol(_path);
 
+    // get image name
     var imgName = parts.pathname.split("/").pop();
 
-    console.log("imgName: %s", imgName);
-
+    // get bucket name
     var s3Bucket = parts.hostname;
 
     var s3Key = imgName;
 
+    // get protocol
     var _protocol = parts.protocol;
-
-    console.log(_protocol);
 
     // RegExp to check for image type
     var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
 
+    // use configs file
     var sizesConfigs = configs.sizes;
 
     var obj = createObj(_path);
@@ -69,9 +62,11 @@ exports.imageRs = function (event, context) {
     var imgExt = imageTypeRegExp.exec(s3Key);
 
     if (imgExt === null) {
-        console.error('unable to infer the image type for key %s', s3Key);
-        context.done(new Error('unable to infer the image type for key %s' + s3Key));
-        return;
+        if(!context) {
+            return console.error('Unable to infer the image type for key ' + s3Key);
+        } else if (context) {
+            context.done(new Error('unable to infer the image type for key ' + s3Key));
+        }
     }
 
     var imageType = imgExt[1] || imgExt[2];
@@ -107,18 +102,17 @@ exports.imageRs = function (event, context) {
                 function (callback) {
                     fileResizer(_path, imgName, _dir, sizesConfigs, obj, callback);
                 }
-            ], function (error, result) {
+            ], function (error, results) {
                 if(error) {
-                    console.error("Error processing image with path 'file': %s", error);
-                    return;
+                    console.log("Error in file, %s", error);
+                    return error;
                 } else {
-                    console.log("Image processed without errors for 'file' path");
-                    return;
+                    return console.log("Image processed without errors for 'file' path.");
                 }
             });
             break;
         default:
-            console.log("No matches found for: %s", _protocol);
+            return console.log("No matches found for: %s", _protocol);
     }
 };
 

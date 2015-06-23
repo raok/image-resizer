@@ -37,7 +37,7 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, callback) {
 
     async.series([
         function resizeImage (next) {
-            async.eachSeries(sizesObj, function (sizesObj, mapNext) {
+            async.each(sizesObj, function (sizesObj, mapNext) {
                 resizer(data, imgName, tmpDirName, sizesObj, mapNext);
             }, function (err) {
                 if (err) {
@@ -70,19 +70,19 @@ fileResizer.rs = function (data, imgName, _dir, sizesObj, obj, callback) {
                 function sendSqs (asyncCallback) {
                     sqsSend(obj, asyncCallback);
                 }
-            ], function (err) {
+            ], function (err, result) {
                 if(err) {
-                    next(err);
+                    next(err, null);
                 } else {
-                    next();
+                    next(null, result);
                 }
             });
         }
-    ], function (err) {
+    ], function (err, results) {
         if(err) {
-            callback(err);
+            callback(err, null);
         } else {
-            callback();
+            callback(null, results);
         }
     });
 };

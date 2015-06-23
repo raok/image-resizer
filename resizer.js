@@ -32,11 +32,9 @@ resizer.resize = function (data, imgName, directory, sizesObj, callback) {
         .resize(sizesObj.width, sizesObj.height)
         .write(directory + sizesObj.name + "-" + imgName, function (err) {
             if (err) {
-                console.log("There was an error while resizing the image: %s", err);
                 callback(err);
                 return;
             }
-            console.log("Wrote to %s %s / %s ", directory, sizesObj.name, imgName);
             callback();
         });
 
