@@ -43,4 +43,4 @@ Thumbs.db
 awsobject.js
 .idea
 Dockerfile
-/config/config.json
+/config/configs.json
