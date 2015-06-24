@@ -14,7 +14,7 @@
 var AWS = require('aws-sdk');
 var sqs = new AWS.SQS({apiVersion: 'latest', region: 'eu-west-1'});
 
-var configs = require("./configs.json");
+var configs = require("./config/configs.json");
 
 var sqsHandler = {};
 

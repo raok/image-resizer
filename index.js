@@ -21,7 +21,7 @@ var createObj = objCr.creator;
 var fileRs = require("./fileResizer");
 var fileResizer = fileRs.rs;
 
-var configs = require("./configs.json");
+var configs = require("./config/configs.json");
 
 var mkDir = require("./makeDir");
 var makeDir = mkDir.handler;
