@@ -65,7 +65,7 @@ exports.imageRs = function (event, context) {
         if(!context) {
             return console.error('Unable to infer the image type for key ' + s3Key);
         } else if (context) {
-            context.done(new Error('unable to infer the image type for key ' + s3Key));
+            context.done(new Error('unable to infer the image type for key ' + s3Key), null);
         }
     }
 
@@ -79,10 +79,10 @@ exports.imageRs = function (event, context) {
                 }
             ], function (error, result) {
                 if (error) {
-                    context.done(error);
+                    context.done(error, null);
                 } else {
                     console.log("Everything went well. Calling context.done");
-                    context.done(result);
+                    context.done(null, result);
                 }
             });
             break;

@@ -1557,7 +1557,7 @@ describe("imgeRs", function () {
             });
 
             it("calls context.done with no error", function () {
-                expect(contextDoneSpy).has.been.called.and.calledWith(fakeResults);
+                expect(contextDoneSpy).has.been.called.and.calledWith(null, fakeResults);
             });
         });
 
@@ -1624,7 +1624,7 @@ describe("imgeRs", function () {
             });
 
             it("calls context.done with error", function () {
-                expect(contextDoneSpy).has.been.called.and.calledWith(fakeError);
+                expect(contextDoneSpy).has.been.called.and.calledWith(fakeError, null);
             });
         });
     });
