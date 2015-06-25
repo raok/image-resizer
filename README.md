@@ -111,6 +111,8 @@ If you just want to run the app without having to download it to your local mach
 
 Make sure you have `aws cli` set-up to. Refer to step _2_ of the above guide to run the app on the local machine or:
 
+_You will also need permissions to download/copy the files from the s3 bucket. Speak to Chris about granting permissions._
+
 Run the following commands or follow this [guideline](http://docs.aws.amazon.com/cli/latest/userguide/installing.html):
 
     - $ curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
