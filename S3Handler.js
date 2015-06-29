@@ -17,14 +17,21 @@
 'use strict';
 
 var s3 = new (require('aws-sdk')).S3();
+var getprotocol = require("./getProtocol");
+var _getprotocol = getprotocol.getProtocol;
 
 var S3Handler = {};
 
-S3Handler._get = function (bucketName, imgName, callback) {
+S3Handler._get = function (src, callback) {
+
+    var parts = _getprotocol(src);
+    var s3Key = parts.pathname.split("/").pop();
+    var bucketName = parts.hostname;
+
 
     var params = {
         Bucket: bucketName,
-        Key: imgName
+        Key: s3Key
     };
 
     s3.getObject(params, function (error, data) {

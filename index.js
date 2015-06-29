@@ -26,6 +26,8 @@ var configs = require("./config/configs.json");
 var mkDir = require("./makeDir");
 var makeDir = mkDir.handler;
 
+var copyFile = require('./copyFile');
+
 
 exports.lambdaHandler = function (event, context) {
     var _path = event.path;
@@ -35,29 +37,22 @@ exports.cliHandler = function () {
     var _path = argv.source;
     var _dir = argv.dest;
 
-    resize(_path, _dir);
+    resize(_path, _dir, function() {
+
+        process.exit(0);
+    });
 };
 
-var resize = function (src, dest, callback) {
+function resize (src, dest, callback) {
 
-
-    // get parts of passed file path
-    var parts = _getprotocol(src);
-
-    // get image name
-    var imgName = parts.pathname.split("/").pop();
-
-    // get bucket name
-    var s3Bucket = parts.hostname;
-
-    var s3Key = imgName;
-
-    // get protocol
-    var _protocol = parts.protocol;
+    copyFile.copy(src, function(sFile){
+        console.log("resize: " + sFile);
+        callback();
+    });
 
     // RegExp to check for image type
-    var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
-
+    //var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
+return;
     // use configs file
     var sizesConfigs = configs.sizes;
 
