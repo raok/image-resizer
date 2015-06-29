@@ -27,17 +27,22 @@ var mkDir = require("./makeDir");
 var makeDir = mkDir.handler;
 
 
-exports.imageRs = function (event, context) {
+exports.lambdaHandler = function (event, context) {
+    var _path = event.path;
+};
 
-    if (event) {
-        var _path = event.path;
-    } else if (!event) {
-        var _path = argv.source;
-        var _dir = argv.dest;
-    }
+exports.cliHandler = function () {
+    var _path = argv.source;
+    var _dir = argv.dest;
+
+    resize(_path, _dir);
+};
+
+var resize = function (src, dest, callback) {
+
 
     // get parts of passed file path
-    var parts = _getprotocol(_path);
+    var parts = _getprotocol(src);
 
     // get image name
     var imgName = parts.pathname.split("/").pop();
@@ -56,7 +61,7 @@ exports.imageRs = function (event, context) {
     // use configs file
     var sizesConfigs = configs.sizes;
 
-    var obj = createObj(_path);
+    var obj = createObj(src);
 
     // Check if file has a supported image extension
     var imgExt = imageTypeRegExp.exec(s3Key);
@@ -90,7 +95,7 @@ exports.imageRs = function (event, context) {
             async.series([
                 function (callback) {
                     async.eachSeries(sizesConfigs, function (item, mapNext) {
-                        makeDir(_dir, item, mapNext);
+                        makeDir(dest, item, mapNext);
                     }, function (err) {
                         if (err) {
                             callback(err, null);
@@ -100,7 +105,7 @@ exports.imageRs = function (event, context) {
                     });
                 },
                 function (callback) {
-                    fileResizer(_path, imgName, _dir, sizesConfigs, obj, callback);
+                    fileResizer(src, imgName, dest, sizesConfigs, obj, callback);
                 }
             ], function (error, results) {
                 if(error) {
@@ -117,6 +122,6 @@ exports.imageRs = function (event, context) {
 };
 
 if (!module.parent) {
-    exports.imageRs();
+    exports.cliHandler();
 }
 
