@@ -45,8 +45,9 @@ S3Handler._get = function (src, callback) {
 
 S3Handler._put = function (dest, file, callback) {
 
-    console.log("Dest: " + dest);
     var parts = _getprotocol(dest);
+    console.log(parts);
+    var _path = parts.pathname.slice(1);
 
     var bucketName = parts.host;
     var imageType = parts.pathname.split(".").pop();
@@ -54,16 +55,17 @@ S3Handler._put = function (dest, file, callback) {
     getContent(file, function (err, data) {
         var params = {
             Bucket: bucketName,
-            Key: file,
+            Key: _path + file,
             Body: data,
             ContentType: 'image/' + imageType
         };
 
         s3.putObject(params, function (error, data) {
             if ( error ) {
-                callback(error, null);
+                callback(error);
+            } else {
+                callback(data);
             }
-            callback(null, data);
         });
     });
 };

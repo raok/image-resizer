@@ -27,8 +27,6 @@ resizer.resize = function (path, sizesObj, callback) {
 
     var imgType = path.split(".").pop();
 
-    console.log(path);
-
     async.each(sizesObj, function (sizesObj, mapNext) {
         gm(path)
             .resize(sizesObj.width, sizesObj.height)
@@ -42,7 +40,6 @@ resizer.resize = function (path, sizesObj, callback) {
         if(err) {
             callback(err);
         } else {
-            console.log(directory);
             callback(directory);
         }
     });

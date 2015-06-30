@@ -63,13 +63,7 @@ function writeS3File (srcDir, dest, callback) {
 
     readDirFile(srcDir, function (err, files) {
         async.each(files, function (file, mapNext) {
-            S3put(dest, file, function (err) {
-                if (err) {
-                    mapNext(err);
-                } else {
-                    mapNext();
-                }
-            })
+            S3put(dest, file, mapNext);
         }, function (err) {
             if (err) {
                 callback(err);
