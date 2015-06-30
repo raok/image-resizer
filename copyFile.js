@@ -71,25 +71,12 @@ function copyS3File(src, dest, cb) {
 };
 
 
-// This function copies local files using streams TODO: use readFile and writeFile instead. You might be calling successive functions without the stream ending.
+// This function copies local files using streams
 function copyLocalFile (src, dest, cb) {
 
     var parts = _getprotocol(src);
     src = parts.pathname;
 
-    //fs.readFile(src, function (err, data) {
-    //    if (err) {
-    //        console.log(err);
-    //    } else {
-    //        fs.writeFile(dest, data, function (err) {
-    //            if (err) {
-    //                cb(err);
-    //            } else {
-    //                cb();
-    //            }
-    //        });
-    //    }
-    //});
     var cbCalled = false;
 
     var rd = fs.createReadStream(src);

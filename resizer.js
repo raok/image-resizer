@@ -24,7 +24,6 @@ resizer.resize = function (path, sizesObj, callback) {
 
     var directory = createTmpFile();
 
-    console.log(sizesObj);
     var imgType = path.split(".").pop();
 
     async.each(sizesObj, function (sizesObj, mapNext) {
@@ -43,9 +42,7 @@ resizer.resize = function (path, sizesObj, callback) {
         } else {
             callback(directory);
         }
-    })
-
-
+    });
 };
 
 // This function creates a temporary directory to which we will save our files.

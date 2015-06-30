@@ -42,9 +42,10 @@ S3Handler._get = function (src, callback) {
     });
 };
 
-S3Handler._put = function (bucketName, content, fileName, imgName, imageType, callback) {
+S3Handler._put = function (dest, callback) {
 
-    console.log(fileName);
+    console.log(dest);
+    var parts = _getprotocol(dest);
 
     var _sizeName = fileName.split("-").shift();
 

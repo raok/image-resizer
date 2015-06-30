@@ -31,6 +31,8 @@ var rs = _resizer.resize;
 
 var copyFile = require('./copyFile');
 
+var writeFile = require('./writeFile');
+
 
 
 exports.lambdaHandler = function (event, context) {
@@ -70,15 +72,21 @@ function getFile (src, callback) {
 function resize (src, sizes, callback) {
 
     rs(src, sizes, function (dir) {
-        console.log("Resized to: %s", dir);
+        callback(dir);
+    });
+};
+
+function _write (srcDir, dest) {
+    writeFile._write (srcDir, dest, function (err) {
+        console.log("Done Resizing!");
     });
 };
 
 function main (src, dest, sizes, callback) {
 
     getFile(src, function (tmpFile) {
-        resize(tmpFile, sizes, function () {
-            console.log("Resized");
+        resize(tmpFile, sizes, function (dir) {
+            _write(dir, dest);
         });
     });
 
