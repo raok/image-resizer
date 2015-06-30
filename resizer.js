@@ -15,29 +15,45 @@
 
 // dependencies
 var gm = require('gm').subClass({ imageMagick: true });
+var tmp = require('tmp');
+var async = require('async');
 
 var resizer = {};
 
-resizer.resize = function (data, imgName, directory, sizesObj, callback) {
+resizer.resize = function (path, sizesObj, callback) {
 
-    var _data = null;
+    var directory = createTmpFile();
 
-    if (data.hasOwnProperty("Body")) {
-        _data = data.Body;
-    } else {
-        _data = data;
-    }
+    console.log(sizesObj);
+    var imgType = path.split(".").pop();
 
-    gm(_data)
-        .resize(sizesObj.width, sizesObj.height)
-        .write(directory + sizesObj.name + "-" + imgName, function (err) {
-            if (err) {
-                callback(err);
-                return;
-            }
-            callback();
-        });
+    async.each(sizesObj, function (sizesObj, mapNext) {
+        gm(path)
+            .resize(sizesObj.width, sizesObj.height)
+            .write(directory + sizesObj.name + "." + imgType, function (err) {
+                if (err) {
+                    mapNext(err);
+                    return;
+                }
+                mapNext();
+            });
+    }, function (err) {
+        if(err) {
+            callback(err);
+        } else {
+            callback(directory);
+        }
+    })
+
 
 };
+
+// This function creates a temporary directory to which we will save our files.
+function createTmpFile() {
+
+    var tmpDir = tmp.dirSync(); //object
+    var tmpDirName = tmpDir.name + "/"; //path to directory
+    return tmpDirName;
+}
 
 module.exports = resizer;

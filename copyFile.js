@@ -12,6 +12,7 @@ var fs = require('fs');
 var S3 = require("./S3Handler");
 var S3get = S3._get;
 var crypto = require('crypto');
+var path = require('path');
 
 var tmp = require('tmp');
 
@@ -32,7 +33,8 @@ copy = function (src, cb) {
             });
             break;
         case 'file:':
-            copyLocalFile(src, tmpFile, function(){
+            var path = parts.pathname;
+            copyLocalFile(path, tmpFile, function(){
                 console.log(tmpFile);
                 cb(tmpFile);
             });
@@ -46,6 +48,8 @@ module.exports = {
     copy: copy
 };
 
+
+// This function creates a temporary directory to which we will save our files.
 function createTmpFile(src, parts) {
 
     var imgName = parts.pathname.split("/").pop();
@@ -53,9 +57,10 @@ function createTmpFile(src, parts) {
     var tmpDirName = tmpDir.name + "/"; //path to directory
     var tmpFileName = crypto.createHash('md5').update(src + Math.floor(Date.now() / 1000)).digest('hex');
     return tmpDirName + tmpFileName + '.' + imgName.split('.').pop();
+};
 
-}
 
+// This function uses the S3handler get function to retrieve the file from the s3 bucket and writes to the temporary directory
 function copyS3File(src, dest, cb) {
 
     S3get(src, function(data) {
@@ -63,9 +68,28 @@ function copyS3File(src, dest, cb) {
             cb();
         })
     });
-}
+};
 
+
+// This function copies local files using streams TODO: use readFile and writeFile instead. You might be calling successive functions without the stream ending.
 function copyLocalFile (src, dest, cb) {
+
+    var parts = _getprotocol(src);
+    src = parts.pathname;
+
+    //fs.readFile(src, function (err, data) {
+    //    if (err) {
+    //        console.log(err);
+    //    } else {
+    //        fs.writeFile(dest, data, function (err) {
+    //            if (err) {
+    //                cb(err);
+    //            } else {
+    //                cb();
+    //            }
+    //        });
+    //    }
+    //});
     var cbCalled = false;
 
     var rd = fs.createReadStream(src);
@@ -87,4 +111,4 @@ function copyLocalFile (src, dest, cb) {
             cbCalled = true;
         }
     }
-}
+};

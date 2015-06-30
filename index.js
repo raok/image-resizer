@@ -26,35 +26,67 @@ var configs = require("./config/configs.json");
 var mkDir = require("./makeDir");
 var makeDir = mkDir.handler;
 
+var _resizer= require("./resizer");
+var rs = _resizer.resize;
+
 var copyFile = require('./copyFile');
 
 
+
 exports.lambdaHandler = function (event, context) {
+
+    var sizesConfigs = configs.sizes;
+
     var _path = event.path;
+    var _dir = event.dest;
+
+    main(_path, _dir, sizesConfigs, function() {
+
+        context.done();
+    });
 };
 
 exports.cliHandler = function () {
+
+    var sizesConfigs = configs.sizes;
+
     var _path = argv.source;
     var _dir = argv.dest;
 
-    resize(_path, _dir, function() {
+    main(_path, _dir, sizesConfigs, function() {
 
         process.exit(0);
     });
 };
 
-function resize (src, dest, callback) {
+function getFile (src, callback) {
 
     copyFile.copy(src, function(sFile){
         console.log("resize: " + sFile);
-        callback();
+        callback(sFile);
+    });
+};
+
+function resize (src, sizes, callback) {
+
+    rs(src, sizes, function (dir) {
+        console.log("Resized to: %s", dir);
+    });
+};
+
+function main (src, dest, sizes, callback) {
+
+    getFile(src, function (tmpFile) {
+        resize(tmpFile, sizes, function () {
+            console.log("Resized");
+        });
     });
 
     // RegExp to check for image type
     //var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
 return;
     // use configs file
-    var sizesConfigs = configs.sizes;
+
 
     var obj = createObj(src);
 
@@ -71,49 +103,49 @@ return;
 
     var imageType = imgExt[1] || imgExt[2];
 
-    switch(_protocol) {
-        case "s3:":
-            async.waterfall([
-                function(callback) {
-                    s3resizer(s3Key, s3Bucket, sizesConfigs, imageType, obj, callback);
-                }
-            ], function (error, result) {
-                if (error) {
-                    context.done(error, null);
-                } else {
-                    console.log("Everything went well. Calling context.done");
-                    context.done(null, result);
-                }
-            });
-            break;
-        case "file:":
-            async.series([
-                function (callback) {
-                    async.eachSeries(sizesConfigs, function (item, mapNext) {
-                        makeDir(dest, item, mapNext);
-                    }, function (err) {
-                        if (err) {
-                            callback(err, null);
-                        } else {
-                            callback(null);
-                        }
-                    });
-                },
-                function (callback) {
-                    fileResizer(src, imgName, dest, sizesConfigs, obj, callback);
-                }
-            ], function (error, results) {
-                if(error) {
-                    console.log("Error in file, %s", error);
-                    return error;
-                } else {
-                    return console.log("Image processed without errors for 'file' path.");
-                }
-            });
-            break;
-        default:
-            return console.log("No matches found for: %s", _protocol);
-    }
+    //switch(_protocol) {
+    //    case "s3:":
+    //        async.waterfall([
+    //            function(callback) {
+    //                s3resizer(s3Key, s3Bucket, sizesConfigs, imageType, obj, callback);
+    //            }
+    //        ], function (error, result) {
+    //            if (error) {
+    //                context.done(error, null);
+    //            } else {
+    //                console.log("Everything went well. Calling context.done");
+    //                context.done(null, result);
+    //            }
+    //        });
+    //        break;
+    //    case "file:":
+    //        async.series([
+    //            function (callback) {
+    //                async.eachSeries(sizesConfigs, function (item, mapNext) {
+    //                    makeDir(dest, item, mapNext);
+    //                }, function (err) {
+    //                    if (err) {
+    //                        callback(err, null);
+    //                    } else {
+    //                        callback(null);
+    //                    }
+    //                });
+    //            },
+    //            function (callback) {
+    //                fileResizer(src, imgName, dest, sizesConfigs, obj, callback);
+    //            }
+    //        ], function (error, results) {
+    //            if(error) {
+    //                console.log("Error in file, %s", error);
+    //                return error;
+    //            } else {
+    //                return console.log("Image processed without errors for 'file' path.");
+    //            }
+    //        });
+    //        break;
+    //    default:
+    //        return console.log("No matches found for: %s", _protocol);
+    //}
 };
 
 if (!module.parent) {
