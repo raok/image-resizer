@@ -19,6 +19,7 @@
 var s3 = new (require('aws-sdk')).S3();
 var getprotocol = require("./getProtocol");
 var _getprotocol = getprotocol.getProtocol;
+var fs = require('fs');
 
 var S3Handler = {};
 
@@ -42,26 +43,38 @@ S3Handler._get = function (src, callback) {
     });
 };
 
-S3Handler._put = function (dest, callback) {
+S3Handler._put = function (dest, file, callback) {
 
-    console.log(dest);
+    console.log("Dest: " + dest);
     var parts = _getprotocol(dest);
 
-    var _sizeName = fileName.split("-").shift();
+    var bucketName = parts.host;
+    var imageType = parts.pathname.split(".").pop();
 
-    var params = {
-        Bucket: bucketName,
-        Key: "images/" + _sizeName + "/" + imgName,
-        Body: content,
-        ContentType: 'image/' + imageType
-    };
+    getContent(file, function (err, data) {
+        var params = {
+            Bucket: bucketName,
+            Key: file,
+            Body: data,
+            ContentType: 'image/' + imageType
+        };
 
-    s3.putObject(params, function (error, data) {
-        if ( error ) {
+        s3.putObject(params, function (error, data) {
+            if ( error ) {
+                callback(error, null);
+            }
+            callback(null, data);
+        });
+    });
+};
+
+module.exports = S3Handler;
+
+function getContent (file, callback) {
+    fs.readFile(file, function (error, data) {
+        if(error) {
             callback(error, null);
         }
         callback(null, data);
     });
 };
-
-module.exports = S3Handler;

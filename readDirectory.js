@@ -25,10 +25,9 @@ _getFiles._get = function (path, callback) {
     });
 };
 
-_getFiles._getContent = function (file, dir, callback) {
+_getFiles._getContent = function (file, callback) {
 
-    var _path = dir + file;
-    fs.readFile(_path, function (error, data) {
+    fs.readFile(file, function (error, data) {
         if(error) {
             callback(error, null);
         }

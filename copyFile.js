@@ -27,15 +27,13 @@ copy = function (src, cb) {
 
     switch(_protocol) {
         case 's3:':
-            copyS3File(src, tmpFile, function(){
-                console.log(tmpFile);
+            copyS3File(src, tmpFile, function (){
                 cb(tmpFile);
             });
             break;
         case 'file:':
             var path = parts.pathname;
-            copyLocalFile(path, tmpFile, function(){
-                console.log(tmpFile);
+            copyLocalFile(path, tmpFile, function (){
                 cb(tmpFile);
             });
             break;
@@ -63,9 +61,14 @@ function createTmpFile(src, parts) {
 // This function uses the S3handler get function to retrieve the file from the s3 bucket and writes to the temporary directory
 function copyS3File(src, dest, cb) {
 
-    S3get(src, function(data) {
-        fs.writeFile(dest, data, function (err) {
-            cb();
+    S3get(src, function(err, data) {
+        fs.writeFile(dest, data.Body, function (err) {
+            console.log(data);
+            if (err) {
+                cb(err, null);
+            } else {
+                cb();
+            }
         })
     });
 };

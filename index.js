@@ -58,7 +58,7 @@ exports.cliHandler = function () {
     main(_path, _dir, sizesConfigs, function () {
 
         console.log("Resized for CLI");
-        //process.exit(0);
+        process.exit(0);
     });
 };
 
