@@ -55,9 +55,10 @@ exports.cliHandler = function () {
     var _path = argv.source;
     var _dir = argv.dest;
 
-    main(_path, _dir, sizesConfigs, function() {
+    main(_path, _dir, sizesConfigs, function () {
 
-        process.exit(0);
+        console.log("Resized for CLI");
+        //process.exit(0);
     });
 };
 
@@ -76,9 +77,9 @@ function resize (src, sizes, callback) {
     });
 };
 
-function _write (srcDir, dest) {
+function _write (srcDir, dest, callback) {
     writeFile._write (srcDir, dest, function (err) {
-        console.log("Done Resizing!");
+        callback();
     });
 };
 
@@ -86,7 +87,7 @@ function main (src, dest, sizes, callback) {
 
     getFile(src, function (tmpFile) {
         resize(tmpFile, sizes, function (dir) {
-            _write(dir, dest);
+            _write(dir, dest, callback);
         });
     });
 

@@ -51,11 +51,11 @@ function writeLocalFile (srcDir, dest, callback) {
         if (err) {
             callback(err);
         } else {
-            callback("Done!");
+            callback();
         }
     });
 };
 
-function writeS3File () {
+function writeS3File (srcDir, dest, callback) {
 
 };
