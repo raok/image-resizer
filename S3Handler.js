@@ -46,7 +46,6 @@ S3Handler._get = function (src, callback) {
 S3Handler._put = function (dest, file, callback) {
 
     var parts = _getprotocol(dest);
-    console.log(parts);
     var _path = parts.pathname.slice(1);
 
     var bucketName = parts.host;

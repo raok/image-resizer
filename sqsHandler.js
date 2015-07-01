@@ -23,7 +23,7 @@ var _queueUrl = configs.queueUrl;
 sqsHandler._sendMessage = function (obj, callback) {
 
     var params = {
-        MessageBody : obj,
+        MessageBody: obj,
         QueueUrl: _queueUrl
     };
 

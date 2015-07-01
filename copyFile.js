@@ -63,7 +63,6 @@ function copyS3File(src, dest, cb) {
 
     S3get(src, function(err, data) {
         fs.writeFile(dest, data.Body, function (err) {
-            console.log(data);
             if (err) {
                 cb(err, null);
             } else {
