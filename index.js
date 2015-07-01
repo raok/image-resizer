@@ -69,15 +69,12 @@ exports.cliHandler = function () {
 
     main(_path, _dir, sizesConfigs, function (error) {
 
-        //if ( error ) {
-        //    return console.log("Error with CLI resizer.");
-        //} else {
-            console.log("Resized for CLI");
-            return;
-
-        //}
+        if ( error ) {
+            return console.log("Error with CLI resizer.");
+        } else {
+            return console.log("Resized for CLI");
+        }
     });
-
 };
 
 function imgExtChecker (src, context) {
