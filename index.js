@@ -6,7 +6,7 @@
 
 
 //var _ = require("underscore");
-//var async = require('async');
+var async = require('async');
 var argv = require("minimist")(process.argv.slice(2));
 var request = require('request');
 
@@ -46,9 +46,15 @@ exports.lambdaHandler = function (event, context) {
     var _path = event.path;
     var _dir = event.dest;
 
-    main(_path, _dir, sizesConfigs, function () {
+    imgExtChecker(_path, context);
 
-        context.done();
+    main(_path, _dir, sizesConfigs, function (error) {
+
+        if ( error ) {
+            context.done(error);
+        } else {
+            context.done(null);
+        }
     });
 };
 
@@ -59,12 +65,36 @@ exports.cliHandler = function () {
     var _path = argv.source;
     var _dir = argv.dest;
 
-    main(_path, _dir, sizesConfigs, function () {
+    imgExtChecker(_path, null);
 
-        console.log("Resized for CLI");
-        return;
+    main(_path, _dir, sizesConfigs, function (error) {
+
+        //if ( error ) {
+        //    return console.log("Error with CLI resizer.");
+        //} else {
+            console.log("Resized for CLI");
+            return;
+
+        //}
     });
+
 };
+
+function imgExtChecker (src, context) {
+
+    var imgName = src.split("/").pop();
+    console.log(imgName);
+    var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
+    var imgExt = imageTypeRegExp.exec(imgName);
+
+    if (imgExt === null) {
+        if(context === null) {
+            throw new Error("Unable to infer the image type.");
+        } else if (context) {
+            context.done(new Error('unable to infer the image type for key ' + imgName), null);
+        }
+    }
+}
 
 function getFile (src, callback) {
 
@@ -144,27 +174,6 @@ function reqSender (src, callback) {
             return console.log("No type for end request specified.");
     }
 }
-
-    // RegExp to check for image type
-    //var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
-//return;
-//    // use configs file
-//
-//
-//    var obj = createObj(src);
-//
-//    // Check if file has a supported image extension
-//    var imgExt = imageTypeRegExp.exec(s3Key);
-//
-//    if (imgExt === null) {
-//        if(!context) {
-//            return console.error('Unable to infer the image type for key ' + s3Key);
-//        } else if (context) {
-//            context.done(new Error('unable to infer the image type for key ' + s3Key), null);
-//        }
-//    }
-//
-//    var imageType = imgExt[1] || imgExt[2];
 
 
 
