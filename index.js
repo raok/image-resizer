@@ -91,7 +91,7 @@ function main (src, dest, sizes, callback) {
     getFile(src, function (tmpFile) {
         resize(tmpFile, sizes, function (dir) {
             _write(dir, dest, function () {
-                httpReq(callback);
+                reqSender(src, callback);
             });
         });
     });
@@ -99,7 +99,7 @@ function main (src, dest, sizes, callback) {
 
 function httpReq (callback) {
 
-    var reqUrl = configs.requestUrl + "/create/";
+    var reqUrl = configs.requestUrl;
     var reqBody = configs.eventMessage;
 
     var options = {
@@ -107,7 +107,8 @@ function httpReq (callback) {
         url: reqUrl,
         body: reqBody,
         json: true
-    }
+    };
+
     request(options, function (error, response, body) {
         if( error ) {
             console.log(error);
@@ -121,6 +122,27 @@ function httpReq (callback) {
             callback();
         }
     });
+};
+
+function reqSender (src, callback) {
+
+    var _type = configs.reqType;
+
+    switch(_type) {
+        case "http":
+            httpReq(function () {
+                callback();
+            });
+            break;
+        case "sqs":
+            var obj = createObj(src);
+            sqsSend(obj, function () {
+                callback();
+            });
+            break;
+        default :
+            return console.log("No type for end request specified.");
+    }
 }
 
     // RegExp to check for image type
