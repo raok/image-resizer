@@ -5,27 +5,27 @@
 'use strict';
 
 
-var _ = require("underscore");
-var async = require('async');
+//var _ = require("underscore");
+//var async = require('async');
 var argv = require("minimist")(process.argv.slice(2));
 var request = require('request');
 
 var getprotocol = require("./getProtocol");
 var _getprotocol = getprotocol.getProtocol;
 
-var S3rs = require("./S3resizer");
-var s3resizer = S3rs.rs;
+//var S3rs = require("./S3resizer");
+//var s3resizer = S3rs.rs;
 
 var objCr = require("./objectCreator");
 var createObj = objCr.creator;
 
-var fileRs = require("./fileResizer");
-var fileResizer = fileRs.rs;
+//var fileRs = require("./fileResizer");
+//var fileResizer = fileRs.rs;
 
 var configs = require("./config/configs.json");
 
-var mkDir = require("./makeDir");
-var makeDir = mkDir.handler;
+//var mkDir = require("./makeDir");
+//var makeDir = mkDir.handler;
 
 var _resizer= require("./resizer");
 var rs = _resizer.resize;
@@ -99,13 +99,14 @@ function main (src, dest, sizes, callback) {
 
 function httpReq (callback) {
 
-    var reqUrl = configs.requestUrl + ":/" + configs['eventMessage'].event;
-    var reqBody = configs['eventMessage'].message;
+    var reqUrl = configs.requestUrl + "/create/";
+    var reqBody = configs.eventMessage;
 
     var options = {
         method: 'POST',
         url: reqUrl,
-        body: reqBody
+        body: reqBody,
+        json: true
     }
     request(options, function (error, response, body) {
         if( error ) {
@@ -113,7 +114,7 @@ function httpReq (callback) {
             callback(error);
         }
         if ( !error && response.statusCode !== 200 ) {
-            callback(new error("No error, but status code %", response.statusCode));
+            callback(new Error("No error, but status code %", response.statusCode));
         }
 
         if ( !error && response.statusCode === 200 ) {
