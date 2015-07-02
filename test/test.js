@@ -29,7 +29,7 @@ describe("getProtocol", function () {
 
         parseSpy = sinon.spy(url, 'parse');
 
-        testedModule = require('../getProtocol.js');
+        testedModule = require('../lib/modules/getProtocol.js');
     });
 
     after(function () {
@@ -187,7 +187,7 @@ describe("readDirectory _getFiles._get", function () {
 
             callbackSpy = sinon.spy();
 
-            testedModule = require('../readDirectory.js');
+            testedModule = require('../lib/modules/readDirectory.js');
 
             mockDir({
                 tmp: {
@@ -222,7 +222,7 @@ describe("readDirectory _getFiles._get", function () {
 
             callbackSpy = sinon.spy();
 
-            testedModule = proxyquire('../readDirectory', {
+            testedModule = proxyquire('../lib/modules/readDirectory', {
                 "fs": {
                     "readdir": readFileStub
                 }
@@ -272,7 +272,7 @@ describe("S3Handler", function () {
 
             putStub = sinon.stub();
 
-            testedModule = proxyquire("../S3Handler", {
+            testedModule = proxyquire("../lib/modules//S3Handler", {
                 'aws-sdk': {
                     "S3": function () {
                         return {
@@ -303,61 +303,57 @@ describe("S3Handler", function () {
         });
     });
 
-    //describe("S3Handler._put", function () {
-    //    var testedModule, imgName, imgType, content, data, bucketName, getStub, putStub, callbackSpy, fileName;
-    //
-    //    before(function () {
-    //
-    //        imgName = "S3test.png";
-    //
-    //        imgType = "png";
-    //
-    //        fileName = "large-S3test.png";
-    //
-    //        content = new Buffer([1,2,3]);
-    //
-    //        bucketName = "testBucket";
-    //
-    //        callbackSpy = sinon.spy();
-    //
-    //        data = {
-    //            "Expiration": "12-12-2016"
-    //        };
-    //
-    //        putStub = sinon.stub();
-    //
-    //        getStub = sinon.stub();
-    //
-    //        testedModule = proxyquire("../S3Handler", {
-    //            'aws-sdk': {
-    //                "S3": function () {
-    //                    return {
-    //                        getObject: getStub,
-    //                        putObject: putStub
-    //                    }
-    //                }
-    //            }
-    //        });
-    //    });
-    //
-    //    it("put object to S3Bucket", function () {
-    //        putStub.callsArgWith(1, null, data);
-    //        testedModule._put(bucketName, content, fileName, imgName, imgType, function () {
-    //            callbackSpy.apply(null, arguments);
-    //        });
-    //
-    //        expect(callbackSpy).has.been.called.and.calledWith(null, data);
-    //    });
-    //
-    //    it("put object triggers error", function () {
-    //        putStub.callsArgWith(1, new Error("Error putting image to S3"), null);
-    //        testedModule._put(bucketName, content, fileName, imgName, imgType, function () {
-    //            callbackSpy.apply(null, arguments);
-    //        });
-    //
-    //        expect(callbackSpy).has.been.called.and.calledWith(new Error("Error putting image to S3"));
-    //    });
-    //});
+//    describe("S3Handler._put", function () {
+//        var testedModule, _path, content, data, bucketName, getStub, putStub, callbackSpy, fileName;
+//
+//        before(function () {
+//
+//            _path = "s3://bucketName/S3test.png";
+//
+//            fileName = "S3test.png";
+//
+//            content = new Buffer([1,2,3]);
+//
+//            callbackSpy = sinon.spy();
+//
+//            data = {
+//                "Expiration": "12-12-2016"
+//            };
+//
+//            putStub = sinon.stub();
+//
+//            getStub = sinon.stub();
+//
+//            testedModule = proxyquire("../S3Handler", {
+//                'aws-sdk': {
+//                    "S3": function () {
+//                        return {
+//                            getObject: getStub,
+//                            putObject: putStub
+//                        }
+//                    }
+//                }
+//            });
+//        });
+//
+//        it("put object to S3Bucket", function () {
+//            putStub.callsArgWith(1, null, data);
+//            testedModule._put(_path, fileName, function () {
+//                callbackSpy.apply(null, arguments);
+//            });
+//
+//            expect(callbackSpy).has.been.called.and.calledWith(null, data);
+//        });
+//
+//        it("put object triggers error", function () {
+//            putStub.callsArgWith(1, new Error("Error putting image to S3"), null);
+//            testedModule._put(_path, fileName, function () {
+//                callbackSpy.apply(null, arguments);
+//            });
+//
+//            expect(callbackSpy).has.been.called.and.calledWith(new Error("Error putting image to S3"));
+//        });
+//    });
 });
 
 
@@ -383,7 +379,7 @@ describe("sqsHandler", function () {
 
             object = JSON.stringify(object);
 
-            testedModule = proxyquire("../sqsHandler", {
+            testedModule = proxyquire("../lib/modules//sqsHandler", {
                 'aws-sdk': {
                     'SQS': function () {
                         return {
@@ -423,7 +419,7 @@ describe("sqsHandler", function () {
 
             object = JSON.stringify(object);
 
-            testedModule = proxyquire("../sqsHandler", {
+            testedModule = proxyquire("../lib/modules//sqsHandler", {
                 'aws-sdk': {
                     'SQS': function () {
                         return {
@@ -461,7 +457,7 @@ describe("objectCreator", function () {
 
         fakePath = "S3://bucketname/images/908798";
 
-        testedModule = require("../objectCreator.js");
+        testedModule = require("../lib/modules/objectCreator.js");
     });
 
     it("returns a newly formed object", function () {
@@ -487,7 +483,7 @@ describe("writeFiles", function () {
 
             data = new Buffer([1,2,3]);
 
-            testedModule = require("../writeFiles.js");
+            testedModule = require("../lib/modules/writeFiles.js");
 
             mockDir({
                 "images" : {
@@ -523,7 +519,7 @@ describe("writeFiles", function () {
 
             fsStub = sinon.stub();
 
-            testedModule = proxyquire('../writeFiles', {
+            testedModule = proxyquire('../lib/modules//writeFiles', {
                 fs: {
                     writeFile: fsStub
                 }
