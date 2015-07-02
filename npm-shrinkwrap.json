@@ -92,17 +92,10 @@
       "from": "minimist@*",
       "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.1.1.tgz"
     },
-    "mkdirp": {
-      "version": "0.5.1",
-      "from": "mkdirp@*",
-      "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz",
-      "dependencies": {
-        "minimist": {
-          "version": "0.0.8",
-          "from": "minimist@0.0.8",
-          "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz"
-        }
-      }
+    "ncp": {
+      "version": "2.0.0",
+      "from": "ncp@*",
+      "resolved": "https://registry.npmjs.org/ncp/-/ncp-2.0.0.tgz"
     },
     "qs": {
       "version": "2.4.1",
