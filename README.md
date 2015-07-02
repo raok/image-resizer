@@ -21,7 +21,7 @@ If you already have an ID and secret key, follow [this](http://docs.aws.amazon.c
 
 4 next we need the image resizer app on our vagrant box. For this you will need to do a `git clone git@bitbucket.org:hevnly/image-resizer.git` in your develop branch of hevnly.dev, and then `git fetch && git checkout refactor` to get the _refactor_ branch, and run `npm install`.
 
-5 we will also need to get `eevy`. Make sure you download it to the same directory as your `conf.yml` file. You can get it with the command `wget https://github.com/hevnly/eevy/releases/download/0.2.1/eevy` while in your develop branch and give eevy permissions with `chmod +x eevy`. Or you can go to [https://github.com/hevnly/eevy/releases](https://github.com/hevnly/eevy/releases), and download the latest version of `eevy` and then copy it to your vagrant box with using `scp`.
+5 we will also need to get `eevy`. Make sure you download it to the same directory as your `conf.yml` file. You can get it with the command `wget https://github.com/hevnly/eevy/releases/download/0.2.5/eevy` while in your develop branch and give eevy permissions with `chmod +x eevy`. Or you can go to [https://github.com/hevnly/eevy/releases](https://github.com/hevnly/eevy/releases), and download the latest version of `eevy` and then copy it to your vagrant box with using `scp`.
 
 6 in your vagrant box, cd into `/var/www/hevnly.dev` and change you `conf.yml` file so it looks like this:
 
@@ -42,7 +42,7 @@ If you already have an ID and secret key, follow [this](http://docs.aws.amazon.c
         args:
           - /vagrant/image-resizer/index.js
           - --source=${message.path}
-          - --dest=/var/www/henvly.dev/web/uploads/image/resized/
+          - --dest=file:///var/www/henvly.dev/web/uploads/image/resized/
     listners:
       api.image_created:
         - imageResizer
