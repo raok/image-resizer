@@ -1,7 +1,5 @@
 # ImageRs
 
-## All code herein is property of hevnly.ltd
-
 ### This image processor resizes images from both the file system and S3 buckets.
 
 ### How to get it running on your local machine or VM (filesystem).
@@ -54,9 +52,10 @@ __NOTE THAT THE FIRST ARGUMENT IN THE PROPERTY ARGS IS THE PATH TO THE APP. THIS
 
 7 next its time to run the app on your local machine. To do this:
 
-    - in the command line type `node /path/to/app/index.js --source=file:///source/path/to/target/image.png --dest=/destination/path/for/resized/images/`
+    - in the command line type `node /path/to/app/index.js --source=file:///source/path/to/target/image.png --dest=file:///destination/path/for/resized/images/`
     - note that the destination path ends with `/`
     - if the destination folder does not exist, the app will generate it for you before resizing the images.
+    - you can also use "s3" instead of the "file" if you want to download an image from an s3 bucket.
     
 8 to run the app when you post an image to hevnly:
 
