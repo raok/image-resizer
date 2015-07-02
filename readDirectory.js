@@ -1,5 +1,5 @@
 /**
- * Created by mario on 12/05/15.
+ * Created by mario (https://github.com/hyprstack) on 12/05/15.
  */
 
 /**
@@ -22,16 +22,6 @@ _getFiles._get = function (path, callback) {
             callback(error, null);
         }
         callback(null, files);
-    });
-};
-
-_getFiles._getContent = function (file, callback) {
-
-    fs.readFile(file, function (error, data) {
-        if(error) {
-            callback(error, null);
-        }
-        callback(null, data);
     });
 };
 

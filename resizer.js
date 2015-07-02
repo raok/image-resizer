@@ -1,5 +1,5 @@
 /**
- * Created by mario on 11/05/15.
+ * Created by mario (https://github.com/hyprstack) on 11/05/15.
  */
 
 /**
@@ -17,7 +17,6 @@
 var gm = require('gm').subClass({ imageMagick: true });
 var tmp = require('tmp');
 var async = require('async');
-var fs = require('fs');
 
 var resizer = {};
 

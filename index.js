@@ -1,31 +1,26 @@
 /**
- * Created by mario on 24/02/2015.
+ * Created by mario (https://github.com/hyprstack) on 24/02/2015.
+ *
+ * @fn createObj - function used to create our object to send in the sqs queue
+ * @fn rs - function that takes care of the actual resizing
+ * @fn sqsSend - function that send the sqs queue message
+ * @fn copyFile - function that copies files to a temporary directory to then be manipulated by the rs function
+ * @fn writeFile - function that writes the file from the temporary directory to a target destination
+ * @fn lambdaHandler - module used on lambda environment to resize images
+ * @fn cliHandler - module used for the command line to resize images
+ *
+ * @param configs - our configurations files, where we define the target sizes, sqs queue url, type of request, request url and request body
  */
 
 'use strict';
 
-
-//var _ = require("underscore");
-var async = require('async');
 var argv = require("minimist")(process.argv.slice(2));
 var request = require('request');
-
-var getprotocol = require("./getProtocol");
-var _getprotocol = getprotocol.getProtocol;
-
-//var S3rs = require("./S3resizer");
-//var s3resizer = S3rs.rs;
 
 var objCr = require("./objectCreator");
 var createObj = objCr.creator;
 
-//var fileRs = require("./fileResizer");
-//var fileResizer = fileRs.rs;
-
 var configs = require("./config/configs.json");
-
-//var mkDir = require("./makeDir");
-//var makeDir = mkDir.handler;
 
 var _resizer= require("./resizer");
 var rs = _resizer.resize;
@@ -77,10 +72,10 @@ exports.cliHandler = function () {
     });
 };
 
+// Check the type of file is an image
 function imgExtChecker (src, context) {
 
     var imgName = src.split("/").pop();
-    console.log(imgName);
     var imageTypeRegExp = /(?:(jpg)|(png)|(jpeg))$/;
     var imgExt = imageTypeRegExp.exec(imgName);
 
@@ -93,6 +88,7 @@ function imgExtChecker (src, context) {
     }
 }
 
+// Retrieve the file
 function getFile (src, callback) {
 
     copyFile.copy(src, function(sFile){
@@ -100,6 +96,8 @@ function getFile (src, callback) {
     });
 };
 
+
+// Do actual resizing of image
 function resize (src, sizes, callback) {
 
     rs(src, sizes, function (dir) {
@@ -107,12 +105,15 @@ function resize (src, sizes, callback) {
     });
 };
 
+
+// Write file to destination
 function _write (srcDir, dest, callback) {
     writeFile._write (srcDir, dest, function (err) {
         callback();
     });
 };
 
+// This is our main caller function
 function main (src, dest, sizes, callback) {
 
     getFile(src, function (tmpFile) {
@@ -124,6 +125,8 @@ function main (src, dest, sizes, callback) {
     });
 };
 
+
+// Send an http request
 function httpReq (callback) {
 
     var reqUrl = configs.requestUrl;
@@ -151,18 +154,22 @@ function httpReq (callback) {
     });
 };
 
+// Function that determines if we send an http request or a sqs queue message
 function reqSender (src, callback) {
 
     var _type = configs.reqType;
 
     switch(_type) {
         case "http":
+            // send http request
             httpReq(function () {
                 callback();
             });
             break;
         case "sqs":
+            // create our object for the sqs queue message
             var obj = createObj(src);
+            // send the sqs queue message
             sqsSend(obj, function () {
                 callback();
             });
@@ -171,8 +178,6 @@ function reqSender (src, callback) {
             return console.log("No type for end request specified.");
     }
 }
-
-
 
 if (!module.parent) {
     exports.cliHandler();
