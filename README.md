@@ -158,7 +158,7 @@ This will pull the image from the docker hub and build it for you.
 
 Next, to run the image and create our container, type:
 
-`docker run -it --rm -v ~/.aws:/root/.aws hyprstack/hevnly-image sh -c 'aws s3 cp s3://hevnlydeployments/image-resizer-nightly.tar.gz /home/image-resizer && cd /home/image-resizer && tar zxvf image-resizer-nightly.tar.gz && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
+`docker run -it --rm hyprstack/hevnly-image /bin/bash`
 
 This should open the command line tool for the container. 
 
@@ -186,7 +186,7 @@ This will pull the image from the docker hub and build it for you.
 
 Next, to run the image and create our container, type:
 
-`sudo docker run -it -e AWS_CONFIG_FILE=/root/.aws/config -e AWS_CONFIG_FILE=/root/.aws/credentials --rm -v ~/.aws:/root/.aws hyprstack/hevnly-image sh -c 'aws s3 cp s3://hevnlydeployments/image-resizer-nightly.tar.gz /home/image-resizer && cd /home/image-resizer && tar zxvf image-resizer-nightly.tar.gz && echo "192.168.56.101 hevnly.dev" >> /etc/hosts && /bin/bash'`
+`sudo docker run -it --rm hyprstack/hevnly-image /bin/bash`
 
 This should open the command line tool for the container. 
 
