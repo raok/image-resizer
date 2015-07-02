@@ -1,6 +1,6 @@
 {
   "queueUrl": "https://sqs.eu-west-1.amazonaws.com/193656525156/mariotest",
-  "requestUrl": "http://localhost:8000/event/",
+  "requestUrl": "http://hevnly.dev:8000/event/",
   "eventMessage": {
     "event": "imageResizer.created",
     "message": {"desc": "Image was resized and saved to database."}
