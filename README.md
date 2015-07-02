@@ -110,7 +110,7 @@ If you just want to run the app without having to download it to your local mach
 
 Make sure you have `aws cli` set-up to. Refer to step _2_ of the above guide to run the app on the local machine or:
 
-_You will also need permissions to download/copy the files from the s3 bucket. Speak to Chris about granting permissions._
+__You will also need permissions to download/copy the files from the s3 bucket. Speak to Chris about granting permissions.__
 
 Run the following commands or follow this [guideline](http://docs.aws.amazon.com/cli/latest/userguide/installing.html):
 
@@ -146,7 +146,7 @@ now type in:
 
 You are now ready to issue docker commands. 
 
-_Note:_ That all commands once docker has started on mac do not need `sudo`.
+__Note:__ That all commands once docker has started on mac do not need `sudo`.
 
 ##### Getting the docker image and running the container.
 
@@ -164,7 +164,7 @@ This should open the command line tool for the container.
 
 To make sure the app's files have been copied correctly, `ls -la`. There should be all the files belonging to the app.
  
- _Note:_ You will need to change the `configs.json` to send http request or sqs queue messages.
+__Note:__ You will need to change the `configs.json` to send http request or sqs queue messages.
 
 To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=file:///home/resized/`
 
@@ -176,7 +176,7 @@ ___
 
 Once you have downloaded and setup docker and aws-cli, you can start to issue docker commands. 
 
-_Note:_ All commands need to be prefixed with the `sudo` command for linux machines.
+__Note:__ All commands need to be prefixed with the `sudo` command for linux machines.
 
 ##### Getting the docker image and running the container.
 
@@ -192,8 +192,11 @@ Next, to run the image and create our container, type:
 
 This should open the command line tool for the container. 
 
-_Note:_ You will need to change the `configs.json` to send http request or sqs queue messages.
+__Note:__ You will need to change the `configs.json` to send http request or sqs queue messages.
 
 To make sure the app's files have been copied correctly, `ls -la`. There should be all the files belonging to the app.
 
 To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=file:///home/resized/`
+
+
+_Tests need to be completed_
