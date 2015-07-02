@@ -19,7 +19,7 @@ If you already have an ID and secret key, follow [this](http://docs.aws.amazon.c
 
 3 __If you only want to run the app on your local machine__, jump to step 7.
 
-4 next we need the image resizer app on our vagrant box. For this you will need to do a `git clone git@bitbucket.org:hevnly/image-resizer.git` in your develop branch of hevnly.dev, and run `npm install`.
+4 next we need the image resizer app on our vagrant box. For this you will need to do a `git clone git@bitbucket.org:hevnly/image-resizer.git` in your develop branch of hevnly.dev, and then `git fetch && git checkout refactor` to get the _refactor_ branch, and run `npm install`.
 
 5 we will also need to get `eevy`. Make sure you download it to the same directory as your `conf.yml` file. You can get it with the command `wget https://github.com/hevnly/eevy/releases/download/0.2.1/eevy` while in your develop branch and give eevy permissions with `chmod +x eevy`. Or you can go to [https://github.com/hevnly/eevy/releases](https://github.com/hevnly/eevy/releases), and download the latest version of `eevy` and then copy it to your vagrant box with using `scp`.
 
@@ -164,7 +164,7 @@ This should open the command line tool for the container.
 
 To make sure the app's files have been copied correctly, `ls -la`. There should be all the files belonging to the app.
 
-To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=/home/resized/`
+To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=file:///home/resized/`
 
 Now `cd` to `/home/resized` and `ls -la`. You should see the resized images.
 
@@ -192,4 +192,4 @@ This should open the command line tool for the container.
 
 To make sure the app's files have been copied correctly, `ls -la`. There should be all the files belonging to the app.
 
-To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=/home/resized/`
+To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=file:///home/resized/`
