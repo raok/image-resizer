@@ -152,7 +152,7 @@ _Note:_ That all commands once docker has started on mac do not need `sudo`.
 
 Next, to fetch the docker image for the image-resizer app type in the command:
 
-`docker pull hyprstack/hevnly-image`
+`docker pull hyprstack/hevnly-image:v2`
 
 This will pull the image from the docker hub and build it for you.
 
@@ -182,7 +182,7 @@ _Note:_ All commands need to be prefixed with the `sudo` command for linux machi
 
 To fetch the docker image for the image-resizer app type in the command:
 
-`sudo docker pull hyprstack/hevnly-image`
+`sudo docker pull hyprstack/hevnly-image:v2`
 
 This will pull the image from the docker hub and build it for you.
 
