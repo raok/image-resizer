@@ -163,6 +163,8 @@ Next, to run the image and create our container, type:
 This should open the command line tool for the container. 
 
 To make sure the app's files have been copied correctly, `ls -la`. There should be all the files belonging to the app.
+ 
+ _Note:_ You will need to change the `configs.json` to send http request or sqs queue messages.
 
 To run the app make sure you have an image in the docker container to resize and then type `node index.js --source=file:///home/grumpy.jpg --dest=file:///home/resized/`
 
@@ -189,6 +191,8 @@ Next, to run the image and create our container, type:
 `sudo docker run -it --rm hyprstack/hevnly-image /bin/bash`
 
 This should open the command line tool for the container. 
+
+_Note:_ You will need to change the `configs.json` to send http request or sqs queue messages.
 
 To make sure the app's files have been copied correctly, `ls -la`. There should be all the files belonging to the app.
 

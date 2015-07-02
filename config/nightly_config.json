@@ -1,6 +1,11 @@
 {
   "queueUrl": "https://sqs.eu-west-1.amazonaws.com/193656525156/mariotest",
-  "eventName": "image_rs.re-sized",
+  "requestUrl": "http://localhost:8000/event/",
+  "eventMessage": {
+    "event": "imageResizer.created",
+    "message": {"desc": "Image was resized and saved to database."}
+  },
+  "reqType": "http",
   "sizes" : [
     { "width": 800, "height": 800, "name": "large" },
     { "width": 500, "height": 500, "name": "medium" },
