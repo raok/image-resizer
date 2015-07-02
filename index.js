@@ -17,20 +17,20 @@
 var argv = require("minimist")(process.argv.slice(2));
 var request = require('request');
 
-var objCr = require("./objectCreator");
+var objCr = require("./lib/modules/objectCreator");
 var createObj = objCr.creator;
 
 var configs = require("./config/configs.json");
 
-var _resizer= require("./resizer");
+var _resizer= require("./lib/modules/resizer");
 var rs = _resizer.resize;
 
-var _sqs = require("./sqsHandler");
+var _sqs = require("./lib/modules/sqsHandler");
 var sqsSend = _sqs._sendMessage;
 
-var copyFile = require('./copyFile');
+var copyFile = require('./lib/modules/copyFile');
 
-var writeFile = require('./writeFile');
+var writeFile = require('./lib/modules/writeFile');
 
 
 
